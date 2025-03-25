@@ -1,0 +1,597 @@
+{
+    "dashboard": {
+        "keyword": [
+            "Dashboard",
+            "Home",
+            "Panel",
+            "Admin",
+            "Control center",
+            "Overview",
+            "Main hub",
+            "Management hub",
+            "Administrative hub",
+            "Central hub",
+            "Command center",
+            "Administrator portal",
+            "Centralized interface",
+            "Admin console",
+            "Management dashboard",
+            "Main screen",
+            "Administrative dashboard",
+            "Command dashboard",
+            "Main control panel"
+        ],
+        "title": "Dashboard",
+        "icon": "las la-home",
+        "route_name": "admin.dashboard",
+        "menu_active": "admin.dashboard"
+    },
+    "manage_sale": {
+        "title": "Manage Sales",
+        "icon": "la la-shopping-cart",
+        "menu_active": [
+            "admin.sale*"
+        ],
+        "submenu": [
+            {
+                "keyword": [
+                    "Sales",
+                    "Manage sales",
+                    "Sale Configuration",
+                    "Add sale",
+                    "Edit sale"
+                ],
+                "title": "All Sales",
+                "route_name": "admin.sale.index",
+                "menu_active": [
+                    "admin.sale.index",
+                    "admin.sale.create",
+                    "admin.sale.edit"
+                ]
+            },
+            {
+                "keyword": [
+                    "All sales return",
+                    "Manage sales return",
+                    "Sale return Configuration",
+                    "Add sale return",
+                    "Edit sale return"
+                ],
+                "title": "Sales Return",
+                "route_name": "admin.sale.return.index",
+                "menu_active": [
+                    "admin.sale.return.index",
+                    "admin.sale.return.items",
+                    "admin.sale.return.edit"
+                ]
+            }
+        ]
+    },
+    "manage_purchase": {
+        "title": "Manage Purchases",
+        "icon": "la la-shopping-bag",
+        "menu_active": [
+            "admin.purchase*"
+        ],
+        "submenu": [
+            {
+                "keyword": [
+                    "purchases",
+                    "Manage purchase",
+                    "Purchase Configuration",
+                    "Add purchase",
+                    "Edit purchase"
+                ],
+                "title": "All Purchases",
+                "route_name": "admin.purchase.index",
+                "menu_active": [
+                    "admin.purchase.index",
+                    "admin.purchase.new",
+                    "admin.purchase.edit"
+                ]
+            },
+            {
+                "keyword": [
+                    "All purchase return",
+                    "Manage purchase return",
+                    "Purchase return Configuration",
+                    "Add purchase return",
+                    "Edit purchase return"
+                ],
+                "title": "Purchases Return",
+                "route_name": "admin.purchase.return.index",
+                "menu_active": [
+                    "admin.purchase.return.index",
+                    "admin.purchase.return.items",
+                    "admin.purchase.return.edit"
+                ]
+            }
+        ]
+    },
+    "manage_products": {
+        "title": "Manage Products",
+        "icon": "las la-box",
+        "menu_active": [
+            "admin.product*"
+        ],
+        "submenu": [
+            {
+                "keyword": [
+                    "All Products",
+                    "Manage Product",
+                    "Product Configuration",
+                    "Add product",
+                    "Edit Products"
+                ],
+                "title": "Products",
+                "route_name": "admin.product.index",
+                "menu_active": "admin.product.index"
+            },
+            {
+                "keyword": [
+                    "All Categories",
+                    "Manage Category",
+                    "Category management",
+                    "Category control",
+                    "Category activity",
+                    "Category analytics"
+                ],
+                "title": "Categories",
+                "route_name": "admin.product.category.index",
+                "menu_active": "admin.product.category.index"
+            },
+            {
+                "keyword": [
+                    "All Brands",
+                    "Manage Brands",
+                    "Brand management"
+                ],
+                "title": "Brands",
+                "route_name": "admin.product.brand.index",
+                "menu_active": [
+                    "admin.product.brand.index"
+                ]
+            },
+            {
+                "keyword": [
+                    "All Units",
+                    "Manage Units",
+                    "Product Units"
+                ],
+                "title": "Units",
+                "route_name": "admin.product.unit.index",
+                "menu_active": "admin.product.unit.index"
+            }
+        ]
+    },
+    "warehouses": {
+        "keyword": [
+            "Warehouses",
+            "Product Warehouse",
+            "Product Stock House"
+        ],
+        "title": "Manage Warehouse",
+        "icon": "la la-warehouse",
+        "route_name": "admin.warehouse.index",
+        "menu_active": "admin.warehouse.index"
+    },
+    "customers": {
+        "keyword": [
+            "Customer",
+            "Product Customer",
+            "Users",
+            "Product Buyers"
+        ],
+        "title": "Manage Customers",
+        "icon": "la la-users",
+        "route_name": "admin.customer.index",
+        "menu_active": [
+            "admin.customer.index",
+            "admin.customer.payment.*",
+            "admin.customer.notification.*"
+        ]
+    },
+    "suppliers": {
+        "keyword": [
+            "Suppliers",
+            "Product Suppliers",
+            "Producer",
+            "Product Seller"
+        ],
+        "title": "Manage Suppliers",
+        "icon": "la la-user-friends",
+        "route_name": "admin.supplier.index",
+        "menu_active": [
+            "admin.supplier.index",
+            "admin.supplier.payment.*"
+        ]
+    },
+    "manage_staff": {
+        "title": "Manage Staff",
+        "icon": "las la-user",
+        "menu_active": [
+            "admin.staff*",
+            "admin.roles*"
+        ],
+        "submenu": [
+            {
+                "keyword": [
+                    "All Staff",
+                    "Manage staff",
+                    "Staff management",
+                    "Staff control",
+                    "Staff activity",
+                    "Staff analytics"
+                ],
+                "title": "All Staff",
+                "route_name": "admin.staff.index",
+                "menu_active": "admin.staff.index"
+            },
+            {
+                "keyword": [
+                    "All Roles",
+                    "Manage Role",
+                    "Role management",
+                    "Role control",
+                    "Role activity",
+                    "Role analytics"
+                ],
+                "title": "Roles",
+                "route_name": "admin.roles.index",
+                "menu_active": [
+                    "admin.roles.index",
+                    "admin.roles.edit"
+                ]
+            }
+        ]
+    },
+    "product_adjustments": {
+        "keyword": [
+            "adjustment",
+            "Product adjustment",
+            "Good adjustment"
+        ],
+        "title": "Adjustments",
+        "icon": "la la-balance-scale",
+        "route_name": "admin.adjustment.index",
+        "menu_active": "admin.adjustment.*"
+    },
+    "product_transfers": {
+        "keyword": [
+            "adjustment",
+            "Product adjustment",
+            "Good adjustment"
+        ],
+        "title": "Transfers",
+        "icon": "la la-retweet",
+        "route_name": "admin.transfer.index",
+        "menu_active": "admin.transfer.*"
+    },
+    "institute_expense": {
+        "title": "Manage Expenses",
+        "icon": "la la-wallet",
+        "menu_active": [
+            "admin.expense.*"
+        ],
+        "submenu": [
+            {
+                "keyword": [
+                    "All expense type",
+                    "Manage expense type",
+                    "expense type Configuration",
+                    "Add expense type",
+                    "Edit expense type"
+                ],
+                "title": "Expense Types",
+                "route_name": "admin.expense.type.index",
+                "menu_active": "admin.expense.type.index"
+            },
+            {
+                "keyword": [
+                    "All expense",
+                    "Manage expense",
+                    "expense Configuration",
+                    "Add expense",
+                    "Edit expense"
+                ],
+                "title": "Expenses",
+                "route_name": "admin.expense.index",
+                "menu_active": "admin.expense.index"
+            }
+        ]
+    },
+    "payment_report": {
+        "title": "Payment Report",
+        "header": "Report",
+        "icon": "la la-money-check-alt",
+        "menu_active": [
+            "admin.report.payment.*"
+        ],
+        "submenu": [
+            {
+                "keyword": [
+                    "All Supplier Payment Report",
+                    "Manage Supplier Payment Report",
+                    "Supplier Payment Report Configuration"
+                ],
+                "title": "Supplier Payments",
+                "route_name": "admin.report.payment.supplier",
+                "menu_active": "admin.report.payment.supplier"
+            },
+            {
+                "keyword": [
+                    "All customer payment report",
+                    "Manage customer payment report",
+                    "customer payment report Configuration"
+                ],
+                "title": "Customer Payments",
+                "route_name": "admin.report.payment.customer",
+                "menu_active": "admin.report.payment.customer"
+            }
+        ]
+    },
+    "stock_report": {
+        "keyword": [
+            "Stock Count",
+            "Stock report",
+            "Goods stock"
+        ],
+        "title": "Stock Report",
+        "icon": "la la-list",
+        "route_name": "admin.report.stock.index",
+        "menu_active": "admin.report.stock.index"
+    },
+    "data_entry_report": {
+        "title": "Data Entry Report",
+        "icon": "la la-database",
+        "menu_active": [
+            "admin.report.data.entry.*"
+        ],
+        "submenu": [
+            {
+                "keyword": [
+                    "Purchase Data Entry",
+                    "Purchase Add Data",
+                    "Purchase Edit Data"
+                ],
+                "title": "Purchases",
+                "route_name": "admin.report.data.entry.purchase",
+                "menu_active": "admin.report.data.entry.purchase"
+            },
+            {
+                "keyword": [
+                    "Purchase Return Data Entry",
+                    "Purchase Return Add Data",
+                    "Purchase Return Edit Data"
+                ],
+                "title": "Purchase Return",
+                "route_name": "admin.report.data.entry.purchase.return",
+                "menu_active": "admin.report.data.entry.purchase.return"
+            },
+            {
+                "keyword": [
+                    "Sales Data Entry",
+                    "Sales Add Data",
+                    "Sales Edit Data"
+                ],
+                "title": "Sales",
+                "route_name": "admin.report.data.entry.sale",
+                "menu_active": "admin.report.data.entry.sale"
+            },
+            {
+                "keyword": [
+                    "Sales Return Data Entry",
+                    "Sales Return Add Data",
+                    "Sales Return Edit Data"
+                ],
+                "title": "Sale Return",
+                "route_name": "admin.report.data.entry.sale.return",
+                "menu_active": "admin.report.data.entry.sale.return"
+            },
+            {
+                "keyword": [
+                    "Product Data Entry",
+                    "Product Add Data",
+                    "Product Edit Data"
+                ],
+                "title": "Products",
+                "route_name": "admin.report.data.entry.product",
+                "menu_active": "admin.report.data.entry.product"
+            },
+            {
+                "keyword": [
+                    "Customer Data Entry",
+                    "Customer Add Data",
+                    "Customer Edit Data"
+                ],
+                "title": "Customers",
+                "route_name": "admin.report.data.entry.customer",
+                "menu_active": "admin.report.data.entry.customer"
+            },
+            {
+                "keyword": [
+                    "Customer Payment Data Entry",
+                    "Customer Payment Add Data",
+                    "Customer Payment Edit Data",
+                    "Customer Payment Received Data",
+                    "Customer Payment Payable Data"
+                ],
+                "title": "Customer Payments",
+                "route_name": "admin.report.data.entry.customer.payment",
+                "menu_active": "admin.report.data.entry.customer.payment"
+            },
+            {
+                "keyword": [
+                    "Supplier Data Entry",
+                    "Supplier Add Data",
+                    "Supplier Edit Data"
+                ],
+                "title": "Suppliers",
+                "route_name": "admin.report.data.entry.supplier",
+                "menu_active": "admin.report.data.entry.supplier"
+            },
+            {
+                "keyword": [
+                    "Supplier Payment Data Entry",
+                    "Supplier Payment Add Data",
+                    "Supplier Payment Edit Data",
+                    "Supplier Payment Received Data",
+                    "Supplier Payment Payable Data"
+                ],
+                "title": "Supplier Payments",
+                "route_name": "admin.report.data.entry.supplier.payment",
+                "menu_active": "admin.report.data.entry.supplier.payment"
+            },
+            {
+                "keyword": [
+                    "Adjustments Data Entry",
+                    "Product Adjustment Add Data",
+                    "Product Adjustment Edit Data"
+                ],
+                "title": "Adjustments",
+                "route_name": "admin.report.data.entry.adjustment",
+                "menu_active": "admin.report.data.entry.adjustment"
+            },
+            {
+                "keyword": [
+                    "Transfers Data Entry",
+                    "Product Transfer Add Data",
+                    "Product Transfer Edit Data"
+                ],
+                "title": "Transfers",
+                "route_name": "admin.report.data.entry.transfer",
+                "menu_active": "admin.report.data.entry.transfer"
+            },
+            {
+                "keyword": [
+                    "Expenses Data Entry",
+                    "Institute Expense Add Data",
+                    "Institute Expense Edit Data",
+                    "Basic Expense Data Entry"
+                ],
+                "title": "Expenses",
+                "route_name": "admin.report.data.entry.expense",
+                "menu_active": "admin.report.data.entry.expense"
+            }
+        ]
+    },
+    "system_setting": {
+        "header": "Setting",
+        "keyword": [
+            "System Setting",
+            "setting",
+            "System configuration",
+            "System preferences",
+            "Configuration management",
+            "System setup"
+        ],
+        "title": "System Setting",
+        "icon": "las la-life-ring",
+        "route_name": "admin.setting.system",
+        "menu_active": [
+            "admin.setting.system",
+            "admin.setting.general",
+            "admin.setting.system.configuration",
+            "admin.setting.logo.icon",
+            "admin.extensions.index",
+            "admin.setting.sitemap",
+            "admin.setting.robot",
+            "admin.setting.notification.global.email",
+            "admin.setting.notification.global.sms",
+            "admin.setting.notification.email",
+            "admin.setting.notification.sms",
+            "admin.setting.notification.templates",
+            "admin.setting.notification.template.edit"
+        ]
+    },
+    "extra": {
+        "title": "Extra",
+        "icon": "la la-server",
+        "menu_active": "admin.system*",
+        "counters": [
+            "updateAvailable"
+        ],
+        "submenu": [
+            {
+                "keyword": [
+                    "Application",
+                    "System",
+                    "Application management",
+                    "Application settings",
+                    "System information",
+                    "version",
+                    "laravel",
+                    "php",
+                    "timezone"
+                ],
+                "title": "Application",
+                "route_name": "admin.system.info",
+                "menu_active": "admin.system.info"
+            },
+            {
+                "keyword": [
+                    "Server",
+                    "System",
+                    "Server management",
+                    "Server settings",
+                    "System information",
+                    "version",
+                    "php version",
+                    "software",
+                    "ip address",
+                    "server ip address",
+                    "server port",
+                    "http host"
+                ],
+                "title": "Server",
+                "route_name": "admin.system.server.info",
+                "menu_active": "admin.system.server.info"
+            },
+            {
+                "keyword": [
+                    "Cache",
+                    "System",
+                    "Cache management",
+                    "Cache optimization",
+                    "System performance",
+                    "clear cache"
+                ],
+                "title": "Cache",
+                "route_name": "admin.system.optimize",
+                "menu_active": "admin.system.optimize"
+            },
+            {
+                "keyword": [
+                    "Update",
+                    "System",
+                    "Update management",
+                    "System update",
+                    "Software updates",
+                    "version update",
+                    "upgrade",
+                    "latest version"
+                ],
+                "title": "Update",
+                "route_name": "admin.system.update",
+                "menu_active": "admin.system.update*",
+                "counter": "updateAvailable"
+            }
+        ]
+    },
+    "report_and_request": {
+        "keyword": [
+            "Report & Request",
+            "Report and Request",
+            "Reports and Requests",
+            "Reporting and Requests",
+            "Report management",
+            "Request management",
+            "feature request",
+            "bug report"
+        ],
+        "title": "Report & Request",
+        "icon": "las la-bug",
+        "route_name": "admin.request.report",
+        "menu_active": "admin.request.report"
+    }
+}

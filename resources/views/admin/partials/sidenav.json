@@ -1,0 +1,195 @@
+{
+    "dashboard": {
+        "keyword": [
+            "Dashboard",
+            "Home",
+            "Panel",
+            "Admin",
+            "Control center",
+            "Overview",
+            "Main hub",
+            "Management hub",
+            "Administrative hub",
+            "Central hub",
+            "Command center",
+            "Administrator portal",
+            "Centralized interface",
+            "Admin console",
+            "Management dashboard",
+            "Main screen",
+            "Administrative dashboard",
+            "Command dashboard",
+            "Main control panel"
+        ],
+        "title": "Dashboard",
+        "icon": "las la-home",
+        "route_name": "admin.dashboard",
+        "menu_active": "admin.dashboard"
+    },
+    "manage_sale": {
+        "title": "Manage Sales",
+        "icon": "la la-shopping-cart",
+        "menu_active": [
+            "admin.sale*"
+        ],
+        "submenu": [
+            {
+                "keyword": [
+                    "Sales",
+                    "Manage sales",
+                    "Sale Configuration",
+                    "Add sale",
+                    "Edit sale"
+                ],
+                "title": "All Sales",
+                "route_name": "admin.sale.index",
+                "menu_active": [
+                    "admin.sale.index",
+                    "admin.sale.create",
+                    "admin.sale.edit"
+                ]
+            },
+            {
+                "keyword": [
+                    "All sales return",
+                    "Manage sales return",
+                    "Sale return Configuration",
+                    "Add sale return",
+                    "Edit sale return"
+                ],
+                "title": "Sales Return",
+                "route_name": "admin.sale.return.index",
+                "menu_active": [
+                    "admin.sale.return.index",
+                    "admin.sale.return.items",
+                    "admin.sale.return.edit"
+                ]
+            }
+        ]
+    },
+    "manage_banks": {
+        "keyword": [
+            "Banks",
+            "Home",
+            "Panel",
+            "Admin",
+            "Control center",
+            "Overview",
+            "Main hub",
+            "Management hub",
+            "Administrative hub",
+            "Central hub",
+            "Command center",
+            "Administrator portal",
+            "Centralized interface",
+            "Admin console",
+            "Management dashboard",
+            "Main screen",
+            "Administrative dashboard",
+            "Command dashboard",
+            "Main control panel"
+        ],
+        "title": "Banks Management",
+        "icon": "las la-university",
+        "route_name": "admin.bank.index",
+        "menu_active": "admin.bank.index"
+    },
+    "manage_products": {
+        "title": "Manage Products",
+        "icon": "las la-box",
+        "menu_active": [
+            "admin.product*"
+        ],
+        "submenu": [
+            {
+                "keyword": [
+                    "All Products",
+                    "Manage Product",
+                    "Product Configuration",
+                    "Add product",
+                    "Edit Products"
+                ],
+                "title": "Products",
+                "route_name": "admin.product.index",
+                "menu_active": "admin.product.index"
+            },
+            {
+                "keyword": [
+                    "All Categories",
+                    "Manage Category",
+                    "Category management",
+                    "Category control",
+                    "Category activity",
+                    "Category analytics"
+                ],
+                "title": "Categories",
+                "route_name": "admin.product.category.index",
+                "menu_active": "admin.product.category.index"
+            },
+            {
+                "keyword": [
+                    "All Brands",
+                    "Manage Brands",
+                    "Brand management"
+                ],
+                "title": "Brands",
+                "route_name": "admin.product.brand.index",
+                "menu_active": [
+                    "admin.product.brand.index"
+                ]
+            },
+            {
+                "keyword": [
+                    "All Units",
+                    "Manage Units",
+                    "Product Units"
+                ],
+                "title": "Units",
+                "route_name": "admin.product.unit.index",
+                "menu_active": "admin.product.unit.index"
+            }
+        ]
+    },
+    "warehouses": {
+        "keyword": [
+            "Warehouses",
+            "Product Warehouse",
+            "Product Stock House"
+        ],
+        "title": "Manage Warehouse",
+        "icon": "la la-warehouse",
+        "route_name": "admin.warehouse.index",
+        "menu_active": "admin.warehouse.index"
+    },
+    "customers": {
+        "keyword": [
+            "Customer",
+            "Product Customer",
+            "Users",
+            "Product Buyers"
+        ],
+        "title": "Manage Customers",
+        "icon": "la la-users",
+        "route_name": "admin.customer.index",
+        "menu_active": [
+            "admin.customer.index",
+            "admin.customer.payment.*",
+            "admin.customer.notification.*"
+        ]
+    },
+    "suppliers": {
+        "keyword": [
+            "Suppliers",
+            "Product Suppliers",
+            "Producer",
+            "Product Seller"
+        ],
+        "title": "Manage Suppliers",
+        "icon": "la la-user-friends",
+        "route_name": "admin.supplier.index",
+        "menu_active": [
+            "admin.supplier.index",
+            "admin.supplier.payment.*"
+        ]
+    }
+}
