@@ -14,7 +14,6 @@ use App\Notify\Notify;
 use App\Rules\FileTypeValidate;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cache;
-use Laramin\Utility\VugiChugi;
 
 function systemDetails()
 {
@@ -178,18 +177,7 @@ function osBrowser()
 }
 
 
-function getTemplates()
-{
-    $param['purchasecode'] = env("PURCHASECODE");
-    $param['website']      = @$_SERVER['HTTP_HOST'] . @$_SERVER['REQUEST_URI'] . ' - ' . env("APP_URL");
-    $url                   = VugiChugi::gttmp() . systemDetails()['name'];
-    $response              = CurlRequest::curlPostContent($url, $param);
-    if ($response) {
-        return $response;
-    } else {
-        return null;
-    }
-}
+
 
 
 function getPageSections($arr = false)
