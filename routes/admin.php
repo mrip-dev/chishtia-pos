@@ -26,7 +26,7 @@ Route::namespace('Auth')->group(function () {
     });
 });
 
-// Route::middleware(['admin', 'admin.permission'])->group(function () {
+Route::middleware(['admin', 'admin.permission'])->group(function () {
     Route::controller('AdminController')->group(function () {
         Route::get('dashboard', 'dashboard')->name('dashboard');
         Route::get('chart/purchase-sale', 'purchaseAndSaleReport')->name('chart.purchase.sale');
@@ -120,7 +120,7 @@ Route::namespace('Auth')->group(function () {
        Route::get('manage' ,'index')->name('index');
    });
 
- 
+
 
     // Manage Purchase
     Route::controller('PurchaseController')->name('purchase.')->prefix('purchase')->group(function () {
@@ -387,4 +387,4 @@ Route::namespace('Auth')->group(function () {
         Route::post('system-update', 'systemUpdateProcess')->name('update.process');
         Route::get('system-update/log', 'systemUpdateLog')->name('update.log');
     });
-// });
+});
