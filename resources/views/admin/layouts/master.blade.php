@@ -37,7 +37,6 @@
 @stack('script-lib')
 
 <script src="{{ asset('assets/global/js/nicEdit.js') }}"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script src="{{asset('assets/global/js/select2.min.js')}}"></script>
 <script src="{{asset('assets/admin/js/app.js')}}"></script>
