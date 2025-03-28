@@ -1,9 +1,7 @@
 <div class="container mt-4">
     <div class="row mb-3">
-        <div class="col-md-6">
-            <input type="text" class="form-control" wire:model.debounce.500ms="search" placeholder="Search banks...">
-        </div>
-        <div class="col-md-6 text-end">
+        <div class="col-md-12 d-flex justify-content-end gap-2">
+            <input type="text" class="form-control w-auto" wire:model.debounce.500ms="search" placeholder="Search banks...">
             <button class="btn btn-outline-custom" data-bs-toggle="modal" data-bs-target="#cuModal" wire:click="addNew">
                 + Add New Bank
             </button>
@@ -15,7 +13,7 @@
             <div class="card">
                 <div class="card-body p-0">
                     <div class="table-responsive--md table-responsive">
-                        <table class="table table-bordered table-custom">
+                        <table class="table table-striped table-custom">
                             <thead class="table table--light">
                                 <tr>
                                     <th>#</th>
@@ -61,7 +59,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">{{ $bank->id ? 'Edit Bank' : 'Add Bank' }}</h5>
+                    <h5 class="modal-title">{{isset($bank->id) ? 'Edit Bank' : 'Add Bank' }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 

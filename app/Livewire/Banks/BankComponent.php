@@ -9,10 +9,10 @@ use Livewire\WithPagination;
 class BankComponent extends Component
 {
     use WithPagination;
+
     public $bank;
     public $search = '';
     public $perPage = 10;
-    public $name;
 
     protected $rules = [
         'bank.name' => 'required|string|max:255',
@@ -20,44 +20,57 @@ class BankComponent extends Component
 
     public function mount()
     {
-        $this->bank = new Bank(); // Initialize the model for units
+        $this->resetBank();
     }
+
+    public function updatingSearch()
+    {
+        $this->resetPage(); // Reset pagination when searching
+    }
+
     public function addNew()
     {
-        $this->bank = new Bank(); // Reset the bank model
-        $this->resetInputFields();
+        $this->resetBank();
     }
+
     public function editItem($id)
     {
-        $this->bank = Bank::find($id);
+        $this->bank = Bank::findOrFail($id);
     }
+
     public function deleteItem($id)
     {
-        Bank::find($id)->delete();
+        Bank::destroy($id);
+
         $this->dispatchBrowserEvent('success-notification', [
             'message' => 'Bank deleted successfully.'
         ]);
     }
+
     public function addEntry()
     {
-        $this->bank = $this->bank ?? new Bank(); // Ensure bank is an instance
+        dd($this->bank);
+        $this->bank = $this->bank ?? new Bank();
         $this->validate();
         $this->bank->save();
-        $this->resetInputFields();
-        $this->dispatchBrowserEvent('close-modal', ['id' => 'bankComponentModal']);
+        $this->resetBank();
+
+        $this->dispatchBrowserEvent('close-modal'); // Fix modal close issue
         $this->dispatchBrowserEvent('success-notification', [
             'message' => 'Bank added successfully.'
         ]);
     }
-    private function resetInputFields()
-    {
-        $this->name = ''; // Reset unit name
 
+    private function resetBank()
+    {
+        $this->bank = new Bank(); // Reset model
     }
+
     public function render()
     {
         $banks = Bank::where('name', 'like', '%' . $this->search . '%')
             ->paginate($this->perPage);
+
         return view('livewire.banks.bank-component', compact('banks'));
     }
 }
