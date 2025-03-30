@@ -71,10 +71,13 @@
                                 <div class="form-group products-container position-relative">
                                     <label> @lang('Product')<span class="text--danger">*</span></label>
                                     <div class="input-group">
-                                        <span class="input-group-text"><i class="las la-search"></i></span>
-                                        <input class="form-control keyword" name="search" type="search" placeholder="@lang('Product Name or SKU')">
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="las la-search"></i></span>
+                                            <input class="form-control" name="search" type="search" placeholder="@lang('Product Name or SKU')">
+                                        </div>
                                     </div>
                                     <ul class="products">
+                                        <!-- Product data will append here after search -->
                                     </ul>
                                     <span class="text--danger error-message"></span>
                                 </div>

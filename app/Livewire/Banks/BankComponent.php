@@ -66,7 +66,10 @@ class BankComponent extends Component
     public function saveEntry()
     {
         $this->validate();
-        Bank::create($this->bank);
+        Bank::updateOrCreate(
+            ['account_number' => $this->bank['account_number']], // Condition to check for existing entry
+            $this->bank // Data to update or create
+        );
         $this->bank = [
             'name' => '',
             'account_number' => '',
