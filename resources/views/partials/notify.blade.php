@@ -58,4 +58,15 @@
             $.each(message, (i, val) => triggerToaster(status, val));
         }
     }
+
+
+    window.addEventListener('notify', function (e) {
+        const { status, message } = e.detail;
+        notify(status, message);
+    });
+
+
+    window.addEventListener('close-modal', event => {
+          $('#cuModal').modal('hide');
+      })
 </script>

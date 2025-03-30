@@ -49,11 +49,6 @@ class AppServiceProvider extends ServiceProvider
         view()->share($viewShare);
 
 
-        view()->composer('admin.partials.sidenav', function ($view) {
-            $view->with([
-                'updateAvailable'    => version_compare(gs('available_version'), systemDetails()['version'], '>') ? 'v' . gs('available_version') : false,
-            ]);
-        });
 
         view()->composer('admin.partials.topnav', function ($view) {
             $view->with([
@@ -63,9 +58,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
 
-        if (gs('force_ssl')) {
-            \URL::forceScheme('https');
-        }
+    
 
 
         Paginator::useBootstrapFive();
