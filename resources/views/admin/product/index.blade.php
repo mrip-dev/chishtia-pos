@@ -163,7 +163,7 @@
 @push('breadcrumb-plugins')
     <x-search-form placeholder="Search Name or SKU" />
     @permit('admin.product.create')
-        <a class="btn btn-outline--primary" href="{{ route('admin.product.create') }}">
+        <a wire:navigate class="btn btn-outline--primary" href="{{ route('admin.product.create') }}">
             <i class="la la-plus"></i>@lang('Add New')
         </a>
     @endpermit

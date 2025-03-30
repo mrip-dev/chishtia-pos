@@ -7,7 +7,7 @@
     <button class="res-sidebar-close-btn"><i class="las la-times"></i></button>
     <div class="sidebar__inner">
         <div class="sidebar__logo">
-            <a class="sidebar__main-logo" href="{{ route('admin.dashboard') }}"><img src="{{ siteLogo('dark') }}" alt="image"></a>
+            <a  class="sidebar__main-logo" href="{{ route('admin.dashboard') }}"><img src="{{ siteLogo('dark') }}" alt="image"></a>
         </div>
         <div class="sidebar__menu-wrapper">
             <ul class="sidebar__menu">
@@ -49,7 +49,7 @@
 
                                         @permit($menu->route_name)
                                             <li class="sidebar-menu-item {{ menuActive(@$menu->menu_active) }} ">
-                                                <a class="nav-link" href="{{ route(@$menu->route_name, $submenuParams) }}">
+                                                <a  class="nav-link" href="{{ route(@$menu->route_name, $submenuParams) }}">
                                                     <i class="menu-icon las la-dot-circle"></i>
                                                     <span class="menu-title">{{ __($menu->title) }}</span>
                                                     @php $counter = @$menu->counter; @endphp
@@ -76,7 +76,7 @@
 
                     @permit(@$data->route_name)
                         <li class="sidebar-menu-item {{ menuActive(@$data->menu_active) }}">
-                            <a class="nav-link " href="{{ route(@$data->route_name, $mainParams) }}">
+                            <a  class="nav-link " href="{{ route(@$data->route_name, $mainParams) }}">
                                 <i class="menu-icon {{ $data->icon }}"></i>
                                 <span class="menu-title">{{ __(@$data->title) }}</span>
                                 @php $counter = @$data->counter; @endphp
