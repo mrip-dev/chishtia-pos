@@ -53,6 +53,7 @@ class BankComponent extends Component
 
     public function newEntry()
     {
+        dd('adsf');
         $this->bank = [
             'name' => '',
             'account_number' => '',
@@ -62,6 +63,9 @@ class BankComponent extends Component
             'opening_balance' => '',
         ];
     }
+
+
+
 
     public function saveEntry()
     {

@@ -136,7 +136,7 @@
     @push('breadcrumb-plugins')
     <x-search-form />
     @permit('admin.product.unit.store')
-        <button type="button"  class="btn btn-sm btn-outline--primary cuModalBtn" data-modal_title="@lang('Add New Bank')">
+        <button type="button" wire:click.prevent="newEntry"  class="btn btn-sm btn-outline--primary cuModalBtn" data-modal_title="@lang('Add New Bank')">
             <i class="las la-plus"></i>@lang('Add New')
         </button>
     @endpermit

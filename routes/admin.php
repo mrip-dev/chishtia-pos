@@ -118,8 +118,12 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
     //Bank Manage
    Route::controller('BankController')->name('bank.')->prefix('bank')->group(function(){
        Route::get('manage' ,'index')->name('index');
-   });
-
+    });
+    
+    Route::get('/manage/sale' , function(){
+        $pageTitle = 'Manage Sale';
+        return view('admin.sale.manage' , compact('pageTitle'));
+    })->name('manage_sale');
 
 
     // Manage Purchase
