@@ -170,10 +170,32 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <label>@lang('Payment Method')</label>
+                            <select name="payment_method" class="form-control" required>
+                                <option value="" disabled selected>@lang('Select Payment Method')</option>
+                                <option value="cash">@lang('Cash')</option>
+                                <option value="bank">@lang('Bank')</option>
+                            </select>
+                        </div>
+                        <div class="form-group d-none" id="bankNameField">
+                            <label>@lang('Bank Name')</label>
+                            <select name="bank_id" class="form-control">
+                                <option value="" disabled selected>@lang('Select Bank')</option>
+
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <label class="payment-type"></label>
                             <div class="input-group">
                                 <button type="button" class="input-group-text">{{ gs('cur_sym') }}</button>
                                 <input type="number" step="any" name="amount" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>@lang('Received Amount Bank')</label>
+                            <div class="input-group">
+                                <button type="button" class="input-group-text">{{ gs('cur_sym') }}</button>
+                                <input type="number" step="any" name="received_amount_bank" class="form-control">
                             </div>
                         </div>
                     </div>
@@ -228,7 +250,7 @@
                                class="la la-download"></i>@lang('Download CSV')</a>
                     </li>
                 @endpermit
-               
+
             </ul>
         </div>
     @endpermit
