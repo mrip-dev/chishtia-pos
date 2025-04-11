@@ -143,7 +143,7 @@
     </div>
     <!-- Start Receive Payment Modal  -->
     <div id="paymentModal" class="modal fade" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">@lang('Payment')</h5>
@@ -154,22 +154,25 @@
                 <form action="" method="POST">
                     @csrf
                     <div class="modal-body">
-                        <div class="form-group">
-                            <label>@lang('Invoice No.')</label>
-                            <input type="text" class="form-control invoice-no" readonly>
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label>@lang('Invoice No.')</label>
+                                <input type="text" class="form-control invoice-no" readonly>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>@lang('Customer')</label>
+                                <input type="text" class="form-control customer-name" readonly>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>@lang('Customer')</label>
-                            <input type="text" class="form-control customer-name" readonly>
-                        </div>
-                        <div class="form-group">
+                      <div class="row">
+                        <div class="form-group col-md-6">
                             <label class="amountType"></label>
                             <div class="input-group">
                                 <button type="button" class="input-group-text">{{ gs('cur_sym') }}</button>
                                 <input type="text" class="form-control receivable_amount" readonly>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group col-md-6">
                             <label>@lang('Payment Method')</label>
                             <select name="payment_method" class="form-control" required>
                                 <option value="" disabled selected>@lang('Select Payment Method')</option>
@@ -177,27 +180,35 @@
                                 <option value="bank">@lang('Bank')</option>
                             </select>
                         </div>
-                        <div class="form-group d-none" id="bankNameField">
+                      </div>
+
+                        <div class="form-group col-md-12 " id="bankNameField">
                             <label>@lang('Bank Name')</label>
                             <select name="bank_id" class="form-control">
                                 <option value="" disabled selected>@lang('Select Bank')</option>
+                                <option value="hbl">@lang('HBL')</option>
+                                <option value="cash">@lang('Cash')</option>
 
                             </select>
                         </div>
-                        <div class="form-group">
+                       <div class="row">
+                        <div class="form-group col-md-6">
                             <label class="payment-type"></label>
                             <div class="input-group">
                                 <button type="button" class="input-group-text">{{ gs('cur_sym') }}</button>
                                 <input type="number" step="any" name="amount" class="form-control" required>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group col-md-6">
                             <label>@lang('Received Amount Bank')</label>
                             <div class="input-group">
                                 <button type="button" class="input-group-text">{{ gs('cur_sym') }}</button>
                                 <input type="number" step="any" name="received_amount_bank" class="form-control">
                             </div>
                         </div>
+                       </div>
+
+
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn--primary h-45 w-100 permit">@lang('Submit')</button>
