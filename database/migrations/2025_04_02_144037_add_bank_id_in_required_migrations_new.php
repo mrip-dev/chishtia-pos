@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('bank_id')->nullable()->after('supplier_id');
         });
         Schema::table('expenses', function (Blueprint $table) {
-            $table->unsignedBigInteger('bank_id')->nullable()->after('category_id');
+            $table->unsignedBigInteger('bank_id')->nullable()->after('expense_type_id');
         });
     }
 
