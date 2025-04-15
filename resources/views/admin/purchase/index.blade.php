@@ -141,7 +141,7 @@
 
     <!-- Start Payment Modal  -->
     <div class="modal fade" id="paymentModal" role="dialog" tabindex="-1">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">@lang('Payment')</h5>
@@ -151,38 +151,72 @@
                 </div>
                 <form action="" method="POST">
                     @csrf
-
                     <div class="modal-body">
-                        <div class="form-group">
-                            <label> @lang('Invoice No.')</label>
-                            <input class="form-control invoice-no" type="text" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label> @lang('Supplier')</label>
-                            <input class="form-control supplier-name" type="text" readonly>
-                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <!-- Left Column -->
+                                <div class="form-group mb-3">
+                                    <label>@lang('Invoice No.')</label>
+                                    <input class="form-control invoice-no" type="text" readonly>
+                                </div>
 
-                        <div class="form-group">
-                            <label class="amountType"></label>
-                            <div class="input-group">
-                                <button class="input-group-text" type="button">{{ gs('cur_sym') }}</button>
-                                <input class="form-control payable_amount" type="text" readonly>
+                                <div class="form-group mb-3">
+                                    <label class="amountType"></label>
+                                    <div class="input-group">
+                                        <button class="input-group-text" type="button">{{ gs('cur_sym') }}</button>
+                                        <input class="form-control payable_amount" type="text" readonly>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-3" id="bankNameField" style="display:none;">
+                                    <label for="bank_id">@lang('Bank Name')</label>
+                                    <select name="bank_id" id="bank_id" class="form-control">
+                                        <option value="" disabled selected>@lang('Select Bank')</option>
+                                        @foreach($banks as $bank)
+                                            <option value="{{ $bank->id }}">{{ $bank->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="form-group">
-                            <label class="payingReceiving"></label>
-                            <div class="input-group">
-                                <button class="input-group-text" type="button">{{ gs('cur_sym') }}</button>
-                                <input class="form-control" name="amount" type="number" step="any" required>
+                            <div class="col-md-6">
+                                <!-- Right Column -->
+                                <div class="form-group mb-3">
+                                    <label>@lang('Supplier')</label>
+                                    <input class="form-control supplier-name" type="text" readonly>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label>@lang('Payment Method')</label>
+                                    <select name="payment_method" class="form-control" id="paymentMethodSelect" required>
+                                        <option value="" disabled selected>@lang('Select Payment Method')</option>
+                                        <option value="cash">@lang('Cash')</option>
+                                        <option value="bank">@lang('Bank')</option>
+                                        <option value="both">@lang('Both')</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group mb-3" id="receivedAmountField" style="display:none;">
+                                    <label>@lang('Received Amount Bank')</label>
+                                    <div class="input-group">
+                                        <button type="button" class="input-group-text">{{ gs('cur_sym') }}</button>
+                                        <input type="number" step="any" name="received_amount_bank" class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-3"  id="receivedAmount">
+                                    <label class="payingReceiving"></label>
+                                    <div class="input-group">
+                                        <button class="input-group-text" type="button">{{ gs('cur_sym') }}</button>
+                                        <input class="form-control" name="amount" type="number" step="any" required>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-
                     <div class="modal-footer">
                         <button class="btn btn--primary h-45 w-100 permit" type="submit">@lang('Submit')</button>
                     </div>
-
                 </form>
             </div>
         </div>
@@ -321,5 +355,49 @@
             });
 
         })(jQuery);
+
     </script>
+    <script>
+        $(document).ready(function () {
+            // Hide all fields initially
+            $('#receivedAmount').hide();
+            $('#receivedAmountField').hide();
+            $('#bankNameField').hide();
+
+            $('#paymentMethodSelect').on('change', function () {
+                let method = $(this).val();
+
+                if (method === 'cash') {
+                    $('#receivedAmount').show();
+                    $('#receivedAmountField').hide();
+                    $('#bankNameField').hide();
+
+                    $('input[name="received_amount_bank"]').val('');
+
+                } else if (method === 'bank') {
+                    $('#receivedAmount').hide();
+                    $('#receivedAmountField').show();
+                    $('#bankNameField').show();
+
+                    $('input[name="amount"]').val('');
+
+                } else if (method === 'both') {
+                    $('#receivedAmount').show();
+                    $('#receivedAmountField').show();
+                    $('#bankNameField').show();
+
+                } else {
+                    // Hide everything if none selected
+                    $('#receivedAmount').hide();
+                    $('#receivedAmountField').hide();
+                    $('#bankNameField').hide();
+
+                    $('input[name="amount"]').val('');
+                    $('input[name="received_amount_bank"]').val('');
+                }
+            });
+        });
+    </script>
+
+
 @endpush

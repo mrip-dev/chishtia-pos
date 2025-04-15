@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Action;
+use App\Models\Bank;
 use App\Models\Product;
 use App\Models\ProductStock;
 use App\Models\Purchase;
@@ -32,7 +33,8 @@ class PurchaseController extends Controller
     {
         $pageTitle = $this->pageTitle;
         $purchases = $this->getPurchases()->paginate(getPaginate());
-        return view('admin.purchase.index', compact('pageTitle', 'purchases'));
+        $banks = Bank::all();
+        return view('admin.purchase.index', compact('pageTitle', 'purchases' , 'banks'));
     }
 
     public function purchasePDF()

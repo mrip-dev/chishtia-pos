@@ -142,81 +142,90 @@
         </div>
     </div>
     <!-- Start Receive Payment Modal  -->
-    <div id="paymentModal" class="modal fade" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-xl" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">@lang('Payment')</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <i class="las la-times"></i>
-                    </button>
-                </div>
-                <form action="" method="POST">
-                    @csrf
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="form-group col-md-6">
+  <!-- Start Receive Payment Modal -->
+<div id="paymentModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@lang('Payment')</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="las la-times"></i>
+                </button>
+            </div>
+            <form action="" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <!-- Basic Information - Two columns in one row -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <!-- Left Column -->
+                            <div class="form-group mb-3">
                                 <label>@lang('Invoice No.')</label>
                                 <input type="text" class="form-control invoice-no" readonly>
                             </div>
-                            <div class="form-group col-md-6">
+
+                            <div class="form-group mb-3">
+                                <label class="amountType"></label>
+                                <div class="input-group">
+                                    <button type="button" class="input-group-text">{{ gs('cur_sym') }}</button>
+                                    <input type="text" class="form-control receivable_amount" readonly>
+                                </div>
+                            </div>
+
+                            <div class="form-group mb-3" id="bankNameField" style="display:none;">
+                                <label for="bank_id">@lang('Bank Name')</label>
+                                <select name="bank_id" id="bank_id" class="form-control">
+                                    <option value="" disabled selected>@lang('Select Bank')</option>
+                                    @foreach($banks as $bank)
+                                        <option value="{{ $bank->id }}">{{ $bank->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="form-group mb-3" id="receivedAmountField" style="display:none;">
+                                <label>@lang('Received Amount Bank')</label>
+                                <div class="input-group">
+                                    <button type="button" class="input-group-text">{{ gs('cur_sym') }}</button>
+                                    <input type="number" step="any" name="received_amount_bank" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <!-- Right Column -->
+                            <div class="form-group mb-3">
                                 <label>@lang('Customer')</label>
                                 <input type="text" class="form-control customer-name" readonly>
                             </div>
-                        </div>
-                      <div class="row">
-                        <div class="form-group col-md-6">
-                            <label class="amountType"></label>
-                            <div class="input-group">
-                                <button type="button" class="input-group-text">{{ gs('cur_sym') }}</button>
-                                <input type="text" class="form-control receivable_amount" readonly>
+
+                            <div class="form-group mb-3">
+                                <label>@lang('Payment Method')</label>
+                                <select name="payment_method" class="form-control" id="paymentMethodSelect" required>
+                                    <option value="" disabled selected>@lang('Select Payment Method')</option>
+                                    <option value="cash">@lang('Cash')</option>
+                                    <option value="bank">@lang('Bank')</option>
+                                    <option value="both">@lang('Both')</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group mb-3" id="receivedAmount">
+                                <label class="payment-type"></label>
+                                <div class="input-group">
+                                    <button type="button" class="input-group-text">{{ gs('cur_sym') }}</button>
+                                    <input type="number" step="any" name="amount" class="form-control" required>
+                                </div>
                             </div>
                         </div>
-                        <div class="form-group col-md-6">
-                            <label>@lang('Payment Method')</label>
-                            <select name="payment_method" class="form-control" required>
-                                <option value="" disabled selected>@lang('Select Payment Method')</option>
-                                <option value="cash">@lang('Cash')</option>
-                                <option value="bank">@lang('Bank')</option>
-                            </select>
-                        </div>
-                      </div>
-
-                        <div class="form-group col-md-12 " id="bankNameField">
-                            <label>@lang('Bank Name')</label>
-                            <select name="bank_id" class="form-control">
-                                <option value="" disabled selected>@lang('Select Bank')</option>
-                                <option value="hbl">@lang('HBL')</option>
-                                <option value="cash">@lang('Cash')</option>
-
-                            </select>
-                        </div>
-                       <div class="row">
-                        <div class="form-group col-md-6">
-                            <label class="payment-type"></label>
-                            <div class="input-group">
-                                <button type="button" class="input-group-text">{{ gs('cur_sym') }}</button>
-                                <input type="number" step="any" name="amount" class="form-control" required>
-                            </div>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label>@lang('Received Amount Bank')</label>
-                            <div class="input-group">
-                                <button type="button" class="input-group-text">{{ gs('cur_sym') }}</button>
-                                <input type="number" step="any" name="received_amount_bank" class="form-control">
-                            </div>
-                        </div>
-                       </div>
-
-
                     </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn--primary h-45 w-100 permit">@lang('Submit')</button>
-                    </div>
-                </form>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn--primary h-45 w-100 permit">@lang('Submit')</button>
+                </div>
+            </form>
         </div>
     </div>
+</div>
+
     <!-- Start Payment Modal  -->
 @endsection
 
@@ -297,5 +306,47 @@
                 modal.modal('show');
             });
         })(jQuery);
+    </script>
+    <script>
+        // Simple JavaScript to toggle fields based on Payment Method
+        document.addEventListener('DOMContentLoaded', function () {
+            // Function to show or hide fields based on selected payment method
+            function togglePaymentFields() {
+                var paymentMethod = document.getElementById('paymentMethodSelect').value;
+
+                // If Cash is selected, hide bank fields
+                if (paymentMethod === 'cash') {
+                    document.getElementById('bankNameField').style.display = 'none';
+                    document.getElementById('receivedAmountField').style.display = 'none';
+                    document.getElementById('receivedAmount').style.display = 'block';
+
+                }
+                // If Bank is selected, show bank fields
+                else if (paymentMethod === 'bank') {
+                    document.getElementById('bankNameField').style.display = 'block';
+                    document.getElementById('receivedAmountField').style.display = 'block';
+                    document.getElementById('receivedAmount').style.display = 'none';
+                }
+                else if (paymentMethod === 'both') {
+                    document.getElementById('bankNameField').style.display = 'block';
+                    document.getElementById('receivedAmountField').style.display = 'block';
+                    document.getElementById('receivedAmount').style.display = 'block';
+                }
+                // If no payment method is selected, hide both
+                else {
+                    document.getElementById('bankNameField').style.display = 'none';
+                    document.getElementById('receivedAmountField').style.display = 'none';
+                    document.getElementById('receivedAmount').style.display = 'none';
+                }
+            }
+
+            // Call function on page load to set initial state
+            togglePaymentFields();
+
+            // Add event listener to change event of payment method dropdown
+            document.getElementById('paymentMethodSelect').addEventListener('change', function () {
+                togglePaymentFields();
+            });
+        });
     </script>
 @endpush

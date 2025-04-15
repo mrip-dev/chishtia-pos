@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Action;
+use App\Models\Bank;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\SaleDetails;
@@ -30,8 +31,10 @@ class SaleController extends Controller
 
     public function index()
     {
+
         $pageTitle = $this->pageTitle;
         $sales     = $this->getSales()->paginate(getPaginate());
+        $banks = Bank::all();
         $pdfButton = true;
         $routePDF  = route('admin.sale.pdf') . "?";
         $routeCSV  = route('admin.sale.csv') . "?";
@@ -43,7 +46,7 @@ class SaleController extends Controller
             $routePDF .= "date=" . request()->date;
             $routeCSV .= "date=" . request()->date;
         }
-        return view('admin.sale.index', compact('pageTitle', 'sales', 'pdfButton', 'routePDF', 'routeCSV'));
+        return view('admin.sale.index', compact('pageTitle', 'sales', 'pdfButton', 'routePDF', 'routeCSV' , 'banks'));
     }
 
     public function salePDF()
