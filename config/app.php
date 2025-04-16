@@ -68,7 +68,7 @@ return [
     |
     */
 
-    'timezone' => $timezone,
+    'timezone' => 'UTC',
 
     /*
     |--------------------------------------------------------------------------
@@ -121,7 +121,7 @@ return [
     |
     */
 
-   
+
 
     'maintenance' => [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),

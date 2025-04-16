@@ -81,6 +81,16 @@
                                 @lang('Year-Month-Date')</small>
                         </div>
 
+                        <div class="form-group mb-3" id="bankNameField" >
+                            <label for="bank_id">@lang('Bank Name')</label>
+                            <select name="bank_id" id="bank_id" class="form-control">
+                                <option value="" disabled selected>@lang('Select Bank')</option>
+                                @foreach($banks as $bank)
+                                    <option value="{{ $bank->id }}">{{ $bank->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
                         <div class="form-group">
                             <label>@lang('Amount')</label>
                             <div class="input-group">
