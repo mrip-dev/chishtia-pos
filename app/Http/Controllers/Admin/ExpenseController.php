@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Action;
+use App\Models\Bank;
 use App\Models\Expense;
 use App\Models\ExpenseType;
 use Carbon\Carbon;
@@ -28,11 +29,12 @@ class ExpenseController extends Controller
         $pageTitle  = $this->pageTitle;
         $categories = ExpenseType::orderBy('name')->get();
         $expenses   = $this->getExpense();
+        $banks = Bank::all();
         if ($id) {
             $expenses->where('id', $id);
         }
         $expenses = $expenses->paginate(getPaginate());
-        return view('admin.expense.index', compact('pageTitle', 'expenses', 'categories'));
+        return view('admin.expense.index', compact('pageTitle', 'expenses', 'categories' , 'banks'));
     }
 
     public function expensePDF()
