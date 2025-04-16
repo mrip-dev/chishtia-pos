@@ -1,6 +1,41 @@
 <div>
 
-  @section('panel')
+<button type="button" wire:click.prevent="createSale" class="btn btn-sm btn-outline--primary m-2">
+        <i class="las la-plus"></i>{{ $isCreating ? __('Close') : __('Add New') }}
+    </button>
+    @push('breadcrumb-plugins')
+    <x-search-form dateSearch='yes' />
+    @permit('admin.sale.create')
+    <!-- <button type="button" wire:click.prevent="createSale" class="btn btn-sm btn-outline--primary ">
+        <i class="las la-plus"></i>@lang('Add New')
+    </button> -->
+    @endpermit
+    @php
+    $params = request()->all();
+    @endphp
+    @permit(['admin.sale.pdf', 'admin.sale.csv'])
+    <div class="btn-group">
+        <button class="btn btn-outline--success dropdown-toggle" data-bs-toggle="dropdown" type="button" aria-expanded="false">
+            @lang('Action')
+        </button>
+        <ul class="dropdown-menu">
+            @permit('admin.sale.pdf')
+            <li>
+                <a class="dropdown-item" href="{{ route('admin.sale.pdf', $params) }}"><i
+                        class="la la-download"></i>@lang('Download PDF')</a>
+            </li>
+            @endpermit
+            @permit('admin.sale.csv')
+            <li>
+                <a class="dropdown-item" href="{{ route('admin.sale.csv', $params) }}"><i
+                        class="la la-download"></i>@lang('Download CSV')</a>
+            </li>
+            @endpermit
+
+        </ul>
+    </div>
+    @endpermit
+    @endpush
     @if(!$isCreating)
     <div class="row">
         <div class="col-lg-12">
@@ -18,117 +53,117 @@
                                     <th>@lang('Action')</th>
                             </thead>
                             <tbody>
-                                <button wire:click.prevent="createSale">gyuij</button>
+
                                 @forelse($sales as $sale)
-                                    <tr>
-                                        <td>
-                                            @if ($sale->return_status == 1)
-                                                <small><i class="fa fa-circle text--danger" title="@lang('Returned')"
-                                                        aria-hidden="true"></i></small>
-                                            @endif
-                                            <span class="fw-bold"> {{ $sale->invoice_no }}</span>
-                                            <br>
-                                            <small>{{ showDateTime($sale->sale_date, 'd M, Y') }}</small>
-                                        </td>
+                                <tr>
+                                    <td>
+                                        @if ($sale->return_status == 1)
+                                        <small><i class="fa fa-circle text--danger" title="@lang('Returned')"
+                                                aria-hidden="true"></i></small>
+                                        @endif
+                                        <span class="fw-bold"> {{ $sale->invoice_no }}</span>
+                                        <br>
+                                        <small>{{ showDateTime($sale->sale_date, 'd M, Y') }}</small>
+                                    </td>
 
-                                        <td>
-                                            <span class="text--primary fw-bold"> {{ $sale->customer->name }}</span>
-                                            <br>
-                                            +{{ $sale->customer->mobile }}
-                                        </td>
+                                    <td>
+                                        <span class="text--primary fw-bold"> {{ $sale->customer->name }}</span>
+                                        <br>
+                                        +{{ $sale->customer->mobile }}
+                                    </td>
 
-                                        <td>
-                                            {{ $sale->warehouse->name }}
-                                            <br>
-                                            <span
-                                                class="fw-bold">{{  showAmount($sale->total_price) }}</span>
-                                        </td>
+                                    <td>
+                                        {{ $sale->warehouse->name }}
+                                        <br>
+                                        <span
+                                            class="fw-bold">{{ showAmount($sale->total_price) }}</span>
+                                    </td>
 
-                                        <td>{{  showAmount($sale->discount_amount) }}
-                                            <br>
-                                            <span class="fw-bold">
-                                                {{  showAmount($sale->receivable_amount) }}</span>
-                                        </td>
+                                    <td>{{ showAmount($sale->discount_amount) }}
+                                        <br>
+                                        <span class="fw-bold">
+                                            {{ showAmount($sale->receivable_amount) }}</span>
+                                    </td>
 
-                                        <td>
-                                            {{  showAmount($sale->received_amount) }}
-                                            <br>
-                                            <span
-                                                @if ($sale->due_amount < 0) class="text--danger" title="@lang('Give Payment To Customer')" @endif
+                                    <td>
+                                        {{ showAmount($sale->received_amount) }}
+                                        <br>
+                                        <span
+                                            @if ($sale->due_amount < 0) class="text--danger" title="@lang('Give Payment To Customer')" @endif
                                                 class="fw-bold">
-                                                {{  showAmount($sale->due_amount) }}
-                                            </span>
-                                        </td>
+                                                {{ showAmount($sale->due_amount) }}
+                                        </span>
+                                    </td>
 
-                                        <td>
-                                            <div class="button--group">
+                                    <td>
+                                        <div class="button--group">
 
-                                                <a href="{{ route('admin.sale.edit', $sale->id) }}"
-                                                    class="btn btn-sm btn-outline--primary ms-1">
-                                                    <i class="la la-pen"></i> @lang('Edit')
+                                            <a href="{{ route('admin.sale.edit', $sale->id) }}"
+                                                class="btn btn-sm btn-outline--primary ms-1">
+                                                <i class="la la-pen"></i> @lang('Edit')
+                                            </a>
+
+                                            <button type="button"
+                                                class="btn btn-sm btn-outline--info ms-1 dropdown-toggle"
+                                                data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="la la-ellipsis-v"></i>@lang('More')
+                                            </button>
+
+                                            <div class="dropdown-menu">
+                                                @permit('admin.customer.payment.store')
+                                                <a href="javascript:void(0)" class="dropdown-item paymentModalBtn"
+                                                    data-customer_id="{{ $sale->customer_id }}"
+                                                    data-customer="{{ $sale->customer->name }}"
+                                                    data-invoice="{{ $sale->invoice_no }}"
+                                                    data-id="{{ $sale->id }}"
+                                                    data-due_amount="{{ $sale->due_amount }}">
+
+                                                    @if ($sale->due_amount > 0)
+                                                    <i class="la la-hand-holding-usd"></i>
+                                                    @lang('Receive Payment')
+                                                    @elseif($sale->due_amount < 0)
+                                                        <i class="la la-money-bill-wave"></i>
+                                                        @lang('Give Payment')
+                                                        @endif
                                                 </a>
+                                                @endpermit
 
-                                                <button type="button"
-                                                    class="btn btn-sm btn-outline--info ms-1 dropdown-toggle"
-                                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="la la-ellipsis-v"></i>@lang('More')
-                                                </button>
-
-                                                <div class="dropdown-menu">
-                                                   @permit('admin.customer.payment.store')
-                                                        <a href="javascript:void(0)" class="dropdown-item paymentModalBtn"
-                                                            data-customer_id="{{ $sale->customer_id }}"
-                                                            data-customer="{{ $sale->customer->name }}"
-                                                            data-invoice="{{ $sale->invoice_no }}"
-                                                            data-id="{{ $sale->id }}"
-                                                            data-due_amount="{{ $sale->due_amount }}">
-
-                                                            @if ($sale->due_amount > 0)
-                                                                <i class="la la-hand-holding-usd"></i>
-                                                                @lang('Receive Payment')
-                                                            @elseif($sale->due_amount < 0)
-                                                                <i class="la la-money-bill-wave"></i>
-                                                                @lang('Give Payment')
-                                                            @endif
-                                                        </a>
-                                                    @endpermit
-
-                                                   @permit('admin.sale.return.items')
-                                                        @if ($sale->return_status == 0 && $sale->due_amount > 0)
-                                                            <li>
-                                                                <a href="{{ route('admin.sale.return.items', $sale->id) }}"
-                                                                    class="dropdown-item">
-                                                                    <i class="la la-redo"></i> @lang('Return Sale')
-                                                                </a>
-                                                            </li>
-                                                        @endif
-                                                    @endpermit
-                                                   @permit('admin.sale.return.edit')
-                                                        @if ($sale->return_status)
-                                                            <li>
-                                                                <a href="{{ route('admin.sale.return.edit', $sale->saleReturn->id) }}"
-                                                                    class="dropdown-item editBtn">
-                                                                    <i class="la la-undo"></i> @lang('View Return Details')
-                                                                </a>
-                                                            </li>
-                                                        @endif
-                                                    @endpermit
-                                                   @permit('admin.sale.invoice.pdf')
-                                                        <li>
-                                                            <a class="dropdown-item"
-                                                                href="{{ route('admin.sale.invoice.pdf', $sale->id) }}/?print=true">
-                                                                <i class="la la-download"></i> @lang('Download Invoice')
-                                                            </a>
-                                                        </li>
-                                                    @endpermit
-                                                </div>
+                                                @permit('admin.sale.return.items')
+                                                @if ($sale->return_status == 0 && $sale->due_amount > 0)
+                                                <li>
+                                                    <a href="{{ route('admin.sale.return.items', $sale->id) }}"
+                                                        class="dropdown-item">
+                                                        <i class="la la-redo"></i> @lang('Return Sale')
+                                                    </a>
+                                                </li>
+                                                @endif
+                                                @endpermit
+                                                @permit('admin.sale.return.edit')
+                                                @if ($sale->return_status)
+                                                <li>
+                                                    <a href="{{ route('admin.sale.return.edit', $sale->saleReturn->id) }}"
+                                                        class="dropdown-item editBtn">
+                                                        <i class="la la-undo"></i> @lang('View Return Details')
+                                                    </a>
+                                                </li>
+                                                @endif
+                                                @endpermit
+                                                @permit('admin.sale.invoice.pdf')
+                                                <li>
+                                                    <a class="dropdown-item"
+                                                        href="{{ route('admin.sale.invoice.pdf', $sale->id) }}/?print=true">
+                                                        <i class="la la-download"></i> @lang('Download Invoice')
+                                                    </a>
+                                                </li>
+                                                @endpermit
                                             </div>
-                                        </td>
-                                    </tr>
+                                        </div>
+                                    </td>
+                                </tr>
                                 @empty
-                                    <tr>
-                                        <td class="text-muted text-center" colspan="100%">{{ __($emptyMessage) }}</td>
-                                    </tr>
+                                <tr>
+                                    <td class="text-muted text-center" colspan="100%">{{ __($emptyMessage) }}</td>
+                                </tr>
                                 @endforelse
                             </tbody>
                         </table><!-- table end -->
@@ -144,7 +179,7 @@
         </div>
     </div>
     @else
-        @livewire('admin.sale-management.create-sale')
+    @livewire('admin.sale-management.create-sale')
     @endif
     <!-- Start Receive Payment Modal  -->
     <div id="paymentModal" class="modal fade" tabindex="-1" role="dialog">
@@ -190,86 +225,54 @@
         </div>
     </div>
     <!-- Start Payment Modal  -->
-@endsection
 
 
-  @push('style')
-  <style>
-      .table-responsive {
-          min-height: 400px;
-          background: transparent
-      }
 
-      .card {
-          box-shadow: none;
-      }
-  </style>
-@endpush
+    @push('style')
+    <style>
+        .table-responsive {
+            min-height: 400px;
+            background: transparent
+        }
 
-@push('breadcrumb-plugins')
-  <x-search-form dateSearch='yes' />
- @permit('admin.sale.create')
- <button type="button" wire:click.prevent="createSale"  class="btn btn-sm btn-outline--primary ">
-    <i class="las la-plus"></i>@lang('Add New')
-</button>
-  @endpermit
-  @php
-      $params = request()->all();
-  @endphp
-  @permit(['admin.sale.pdf', 'admin.sale.csv'])
-      <div class="btn-group">
-          <button class="btn btn-outline--success dropdown-toggle" data-bs-toggle="dropdown" type="button" aria-expanded="false">
-              @lang('Action')
-          </button>
-          <ul class="dropdown-menu">
-              @permit('admin.sale.pdf')
-                  <li>
-                      <a class="dropdown-item" href="{{ route('admin.sale.pdf', $params) }}"><i
-                             class="la la-download"></i>@lang('Download PDF')</a>
-                  </li>
-              @endpermit
-              @permit('admin.sale.csv')
-                  <li>
-                      <a class="dropdown-item" href="{{ route('admin.sale.csv', $params) }}"><i
-                             class="la la-download"></i>@lang('Download CSV')</a>
-                  </li>
-              @endpermit
-             
-          </ul>
-      </div>
-  @endpermit
-@endpush
+        .card {
+            box-shadow: none;
+        }
+    </style>
+    @endpush
 
-@push('script')
-  <script>
-      (function($) {
-          "use strict";
-          $(document).on('click', '.paymentModalBtn', function() {
-              var modal = $('#paymentModal');
 
-              let data = $(this).data();
-              var due = parseFloat(Math.abs(data.due_amount)).toFixed(2);
 
-              let amountTypeLabel = modal.find('.amountType')
-              let payingReceivingLabel = modal.find('.payment-type')
+    @push('script')
+    <script>
+        (function($) {
+            "use strict";
+            $(document).on('click', '.paymentModalBtn', function() {
+                var modal = $('#paymentModal');
 
-              if (parseFloat(data.due_amount).toFixed(2) > 0) {
-                  amountTypeLabel.text('Receivable Amount');
-                  payingReceivingLabel.text('Receiving Amount');
-              } else {
-                  amountTypeLabel.text('Payable Amount');
-                  payingReceivingLabel.text('Paying Amount');
-              }
+                let data = $(this).data();
+                var due = parseFloat(Math.abs(data.due_amount)).toFixed(2);
 
-              modal.find('.invoice-no').val(`${data.invoice}`);
-              modal.find('.customer-name').val(`${data.customer}`);
-              modal.find('.receivable_amount').val(`${due}`);
-              let form = modal.find('form')[0];
-              form.action = `{{ route('admin.customer.payment.store', '') }}/${data.id}`
+                let amountTypeLabel = modal.find('.amountType')
+                let payingReceivingLabel = modal.find('.payment-type')
 
-              modal.modal('show');
-          });
-      })(jQuery);
-  </script>
-@endpush
+                if (parseFloat(data.due_amount).toFixed(2) > 0) {
+                    amountTypeLabel.text('Receivable Amount');
+                    payingReceivingLabel.text('Receiving Amount');
+                } else {
+                    amountTypeLabel.text('Payable Amount');
+                    payingReceivingLabel.text('Paying Amount');
+                }
+
+                modal.find('.invoice-no').val(`${data.invoice}`);
+                modal.find('.customer-name').val(`${data.customer}`);
+                modal.find('.receivable_amount').val(`${due}`);
+                let form = modal.find('form')[0];
+                form.action = `{{ route('admin.customer.payment.store', '') }}/${data.id}`
+
+                modal.modal('show');
+            });
+        })(jQuery);
+    </script>
+    @endpush
 </div>

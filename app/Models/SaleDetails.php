@@ -7,6 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 class SaleDetails extends Model
 {
     public $timestamps = false;
+    protected $fillable = [
+        'sale_id',
+        'product_id',
+        'quantity',
+        'price',
+        'discount',
+        'tax',
+        'total',
+        'date',
+    ];
 
     protected $casts = [
         'date' => 'date',

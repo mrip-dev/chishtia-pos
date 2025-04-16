@@ -35,10 +35,10 @@
                                             </button>
                                              @endpermit
                                         </td>
-                                    </tr>    
+                                    </tr>
                                 @endforeach
                             </tbody>
-                       
+
                         </table><!-- table end -->
                     </div>
                     @if ($banks->hasPages())
@@ -51,7 +51,7 @@
         </div>
     </div>
 
-    
+
     <!--Create & Update Modal -->
     <div id="cuModal" class="modal fade" tabindex="-1" role="dialog" wire:ignore.self>
         <div class="modal-dialog" role="document" >
@@ -62,15 +62,15 @@
                         <i class="las la-times"></i>
                     </button>
                 </div>
-                <form wire:submit.prevent="saveEntry"> 
+                <form wire:submit.prevent="saveEntry">
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
                                 <label>Name</label>
                                 <input type="text" wire:model.live='bank.name' class="form-control" >
-                                @error('bank.name') 
-                                <small class="text-danger">{{ $message }}</small> 
+                                @error('bank.name')
+                                <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
                             </div>
@@ -78,8 +78,8 @@
                                 <div class="form-group">
                                 <label>Account #</label>
                                 <input type="text" wire:model.live='bank.account_number' class="form-control" >
-                                @error('bank.account_number') 
-                                <small class="text-danger">{{ $message }}</small> 
+                                @error('bank.account_number')
+                                <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
                             </div>
@@ -87,8 +87,8 @@
                                 <div class="form-group">
                                 <label>Account Holder</label>
                                 <input type="text" wire:model.live='bank.account_holder' class="form-control" >
-                                @error('bank.account_holder') 
-                                <small class="text-danger">{{ $message }}</small> 
+                                @error('bank.account_holder')
+                                <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
                             </div>
@@ -96,8 +96,8 @@
                                 <div class="form-group">
                                 <label>Iban</label>
                                 <input type="text" wire:model.live='bank.iban' class="form-control" >
-                                @error('bank.iban') 
-                                <small class="text-danger">{{ $message }}</small> 
+                                @error('bank.iban')
+                                <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
                             </div>
@@ -105,8 +105,8 @@
                                 <div class="form-group">
                                 <label>Raast Id</label>
                                 <input type="text" wire:model.live='bank.raast_id' class="form-control" >
-                                @error('bank.raast_id') 
-                                <small class="text-danger">{{ $message }}</small> 
+                                @error('bank.raast_id')
+                                <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
                             </div>
@@ -114,13 +114,13 @@
                                 <div class="form-group">
                                 <label>Opening Balance</label>
                                 <input type="text" wire:model.live='bank.opening_balance' class="form-control" >
-                                @error('bank.opening_balance') 
-                                <small class="text-danger">{{ $message }}</small> 
+                                @error('bank.opening_balance')
+                                <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
                             </div>
                         </div>
-                     
+
                     </div>
                     @permit('admin.product.unit.store')
                         <div class="modal-footer">
