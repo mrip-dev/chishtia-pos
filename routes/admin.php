@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CustomerViewController;
+use App\Http\Controllers\SupplierViewController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -212,9 +214,7 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         Route::get('csv', 'supplierCSV')->name('csv');
         Route::post('import', 'import')->name('import');
     });
-    Route::get('supplier/view', function () {
-        return view('admin.supplier.view');
-    })->name('admin.supplier.view');
+    Route::get('supplier/view', [SupplierViewController::class, 'index'])->name('supplier.view');
 
     // Customer
     Route::controller('CustomerController')->name('customer.')->prefix('customer')->group(function () {
@@ -237,7 +237,7 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         Route::get('notification-log/{id}', 'notificationLog')->name('notification.log');
         Route::get('notification/history', 'notificationHistory')->name('notification.history');
     });
-
+    Route::get('customer/view', [CustomerViewController::class, 'index'])->name('customer.view');
     //Payment - Supplier
     Route::controller('SupplierPaymentController')->name('supplier.payment.')->prefix('supplier/payment')->group(function () {
         Route::get('index/{id}', 'index')->name('index');

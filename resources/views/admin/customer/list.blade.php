@@ -51,6 +51,9 @@
                                                         <i class="las la-money-bill-wave-alt"></i>@lang('Payment')
                                                     </a>
                                                 @endpermit
+                                                <a href="{{ route('admin.customer.view') }}" class="btn btn-sm btn-outline-success">
+                                                    <i class="la la-eye"></i> @lang('View')
+                                                </a>
                                             </div>
                                         </td>
                                     </tr>
