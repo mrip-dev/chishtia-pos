@@ -119,7 +119,7 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
    Route::controller('BankController')->name('bank.')->prefix('bank')->group(function(){
        Route::get('manage' ,'index')->name('index');
     });
-    
+
     Route::get('/manage/sale' , function(){
         $pageTitle = 'Manage Sale';
         return view('admin.sale.manage' , compact('pageTitle'));
@@ -212,7 +212,9 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         Route::get('csv', 'supplierCSV')->name('csv');
         Route::post('import', 'import')->name('import');
     });
-
+    Route::get('supplier/view', function () {
+        return view('admin.supplier.view');
+    })->name('admin.supplier.view');
 
     // Customer
     Route::controller('CustomerController')->name('customer.')->prefix('customer')->group(function () {
