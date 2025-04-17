@@ -1,41 +1,40 @@
 <div>
-
-    <button type="button" wire:click.prevent="createSale" class="btn btn-sm btn-outline--primary m-2">
-        <i class="las la-plus"></i>{{ $isCreating ? __('Close') : __('Add New') }}
-    </button>
-    @push('breadcrumb-plugins')
-    <x-search-form dateSearch='yes' />
-    @permit('admin.sale.create')
-    <!-- <button type="button" wire:click.prevent="createSale" class="btn btn-sm btn-outline--primary ">
-        <i class="las la-plus"></i>@lang('Add New')
-    </button> -->
-    @endpermit
-    @php
-    $params = request()->all();
-    @endphp
-    @permit(['admin.sale.pdf', 'admin.sale.csv'])
-    <div class="btn-group">
-        <button class="btn btn-outline--success dropdown-toggle" data-bs-toggle="dropdown" type="button" aria-expanded="false">
-            @lang('Action')
-        </button>
-        <ul class="dropdown-menu">
-            @permit('admin.sale.pdf')
-            <li>
-                <a class="dropdown-item" href="{{ route('admin.sale.pdf', $params) }}"><i
-                        class="la la-download"></i>@lang('Download PDF')</a>
-            </li>
+    <div class="d-flex mb-30 flex-wrap gap-3 justify-content-end align-items-center">
+        <div class="d-flex flex-wrap justify-content-end gap-2 align-items-center breadcrumb-plugins">
+            <x-search-form dateSearch='yes' />
+            @permit('admin.sale.create')
+            <button type="button" wire:click.prevent="createSale" class="btn btn-sm btn-outline--primary m-2">
+                <i class="las la-plus"></i>{{ $isCreating ? __('Close') : __('Add New') }}
+            </button>
             @endpermit
-            @permit('admin.sale.csv')
-            <li>
-                <a class="dropdown-item" href="{{ route('admin.sale.csv', $params) }}"><i
-                        class="la la-download"></i>@lang('Download CSV')</a>
-            </li>
-            @endpermit
+            @permit(['admin.sale.pdf', 'admin.sale.csv'])
 
-        </ul>
+            @php
+            $params = request()->all();
+            @endphp
+            <div class="btn-group">
+                <button class="btn btn-outline--success dropdown-toggle" data-bs-toggle="dropdown" type="button" aria-expanded="false">
+                    @lang('Action')
+                </button>
+                <ul class="dropdown-menu">
+                    @permit('admin.sale.pdf')
+                    <li>
+                        <a class="dropdown-item" href="{{ route('admin.sale.pdf', $params) }}"><i
+                                class="la la-download"></i>@lang('Download PDF')</a>
+                    </li>
+                    @endpermit
+                    @permit('admin.sale.csv')
+                    <li>
+                        <a class="dropdown-item" href="{{ route('admin.sale.csv', $params) }}"><i
+                                class="la la-download"></i>@lang('Download CSV')</a>
+                    </li>
+                    @endpermit
+
+                </ul>
+            </div>
+            @endpermit
+        </div>
     </div>
-    @endpermit
-    @endpush
     @if(!$isCreating)
     <div class="row">
         <div class="col-lg-12">
@@ -295,7 +294,7 @@
                                 <label>@lang('Total Price')</label>
                                 <div class="input-group">
                                     <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                    <input class="form-control" type="number"  wire:model="total_price" readonly>
+                                    <input class="form-control" type="number" wire:model="total_price" readonly>
                                 </div>
                             </div>
                         </div>
@@ -315,7 +314,7 @@
                                 <label>@lang('Receivable Amount')</label>
                                 <div class="input-group">
                                     <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                    <input class="form-control" type="number"  wire:model="receivable_amount"  readonly>
+                                    <input class="form-control" type="number" wire:model="receivable_amount" readonly>
                                 </div>
                             </div>
                         </div>
@@ -335,7 +334,7 @@
                                 <label>@lang('Due Amount')</label>
                                 <div class="input-group">
                                     <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                    <input class="form-control" type="number"  wire:model="due_amount" readonly>
+                                    <input class="form-control" type="number" wire:model="due_amount" readonly>
                                 </div>
                             </div>
                         </div>
@@ -359,9 +358,8 @@
 
     </div>
     @endif
-    <!-- Start Receive Payment Modal  -->
-    <div id="paymentModal" class="modal fade" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
+    <div id="paymentModal" wire:ignore.self class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">@lang('Payment')</h5>
@@ -369,29 +367,79 @@
                         <i class="las la-times"></i>
                     </button>
                 </div>
-                <form action="" method="POST">
-                    @csrf
+                <form wire:submit.prevent="submitPayment">
+
                     <div class="modal-body">
-                        <div class="form-group">
-                            <label>@lang('Invoice No.')</label>
-                            <input type="text" class="form-control invoice-no" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label>@lang('Customer')</label>
-                            <input type="text" class="form-control customer-name" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label class="amountType"></label>
-                            <div class="input-group">
-                                <button type="button" class="input-group-text">{{ gs('cur_sym') }}</button>
-                                <input type="text" class="form-control receivable_amount" readonly>
+                        <!-- Basic Information - Two columns in one row -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <!-- Left Column -->
+                                <div class="form-group mb-3">
+                                    <label>@lang('Invoice No.')</label>
+                                    <input type="text" class="form-control invoice-no" wire:model="modal_invoice_no" readonly>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label class="amountType"></label>
+                                    <div class="input-group">
+                                        <button type="button" class="input-group-text">{{ gs('cur_sym') }}</button>
+                                        <input type="text" class="form-control receivable_amount" wire:model="modal_receivable_amount" readonly>
+                                    </div>
+                                </div>
+                                @if($modal_payment_method=='bank' || $modal_payment_method=='both')
+                                <div class="form-group mb-3" id="bankNameField">
+                                    <label for="bank_id">@lang('Bank Name')</label>
+                                    <select name="bank_id" id="bank_id" class="form-control">
+                                        <option value="" disabled selected>@lang('Select Bank')</option>
+                                        @foreach($banks as $bank)
+                                        <option value="{{ $bank->id }}">{{ $bank->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="form-group mb-3" id="receivedAmountField">
+                                    <label>@lang('Received Amount Bank')</label>
+                                    <div class="input-group">
+                                        <button type="button" class="input-group-text">{{ gs('cur_sym') }}</button>
+                                        <input type="number" step="any" name="received_amount_bank" wire:model="modal_rec_bank" class="form-control">
+                                    </div>
+                                    @error('modal_rec_bank')
+                                    <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                                @endif
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="payment-type"></label>
-                            <div class="input-group">
-                                <button type="button" class="input-group-text">{{ gs('cur_sym') }}</button>
-                                <input type="number" step="any" name="amount" class="form-control" required>
+
+                            <div class="col-md-6">
+                                <!-- Right Column -->
+                                <div class="form-group mb-3">
+                                    <label>@lang('Customer')</label>
+                                    <input type="text" class="form-control customer-name" wire:model="modal_customer_name" readonly>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label>@lang('Payment Method')</label>
+                                    <select name="payment_method" class="form-control" id="paymentMethodSelect" wire:model.live="modal_payment_method" required>
+                                        <option value="" disabled selected>@lang('Select Payment Method')</option>
+                                        <option value="">----- choose -----</option>
+                                        <option value="cash">@lang('Cash')</option>
+                                        <option value="bank">@lang('Bank')</option>
+                                        <option value="both">@lang('Both')</option>
+                                    </select>
+                                </div>
+
+                                @if($modal_payment_method=='cash' || $modal_payment_method=='both')
+                                <div class="form-group mb-3" id="receivedAmount">
+                                    <label class="payment-type"></label>
+                                    <div class="input-group">
+                                        <button type="button" class="input-group-text">{{ gs('cur_sym') }}</button>
+                                        <input type="number" step="any" wire:model="modal_rec_amount" class="form-control" required>
+                                    </div>
+                                    @error('modal_rec_amount')
+                                    <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -402,7 +450,6 @@
             </div>
         </div>
     </div>
-    <!-- Start Payment Modal  -->
 
 
 

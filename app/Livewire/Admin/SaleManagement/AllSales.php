@@ -12,11 +12,15 @@ use App\Models\ProductStock;
 use App\Models\SaleDetail;
 use App\Lib\Action;
 use App\Models\Action as ModelsAction;
+use App\Models\Bank;
+use App\Models\CustomerPayment;
 use App\Models\SaleDetails;
+use Illuminate\Validation\Rule;
 
 class AllSales extends Component
 {
     public $sales = [];
+    public $banks = [];
     public $selectedSale = null;
     public $saleDetails = [];
     public $isEditing = false;
@@ -50,6 +54,51 @@ class AllSales extends Component
 
     public $editMode = false;
     public $saleId = null;
+
+    public $searchInput = '';
+
+    public $paymentSale;
+    public $modal_invoice_no;
+    public $modal_customer_name;
+    public $modal_rec_amount;
+    public $modal_bank_id;
+    public $modal_payment_method = '';
+    public $modal_rec_bank;
+    public $modal_receivable_amount;
+
+
+
+    protected function rules()
+    {
+        return [
+            'modal_payment_method' => 'required|string',
+
+            'modal_rec_amount' => [
+                Rule::requiredIf(function () {
+                    return in_array($this->modal_payment_method, ['cash', 'both']);
+                }),
+
+
+            ],
+
+            'modal_rec_bank' => [
+                Rule::requiredIf(function () {
+                    return in_array($this->modal_payment_method, ['bank', 'both']);
+                }),
+
+
+            ],
+        ];
+    }
+    protected function messages()
+    {
+        return [
+            'modal_rec_amount.required' => 'Cash amount is required when payment method is cash or both.',
+            'modal_rec_bank.required'   => 'Bank amount is required when payment method is bank or both.',
+        ];
+    }
+
+
 
 
 
@@ -147,6 +196,10 @@ class AllSales extends Component
 
     public function updated($name, $value)
     {
+        if ($name === 'searchInput') {
+            dd('searchInput');
+            $this->loadSales();
+        }
         if ($name === 'searchQuery') {
             $this->getProducts();
         }
@@ -428,7 +481,58 @@ class AllSales extends Component
     }
     public function payMentModal($id)
     {
-       dd('id');
+        $this->banks = Bank::all();
+        $this->paymentSale = Sale::with('customer')->find($id);
+        $this->modal_invoice_no = $this->paymentSale->invoice_no;
+        $this->modal_customer_name = $this->paymentSale->customer()->first()->name;
+        $this->modal_receivable_amount = $this->paymentSale->due_amount;
+        $this->modal_payment_method = $this->paymentSale->payment_method;
+        $this->modal_rec_bank = 0.00;
+        $this->modal_rec_amount = 0.00;
+    }
+    public function submitPayment()
+    {
+        $this->validate();
+
+        $sale = $this->paymentSale;
+        $isPaying = $sale->due_amount < 0;
+        $amount_cash = $this->modal_rec_amount;
+        $amount_bank = $this->modal_rec_bank;
+        $amount = $this->modal_payment_method == 'cash' ? $amount_cash : $amount_bank;
+        $amount = $this->modal_payment_method == 'bank' ? $amount_bank : $amount_cash;
+        $amount = $this->modal_payment_method == 'both' ? $amount_cash + $amount_bank : $amount;
+        $amount = abs($amount);
+
+        $sale->received_amount += $amount;
+        $sale->due_amount -= $amount;
+        $sale->payment_method = $this->modal_payment_method;
+        $sale->received_amount_cash +=$amount_cash;
+        $sale->received_amount_bank +=$amount_bank;
+        $sale->bank_id = $this->modal_bank_id;
+        $sale->save();
+
+        if ($isPaying) {
+            $amount *= -1;
+            $remark = 'RETURNED_EXTRA_PAYMENT_FROM_SALE';
+            $notification = 'Payment completed successfully';
+        } else {
+            $remark = 'RECEIVED_PAYMENT_FOR_SALE';
+            $notification = 'Payment received successfully';
+        }
+        $payment = new CustomerPayment();
+        $payment->customer_id = $sale->customer_id;
+        $payment->sale_id = $sale->id;
+        $payment->amount = $amount;
+        $payment->trx = getTrx();
+        $payment->remark = $remark;
+
+        $payment->save();
+
+
+        session()->flash('success', $notification);
+        $this->resetExcept('saleId');
+        $this->loadSales();
+        $this->dispatch('notify', status: 'success', message: $notification);
     }
 
     public function render()
