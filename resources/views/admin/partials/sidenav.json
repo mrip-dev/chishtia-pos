@@ -41,7 +41,7 @@
                     "Add sale",
                     "Edit sale"
                 ],
-                "title": "All Sales Live",
+                "title": "All Sales",
                 "route_name": "admin.manage_sale",
                 "menu_active": [
                     "admin.sale.index",
@@ -49,22 +49,7 @@
                     "admin.sale.edit"
                 ]
             },
-            {
-                "keyword": [
-                    "Sales",
-                    "Manage sales",
-                    "Sale Configuration",
-                    "Add sale",
-                    "Edit sale"
-                ],
-                "title": "All Sales",
-                "route_name": "admin.sale.index",
-                "menu_active": [
-                    "admin.sale.index",
-                    "admin.sale.create",
-                    "admin.sale.edit"
-                ]
-            },
+
             {
                 "keyword": [
                     "All sales return",
