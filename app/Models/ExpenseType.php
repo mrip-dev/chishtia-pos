@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class ExpenseType extends Model
 {
+    protected $fillable = [
+        'id',
+        'name',
+    ];
+
 
     public function expenses()
     {
