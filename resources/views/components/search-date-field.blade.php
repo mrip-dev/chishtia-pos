@@ -1,5 +1,5 @@
 <div class="input-group w-auto flex-fill">
-    <input name="date" type="search" class="datepicker-here form-control bg--white pe-2 date-range" placeholder="@lang('Start Date - End Date')" autocomplete="off" value="{{ request()->date }}">
+    <input name="date" type="search"  wire:model.live="searchByDate" class="datepicker-here form-control bg--white pe-2 date-range" placeholder="@lang('Start Date - End Date')" autocomplete="off" value="{{ request()->date }}">
     <button class="btn btn--primary input-group-text"><i class="la la-search"></i></button>
 </div>
 

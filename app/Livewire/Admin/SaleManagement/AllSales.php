@@ -15,6 +15,7 @@ use App\Models\Action as ModelsAction;
 use App\Models\Bank;
 use App\Models\CustomerPayment;
 use App\Models\SaleDetails;
+use Carbon\Carbon;
 use Illuminate\Validation\Rule;
 
 class AllSales extends Component
@@ -27,6 +28,7 @@ class AllSales extends Component
     public $isCreating = false;
     public $isDeleting = false;
     public $searchTerm = '';
+    public $searchByDate;
     public $perPage = 10;
 
     public $successMessage;
@@ -109,12 +111,22 @@ class AllSales extends Component
     public function loadSales()
     {
         $this->sales = Sale::with(['customer', 'warehouse'])
-            ->where('invoice_no', 'like', '%' . $this->searchTerm . '%')
-            ->orWhereHas('customer', function ($query) {
-                $query->where('name', 'like', '%' . $this->searchTerm . '%');
+            ->where(function ($query) {
+                $query->where('invoice_no', 'like', '%' . $this->searchTerm . '%')
+                    ->orWhereHas('customer', function ($q) {
+                        $q->where('name', 'like', '%' . $this->searchTerm . '%');
+                    })
+                    ->orWhereHas('warehouse', function ($q) {
+                        $q->where('name', 'like', '%' . $this->searchTerm . '%');
+                    });
             })
-            ->orWhereHas('warehouse', function ($query) {
-                $query->where('name', 'like', '%' . $this->searchTerm . '%');
+            ->when($this->searchByDate, function ($query) {
+                // Parse the date range
+                [$start, $end] = explode(' - ', $this->searchByDate);
+                $startDate = Carbon::parse($start)->startOfDay();
+                $endDate = Carbon::parse($end)->endOfDay();
+
+                $query->whereBetween('created_at', [$startDate, $endDate]);
             })
             ->get();
     }
@@ -196,8 +208,10 @@ class AllSales extends Component
 
     public function updated($name, $value)
     {
-        if ($name === 'searchInput') {
-            dd('searchInput');
+        if ($name === 'searchTerm') {
+            $this->loadSales();
+        }
+        if ($name === 'searchByDate') {
             $this->loadSales();
         }
         if ($name === 'searchQuery') {
@@ -506,8 +520,8 @@ class AllSales extends Component
         $sale->received_amount += $amount;
         $sale->due_amount -= $amount;
         $sale->payment_method = $this->modal_payment_method;
-        $sale->received_amount_cash +=$amount_cash;
-        $sale->received_amount_bank +=$amount_bank;
+        $sale->received_amount_cash += $amount_cash;
+        $sale->received_amount_bank += $amount_bank;
         $sale->bank_id = $this->modal_bank_id;
         $sale->save();
 
