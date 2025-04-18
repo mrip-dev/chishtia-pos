@@ -84,7 +84,7 @@
                     "Edit purchase"
                 ],
                 "title": "All Purchases",
-                "route_name": "admin.purchase.index",
+                "route_name": "admin.manage_purchase",
                 "menu_active": [
                     "admin.purchase.index",
                     "admin.purchase.new",

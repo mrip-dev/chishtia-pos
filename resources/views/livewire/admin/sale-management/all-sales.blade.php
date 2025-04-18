@@ -468,15 +468,5 @@
 
 
 
-    @push('script')
-    <script>
-        (function($) {
-            "use strict";
-            $(document).on('click', '.paymentModalBtn', function() {
-                var modal = $('#paymentModal');
-                modal.modal('show');
-            });
-        })(jQuery);
-    </script>
-    @endpush
+   c
 </div>

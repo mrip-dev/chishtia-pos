@@ -142,6 +142,10 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         Route::get('invoice-check', 'invoiceCheck')->name('invoice.check');
     });
 
+    Route::get('/manage/purchase' , function(){
+        $pageTitle = 'Manage Purchase';
+        return view('admin.purchase.manage' , compact('pageTitle'));
+    })->name('manage_purchase');
     //Manage Purchase Return
     Route::controller('PurchaseReturnController')->name('purchase.return.')->prefix('purchase-return')->group(function () {
         Route::get('new/{id}', 'newReturn')->name('items');

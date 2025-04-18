@@ -458,7 +458,16 @@ function generateInvoiceNumber($lastNumber)
     $invoiceNumber  = str_pad($number, $totalLength, '0', STR_PAD_LEFT);
     return 'S-' . $invoiceNumber;
 }
-
+function generateInvoiceNumberP($lastNumber)
+{
+    $prefix         = 'P-';
+    $number         = str_replace($prefix, '', $lastNumber ?? 0) + 1;
+    $lengthOfNumber = strlen($number);
+    $numberOfZeros  = 6 - $lengthOfNumber;
+    $totalLength    = $numberOfZeros + $lengthOfNumber;
+    $invoiceNumber  = str_pad($number, $totalLength, '0', STR_PAD_LEFT);
+    return 'P-' . $invoiceNumber;
+}
 function importFileValidation($request)
 {
     $request->validate([
