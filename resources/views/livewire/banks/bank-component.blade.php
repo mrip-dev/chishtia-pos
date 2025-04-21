@@ -34,6 +34,7 @@
                                                 <i class="la la-pencil"></i>@lang('Edit')
                                             </button>
                                              @endpermit
+                                             <a href="{{ route('admin.bank.detail') }}">View Bank Detail</a>
                                         </td>
                                     </tr>
                                 @endforeach

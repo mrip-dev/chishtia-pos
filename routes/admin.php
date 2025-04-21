@@ -129,6 +129,10 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         $pageTitle = 'Manage Sale';
         return view('admin.sale.manage' , compact('pageTitle'));
     })->name('manage_sale');
+    Route::get('/bank-detail', function () {
+        $pageTitle = 'Bank Detail Page';
+        return view('bank.detail', compact('pageTitle'));
+    })->name('bank.detail');
 
 
     // Manage Purchase
