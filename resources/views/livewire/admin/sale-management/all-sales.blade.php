@@ -389,7 +389,7 @@
                                 @if($modal_payment_method=='bank' || $modal_payment_method=='both')
                                 <div class="form-group mb-3" id="bankNameField">
                                     <label for="bank_id">@lang('Bank Name')</label>
-                                    <select name="bank_id" id="bank_id" class="form-control">
+                                    <select name="bank_id" id="bank_id" class="form-control" wire:model="bankId">
                                         <option value="" disabled selected>@lang('Select Bank')</option>
                                         @foreach($banks as $bank)
                                         <option value="{{ $bank->id }}">{{ $bank->name }}</option>

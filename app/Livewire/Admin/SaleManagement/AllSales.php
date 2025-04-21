@@ -11,9 +11,11 @@ use App\Models\Customer;
 use App\Models\ProductStock;
 use App\Models\SaleDetail;
 use App\Lib\Action;
+use App\Livewire\Admin\CustomerTransactions\CustomerTransaction;
 use App\Models\Action as ModelsAction;
 use App\Models\Bank;
 use App\Models\CustomerPayment;
+use App\Models\CustomerTransaction as ModelsCustomerTransaction;
 use App\Models\SaleDetails;
 use Carbon\Carbon;
 use Illuminate\Validation\Rule;
@@ -63,7 +65,7 @@ class AllSales extends Component
     public $modal_invoice_no;
     public $modal_customer_name;
     public $modal_rec_amount;
-    public $modal_bank_id;
+    public $bankId;
     public $modal_payment_method = '';
     public $modal_rec_bank;
     public $modal_receivable_amount;
@@ -99,10 +101,6 @@ class AllSales extends Component
             'modal_rec_bank.required'   => 'Bank amount is required when payment method is bank or both.',
         ];
     }
-
-
-
-
 
     public function mount()
     {
@@ -504,7 +502,7 @@ class AllSales extends Component
         $this->modal_rec_bank = 0.00;
         $this->modal_rec_amount = 0.00;
     }
-    public function submitPayment()
+        public function submitPayment()
     {
         $this->validate();
 
@@ -522,7 +520,7 @@ class AllSales extends Component
         $sale->payment_method = $this->modal_payment_method;
         $sale->received_amount_cash += $amount_cash;
         $sale->received_amount_bank += $amount_bank;
-        $sale->bank_id = $this->modal_bank_id;
+        $sale->bank_id = $this->bankId;
         $sale->save();
 
         if ($isPaying) {
@@ -542,12 +540,43 @@ class AllSales extends Component
 
         $payment->save();
 
+        $lastTransaction = ModelsCustomerTransaction::where('customer_id', $sale->customer_id)
+    ->orderBy('id', 'desc')
+    ->first();
+
+// Check if it's the first transaction
+if ($lastTransaction) {
+    $openingBalance = $lastTransaction->closing_balance;
+} else {
+    // First transaction: get opening balance from the customer table
+    $customer = Customer::findOrFail($sale->customer_id);
+    $openingBalance = $customer->opening_balance ?? 0.00;
+}
+
+// Debit amount (sale)
+$debitAmount = $amount;
+$creditAmount = 0.00;
+
+// Calculate new closing balance
+$closingBalance = $openingBalance + $debitAmount;
+
+// Save transaction
+$customerTransaction = new ModelsCustomerTransaction();
+$customerTransaction->customer_id      = $sale->customer_id;
+$customerTransaction->credit_amount    = $creditAmount;
+$customerTransaction->debit_amount     = $debitAmount;
+$customerTransaction->opening_balance  = $openingBalance;
+$customerTransaction->closing_balance  = $closingBalance;
+$customerTransaction->source           = 'Sale Transaction';
+$customerTransaction->bank_id          = $sale->bank_id;
+$customerTransaction->save();
 
         session()->flash('success', $notification);
         $this->resetExcept('saleId');
         $this->loadSales();
         $this->dispatch('notify', status: 'success', message: $notification);
     }
+
 
     public function render()
     {

@@ -11,6 +11,7 @@
                                     <th>@lang('S.N.')</th>
                                     <th>@lang('Name')</th>
                                     <th>@lang('Mobile | Email')</th>
+                                    <th>@lang('Opening Balance')</th>
                                     <th>@lang('Payable')</th>
                                     <th>@lang('Receivable')</th>
                                     <th>@lang('Action')</th>
@@ -23,6 +24,7 @@
                                         <td>{{ $supplier->name }}</td>
                                         <td><span class="fw-bold"> {{ $supplier->mobile }} </span><br> {{ $supplier->email }}
                                         </td>
+                                        <td>{{ number_format($supplier->opening_balance, 2) }}</td>
                                         <td>{{ showAmount($supplier->totalPayableAmount()) }}</td>
                                         <td>{{ showAmount($supplier->totalReceivableAmount()) }}</td>
 
@@ -43,7 +45,7 @@
                                                         <i class="las la-money-bill-wave-alt"></i>@lang('Payment')
                                                     </a>
                                                 @endpermit
-                                                <a href="{{ route('admin.supplier.view') }}" class="btn btn-sm btn-outline-success">
+                                                <a href="{{ route('admin.supplier.view', ['id' => $supplier->id]) }}" class="btn btn-sm btn-outline-success">
                                                     <i class="la la-eye"></i> @lang('View')
                                                 </a>
                                             </div>
@@ -110,6 +112,10 @@
                                     <input class="form-control" name="company_name" type="text" value="{{ old('company_name') }}" autocomplete="off">
                                 </div>
                             </div>
+                            <div class="form-group col-lg-12">
+                                <label for="opening_balance">Opening Balance</label>
+                                <input type="number" step="0.01" name="opening_balance" class="form-control" value="{{ old('opening_balance', $supplier->opening_balance ?? 0) }}">
+                            </div>
 
                             <div class="col-lg-12">
                                 <div class="form-group">
@@ -117,6 +123,7 @@
                                     <input class="form-control" name="address" type="text" value="{{ old('address') }}">
                                 </div>
                             </div>
+
                         </div>
 
                     </div>

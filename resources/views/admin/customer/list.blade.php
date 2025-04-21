@@ -10,6 +10,7 @@
                                 <tr>
                                     <th>@lang('Name') | @lang('Address')</th>
                                     <th>@lang('Mobile') | @lang('Email')</th>
+                                    <th>@lang('Opening Balance')</th>
                                     <th>@lang('Receivable')</th>
                                     <th>@lang('Payable')</th>
                                     <th>@lang('Action')</th>
@@ -26,6 +27,7 @@
                                         <td>
                                             <span class="fw-bold">+{{ $customer->mobile }}</span> <br> {{ $customer->email }}
                                         </td>
+                                        <td>{{ number_format($customer->opening_balance, 2) }}</td>
                                         <td>{{ showAmount($customer->totalReceivableAmount()) }}</td>
                                         <td>{{ showAmount($customer->totalPayableAmount()) }}</td>
                                         <td>
@@ -51,7 +53,7 @@
                                                         <i class="las la-money-bill-wave-alt"></i>@lang('Payment')
                                                     </a>
                                                 @endpermit
-                                                <a href="{{ route('admin.customer.view') }}" class="btn btn-sm btn-outline-success">
+                                                <a href="{{ route('admin.customer.view' , $customer->id) }}" class="btn btn-sm btn-outline-success">
                                                     <i class="la la-eye"></i> @lang('View')
                                                 </a>
                                             </div>
@@ -111,6 +113,10 @@
                                     </label>
                                     <input type="number" name="mobile" value="{{ old('mobile') }}" class="form-control " required>
                                 </div>
+                            </div>
+                            <div class="form-group col-lg-12">
+                                <label for="opening_balance">Opening Balance</label>
+                                <input type="number" step="0.01" name="opening_balance" class="form-control" value="{{ old('opening_balance', $customer->opening_balance ?? 0) }}">
                             </div>
 
                             <div class="col-lg-6">

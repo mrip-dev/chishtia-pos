@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\CustomerViewController;
 use App\Http\Controllers\SupplierViewController;
+use App\Livewire\Admin\CustomerTransactions\CustomerTransaction;
+use App\Models\Customer;
+use App\Models\Supplier;
 use Illuminate\Support\Facades\Route;
 
 
@@ -218,7 +221,15 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         Route::get('csv', 'supplierCSV')->name('csv');
         Route::post('import', 'import')->name('import');
     });
-    Route::get('supplier/view', [SupplierViewController::class, 'index'])->name('supplier.view');
+    Route::get('supplier/view/{id}', function ($id) {
+        $supplier = Supplier::findOrFail($id);
+        $pageTitle = 'Supplier Details - ' . $supplier->name;
+
+        return view('admin.supplier.view', [
+            'supplier' => $supplier,
+            'pageTitle' => $pageTitle,
+        ]);
+    })->name('supplier.view');
 
     // Customer
     Route::controller('CustomerController')->name('customer.')->prefix('customer')->group(function () {
@@ -241,7 +252,17 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         Route::get('notification-log/{id}', 'notificationLog')->name('notification.log');
         Route::get('notification/history', 'notificationHistory')->name('notification.history');
     });
-    Route::get('customer/view', [CustomerViewController::class, 'index'])->name('customer.view');
+
+    Route::get('customer/view/{id}', function ($id) {
+        $customer = Customer::findOrFail($id);
+        $pageTitle = 'Customer Details - ' . $customer->name; // or any title you want
+
+        return view('admin.customer.view', [
+            'customer' => $customer,
+            'pageTitle' => $pageTitle,
+        ]);
+    })->name('customer.view');
+
     //Payment - Supplier
     Route::controller('SupplierPaymentController')->name('supplier.payment.')->prefix('supplier/payment')->group(function () {
         Route::get('index/{id}', 'index')->name('index');
@@ -287,7 +308,7 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         Route::post('import', 'import')->name('import');
     });
     Route::get('/manage/expense-type' , function(){
-        $pageTitle = 'Manage Expense Type';
+        $pageTitle = 'Manage Expense';
         return view('admin.expense.manage' , compact('pageTitle'));
     })->name('manage_expense');
 
@@ -299,7 +320,7 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         Route::post('import', 'import')->name('import');
     });
     Route::get('/manage/expense' , function(){
-        $pageTitle = 'Manage Expense';
+        $pageTitle = 'Manage Expense Type';
         return view('admin.expense.e-type' , compact('pageTitle'));
     })->name('manage_expense_type');
 

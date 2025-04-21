@@ -84,6 +84,7 @@ class CustomerController extends Controller
         $customer->email   = strtolower(trim($request->email));
         $customer->mobile  = $request->mobile;
         $customer->address = $request->address;
+        $customer->opening_balance = $request->opening_balance;
         $customer->save();
 
         Action::newEntry($customer, $id ? 'UPDATED' : 'CREATED');
@@ -99,6 +100,7 @@ class CustomerController extends Controller
             'email'   => 'string|email|unique:suppliers,email,' . $id,
             'mobile'  => 'required|regex:/^([0-9]*)$/|unique:suppliers,mobile,' . $id,
             'address' => 'string|max:500',
+           'opening_balance' => 'nullable|numeric|min:0',
         ]);
     }
 

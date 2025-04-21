@@ -91,6 +91,7 @@ class SupplierController extends Controller
         $supplier->mobile       = $request->mobile;
         $supplier->company_name = $request->company_name;
         $supplier->address      = $request->address;
+        $supplier->opening_balance = $request->opening_balance ?? 0.00;
         $supplier->save();
         Action::newEntry($supplier, $id ? 'UPDATED' : 'CREATED');
     }
@@ -103,6 +104,7 @@ class SupplierController extends Controller
             'mobile'       => 'required|regex:/^([0-9]*)$/|unique:suppliers,mobile,' . $id,
             'company_name' => 'nullable|string|max:40',
             'address'      => 'nullable|string|max:500',
+            'opening_balance' => 'nullable|numeric|min:0',
         ]);
     }
 

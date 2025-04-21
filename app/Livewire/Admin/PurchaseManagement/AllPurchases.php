@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin\PurchaseManagement;
 
 use App\Models\Bank;
+use App\Models\SupplierTransaction as ModelsSupplierTransaction;
 use App\Models\Product;
 use App\Models\ProductStock;
 use App\Models\Purchase;
@@ -50,7 +51,7 @@ class AllPurchases extends Component
     public $modal_invoice_no;
     public $modal_supplier_name;
     public $modal_paid_amount;
-    public $modal_bank_id;
+    public $bankId;
     public $modal_payment_method = '';
     public $modal_rec_bank;
     public $modal_payable_amount;
@@ -491,7 +492,7 @@ class AllPurchases extends Component
         $purchase->payment_method = $this->modal_payment_method;
         $purchase->received_amount_cash += $amount_cash;
         $purchase->received_amount_bank += $amount_bank;
-        $purchase->bank_id = $this->modal_bank_id;
+        $purchase->bank_id = $this->bankId;
         $purchase->save();
 
         if ($isPaying) {
@@ -510,6 +511,45 @@ class AllPurchases extends Component
         $payment->remark = $remark;
 
         $payment->save();
+
+
+        // Get last transaction
+        $lastTransaction = ModelsSupplierTransaction::where('supplier_id', $purchase->supplier_id)
+            ->orderBy('id', 'desc')
+            ->first();
+
+        // If no previous transaction, use supplier's opening balance
+        if ($lastTransaction) {
+            $openingBalance = $lastTransaction->closing_balance;
+        } else {
+            // Supplier table se opening_balance uthao
+            $supplier = Supplier::findOrFail($purchase->supplier_id);
+            $openingBalance = $supplier->opening_balance ?? 0.00;
+        }
+
+        // Credit amount (from purchase)
+        $creditAmount = $amount;
+        $debitAmount = 0.00;
+
+        // Subtract credit from opening to get closing
+        $closingBalance = $openingBalance - $creditAmount;
+
+        // Save transaction
+        $supplierTransaction = new ModelsSupplierTransaction();
+        $supplierTransaction->supplier_id      = $purchase->supplier_id;
+        $supplierTransaction->credit_amount    = $creditAmount;
+        $supplierTransaction->debit_amount     = $debitAmount;
+        $supplierTransaction->opening_balance  = $openingBalance;
+        $supplierTransaction->closing_balance  = $closingBalance;
+        $supplierTransaction->source           = 'Purchase Transaction';
+        $supplierTransaction->bank_id          = $purchase->bank_id;
+        $supplierTransaction->save();
+
+
+
+
+
+
 
 
         session()->flash('success', $notification);
