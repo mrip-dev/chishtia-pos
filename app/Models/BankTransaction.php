@@ -15,4 +15,8 @@ class BankTransaction extends Model
     {
         return $this->morphTo();
     }
+    public function bank()
+    {
+        return $this->belongsTo(Bank::class);
+    }
 }

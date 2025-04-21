@@ -545,31 +545,31 @@ class AllSales extends Component
     ->first();
 
 // Check if it's the first transaction
-if ($lastTransaction) {
-    $openingBalance = $lastTransaction->closing_balance;
-} else {
-    // First transaction: get opening balance from the customer table
-    $customer = Customer::findOrFail($sale->customer_id);
-    $openingBalance = $customer->opening_balance ?? 0.00;
-}
+                if ($lastTransaction) {
+                    $openingBalance = $lastTransaction->closing_balance;
+                } else {
+                    // First transaction: get opening balance from the customer table
+                    $customer = Customer::findOrFail($sale->customer_id);
+                    $openingBalance = $customer->opening_balance ?? 0.00;
+                }
 
-// Debit amount (sale)
-$debitAmount = $amount;
-$creditAmount = 0.00;
+                // Debit amount (sale)
+                $debitAmount = $amount;
+                $creditAmount = 0.00;
 
-// Calculate new closing balance
-$closingBalance = $openingBalance + $debitAmount;
+                // Calculate new closing balance
+                $closingBalance = $openingBalance + $debitAmount;
 
-// Save transaction
-$customerTransaction = new ModelsCustomerTransaction();
-$customerTransaction->customer_id      = $sale->customer_id;
-$customerTransaction->credit_amount    = $creditAmount;
-$customerTransaction->debit_amount     = $debitAmount;
-$customerTransaction->opening_balance  = $openingBalance;
-$customerTransaction->closing_balance  = $closingBalance;
-$customerTransaction->source           = 'Sale Transaction';
-$customerTransaction->bank_id          = $sale->bank_id;
-$customerTransaction->save();
+                // Save transaction
+                $customerTransaction = new ModelsCustomerTransaction();
+                $customerTransaction->customer_id      = $sale->customer_id;
+                $customerTransaction->credit_amount    = $creditAmount;
+                $customerTransaction->debit_amount     = $debitAmount;
+                $customerTransaction->opening_balance  = $openingBalance;
+                $customerTransaction->closing_balance  = $closingBalance;
+                $customerTransaction->source           = 'Sale Transaction';
+                $customerTransaction->bank_id          = $sale->bank_id;
+                $customerTransaction->save();
 
         session()->flash('success', $notification);
         $this->resetExcept('saleId');

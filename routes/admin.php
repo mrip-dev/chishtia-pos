@@ -3,6 +3,7 @@
 use App\Http\Controllers\CustomerViewController;
 use App\Http\Controllers\SupplierViewController;
 use App\Livewire\Admin\CustomerTransactions\CustomerTransaction;
+use App\Models\Bank;
 use App\Models\Customer;
 use App\Models\Supplier;
 use Illuminate\Support\Facades\Route;
@@ -124,15 +125,17 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
    Route::controller('BankController')->name('bank.')->prefix('bank')->group(function(){
        Route::get('manage' ,'index')->name('index');
     });
+    Route::get('/bank-detail/{id}', function ($id) {
+        $bank = Bank::findOrFail($id);
+        $pageTitle = 'Bank Detail Page -' . $bank->name;
+        return view('bank.detail', compact('pageTitle' , 'bank'));
+    })->name('bank.detail');
 
     Route::get('/manage/sale' , function(){
         $pageTitle = 'Manage Sale';
         return view('admin.sale.manage' , compact('pageTitle'));
     })->name('manage_sale');
-    Route::get('/bank-detail', function () {
-        $pageTitle = 'Bank Detail Page';
-        return view('bank.detail', compact('pageTitle'));
-    })->name('bank.detail');
+
 
 
     // Manage Purchase

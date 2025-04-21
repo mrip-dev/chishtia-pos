@@ -7,6 +7,7 @@ use App\Models\Expense;
 use App\Models\ExpenseType;
 use App\Models\Bank;
 use App\Models\Action;
+use App\Models\BankTransaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Livewire\WithPagination;
@@ -36,6 +37,10 @@ class AllExpenses extends Component
         $this->categories = ExpenseType::orderBy('name')->get();
         $this->banks = Bank::all();
     }
+    public function openModal()
+    {
+        $this->dispatch('open-modal');
+    }
 
     public function render()
     {
@@ -61,6 +66,35 @@ class AllExpenses extends Component
         $expense->note            = $this->note;
         $expense->bank_id         = $this->bank_id;
         $expense->save();
+
+                    $bank = Bank::findOrFail($this->bank_id);
+
+            // Step 1: Get the current balance of the bank (which is the most up-to-date balance)
+            $openingBalance = $bank->current_balance;
+
+            // Step 2: Calculate the credit (expense) amount
+            $creditAmount = $this->amount;
+            $debitAmount = null; // Assuming this is a credit transaction (expense)
+
+            // Step 3: Calculate the new closing balance
+            $closingBalance = $openingBalance - $creditAmount; // Deduct the credit amount from the opening balance
+
+            // Step 4: Save the bank transaction (for recording the transaction)
+            $bankTransaction = new BankTransaction();
+            $bankTransaction->opening_balance = $openingBalance;
+            $bankTransaction->closing_balance = $closingBalance;
+            $bankTransaction->bank_id = $this->bank_id;
+            $bankTransaction->transactable_id = $expense->id;
+            $bankTransaction->debit = $debitAmount;  // Debit is null for a credit transaction
+            $bankTransaction->credit = $creditAmount;  // Credit transaction (deduct from bank)
+            $bankTransaction->amount = $this->amount;
+            $bankTransaction->source = 'Expense';  // Or another source, if applicable
+            $bankTransaction->save();
+
+            // Step 5: Update the bank's current balance after the transaction
+            $bank->current_balance = $closingBalance;  // Set the updated balance as the current balance
+            $bank->save();  // Save the updated bank record
+
 
         Action::newEntry($expense, $this->expense_id ? 'UPDATED' : 'CREATED');
 
@@ -92,7 +126,7 @@ class AllExpenses extends Component
     {
         $expense = Expense::findOrFail($this->deleteId);
 
-       
+
 
         $expense->delete();
 

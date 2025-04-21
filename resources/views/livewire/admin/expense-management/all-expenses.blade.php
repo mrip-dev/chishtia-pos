@@ -1,6 +1,6 @@
 <div>
     <!-- Add New Expense Button -->
-    <button class="btn btn-success mb-2" onclick="openAddModal()">Add New Expense</button>
+    <button class="btn btn-success mb-2" wire:click="openModal">Add New Expense</button>
      <div class="row">
         <div class="col-lg-12">
             <div class="card">
@@ -150,14 +150,15 @@
     }
 </script>
 @endif
-<script>
-    window.addEventListener('open-modal', () => {
-        $('#cuModal').modal('show');
-    });
+@endpush
+@push('script')
+    <script>
+        window.addEventListener('open-modal', () => {
+            $('#cuModal').modal('show');  // Open the modal
+        });
 
-    window.addEventListener('close-modal', () => {
-        $('#cuModal').modal('hide');
-    });
-</script>
-
+        window.addEventListener('close-modal', () => {
+            $('#cuModal').modal('hide');  // Close the modal
+        });
+    </script>
 @endpush
