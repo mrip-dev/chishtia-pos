@@ -67,33 +67,43 @@ class AllExpenses extends Component
         $expense->bank_id         = $this->bank_id;
         $expense->save();
 
-                    $bank = Bank::findOrFail($this->bank_id);
+        $bank = Bank::findOrFail($this->bank_id);
 
-            // Step 1: Get the current balance of the bank (which is the most up-to-date balance)
+        // Step 1: Check if this is the first transaction for this bank
+        $lastTransaction = BankTransaction::where('bank_id', $this->bank_id)->latest()->first();
+
+        if ($lastTransaction) {
+            // Not first transaction, use current_balance
             $openingBalance = $bank->current_balance;
+        } else {
+            // First transaction, use bank's opening_balance
+            $openingBalance = $bank->opening_balance;
+        }
 
-            // Step 2: Calculate the credit (expense) amount
-            $creditAmount = $this->amount;
-            $debitAmount = null; // Assuming this is a credit transaction (expense)
+        // Step 2: Credit and Debit (assuming expense)
+        $creditAmount = $this->amount;
+        $debitAmount = null;
 
-            // Step 3: Calculate the new closing balance
-            $closingBalance = $openingBalance - $creditAmount; // Deduct the credit amount from the opening balance
+        // Step 3: Closing balance
+        $closingBalance = $openingBalance - $creditAmount;
 
-            // Step 4: Save the bank transaction (for recording the transaction)
-            $bankTransaction = new BankTransaction();
-            $bankTransaction->opening_balance = $openingBalance;
-            $bankTransaction->closing_balance = $closingBalance;
-            $bankTransaction->bank_id = $this->bank_id;
-            $bankTransaction->transactable_id = $expense->id;
-            $bankTransaction->debit = $debitAmount;  // Debit is null for a credit transaction
-            $bankTransaction->credit = $creditAmount;  // Credit transaction (deduct from bank)
-            $bankTransaction->amount = $this->amount;
-            $bankTransaction->source = 'Expense';  // Or another source, if applicable
-            $bankTransaction->save();
+        // Step 4: Create BankTransaction
+        $bankTransaction = new BankTransaction();
+        $bankTransaction->opening_balance = $openingBalance;
+        $bankTransaction->closing_balance = $closingBalance;
+        $bankTransaction->bank_id = $this->bank_id;
+        $bankTransaction->transactable_id = $expense->id;
+        $bankTransaction->debit = $debitAmount;
+        $bankTransaction->credit = $creditAmount;
+        $bankTransaction->amount = $this->amount;
+        $bankTransaction->source = 'Expense';
+        $bankTransaction->save();
 
-            // Step 5: Update the bank's current balance after the transaction
-            $bank->current_balance = $closingBalance;  // Set the updated balance as the current balance
-            $bank->save();  // Save the updated bank record
+        // Step 5: Update current_balance in bank table
+        $bank->current_balance = $closingBalance;
+        $bank->save();
+
+
 
 
         Action::newEntry($expense, $this->expense_id ? 'UPDATED' : 'CREATED');

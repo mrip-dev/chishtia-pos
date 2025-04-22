@@ -390,7 +390,7 @@
                                 <div class="form-group mb-3" id="bankNameField">
                                     <label for="bank_id">@lang('Bank Name')</label>
                                     <select name="bank_id" id="bank_id" class="form-control" wire:model="bankId">
-                                        <option value="" disabled selected>@lang('Select Bank')</option>
+                                        <option value=""selected>@lang('Select Bank')</option>
                                         @foreach($banks as $bank)
                                         <option value="{{ $bank->id }}">{{ $bank->name }}</option>
                                         @endforeach
@@ -420,8 +420,8 @@
                                 <div class="form-group mb-3">
                                     <label>@lang('Payment Method')</label>
                                     <select name="payment_method" class="form-control" id="paymentMethodSelect" wire:model.live="modal_payment_method" required>
-                                        <option value="" disabled selected>@lang('Select Payment Method')</option>
-                                        <option value="">----- choose -----</option>
+                                        {{-- <option value="" disabled selected>@lang('Select Payment Method')</option>
+                                        <option value="">----- choose -----</option> --}}
                                         <option value="cash">@lang('Cash')</option>
                                         <option value="bank">@lang('Bank')</option>
                                         <option value="both">@lang('Both')</option>
