@@ -49,7 +49,6 @@
                     "admin.sale.edit"
                 ]
             },
-
             {
                 "keyword": [
                     "All sales return",
@@ -314,7 +313,6 @@
                 "route_name": "admin.manage_expense_type",
                 "menu_active": "admin.expense.type.index"
             },
-
             {
                 "keyword": [
                     "All expense",
@@ -326,6 +324,40 @@
                 "title": "Expenses",
                 "route_name": "admin.manage_expense",
                 "menu_active": "admin.expense.index"
+            }
+        ]
+    },
+    "services": {
+        "title": "Manage Services",
+        "header": "Services",
+        "icon": "la la-cogs",
+        "menu_active": [
+            "admin.service.*"
+        ],
+        "submenu": [
+            {
+                "keyword": [
+                    "All Services",
+                    "Manage Service",
+                    "Service Configuration",
+                    "Add service",
+                    "Edit service"
+                ],
+                "title": "Stock In",
+                "route_name": "admin.manage_stock_in",
+                "menu_active": "admin.manage_stock_in"
+            },
+            {
+                "keyword": [
+                    "All Services",
+                    "Manage Service",
+                    "Service Configuration",
+                    "Add service",
+                    "Edit service"
+                ],
+                "title": "Stock Out",
+                "route_name": "admin.manage_stock_out",
+                "menu_active": "admin.manage_stock_out"
             }
         ]
     },
