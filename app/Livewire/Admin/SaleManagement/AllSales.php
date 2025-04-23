@@ -603,7 +603,9 @@ class AllSales extends Component
                 $bankTransaction->debit = $debitAmount;
                 $bankTransaction->credit = $creditAmount;
                 $bankTransaction->amount = $amount;
-                $bankTransaction->source = 'Cash Payment Received';
+                 $bankTransaction->module_id = $sale->id;
+                $bankTransaction->data_model = 'Sale';
+                $bankTransaction->source = 'Cash Payment Sale Received';
                 $bankTransaction->save();
 
                 $bank->current_balance = $closingBalance;
@@ -647,13 +649,67 @@ class AllSales extends Component
             $bankTransaction->debit            = $debitAmount;
             $bankTransaction->credit           = $creditAmount;
             $bankTransaction->amount           = $amount;
-            $bankTransaction->source           = 'Bank Payment Received';
+            $bankTransaction->module_id        = $sale->id;
+            $bankTransaction->data_mode        = 'Sale';
+            $bankTransaction->source           = 'Bank Payment Sale Received';
             $bankTransaction->save();
 
             // Step 8: Update bank current balance
             $bank->current_balance = $closingBalance;
             $bank->save();
         }
+        if ($this->modal_payment_method === 'both') {
+            // --- CASH PART ---
+            $cashAmount = $this->modal_rec_amount;
+            $cashBank = Bank::where('name', 'Cash')->first();
+
+            if ($cashBank && $cashAmount > 0) {
+                $lastCashTransaction = BankTransaction::where('bank_id', $cashBank->id)->latest()->first();
+                $cashOpening = $lastCashTransaction ? $lastCashTransaction->closing_balance : ($cashBank->opening_balance ?? 0.00);
+                $cashClosing = $cashOpening + $cashAmount;
+
+                $cashTransaction = new BankTransaction();
+                $cashTransaction->bank_id = $cashBank->id;
+                $cashTransaction->opening_balance = $cashOpening;
+                $cashTransaction->closing_balance = $cashClosing;
+                $cashTransaction->debit = $cashAmount;
+                $cashTransaction->credit = 0.00;
+                $cashTransaction->amount = $cashAmount;
+                $bankTransaction->module_id = $sale->id;
+                $bankTransaction->data_model = 'Sale';
+                $cashTransaction->source = 'Cash Sale (Both Method)';
+                $cashTransaction->save();
+
+                $cashBank->current_balance = $cashClosing;
+                $cashBank->save();
+            }
+
+            // --- BANK PART ---
+            $bankAmount = $this->modal_rec_bank;
+            $selectedBank = Bank::find($this->bankId);
+
+            if ($selectedBank && $bankAmount > 0) {
+                $lastBankTransaction = BankTransaction::where('bank_id', $selectedBank->id)->latest()->first();
+                $bankOpening = $lastBankTransaction ? $lastBankTransaction->closing_balance : ($selectedBank->opening_balance ?? 0.00);
+                $bankClosing = $bankOpening + $bankAmount;
+
+                $bankTransaction = new BankTransaction();
+                $bankTransaction->bank_id = $selectedBank->id;
+                $bankTransaction->opening_balance = $bankOpening;
+                $bankTransaction->closing_balance = $bankClosing;
+                $bankTransaction->debit = $bankAmount;
+                $bankTransaction->credit = 0.00;
+                $bankTransaction->amount = $bankAmount;
+                $bankTransaction->module_id = $sale->id;
+                $bankTransaction->data_model = 'Sale';
+                $bankTransaction->source = 'Bank Sale (Both Method)';
+                $bankTransaction->save();
+
+                $selectedBank->current_balance = $bankClosing;
+                $selectedBank->save();
+            }
+        }
+
 
 
 

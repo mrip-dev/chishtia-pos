@@ -327,7 +327,7 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         Route::post('store/{id?}', 'store')->name('store');
         Route::post('import', 'import')->name('import');
     });
-    Route::get('/manage/expense-type' , function(){
+    Route::get('/manage/expense' , function(){
         $pageTitle = 'Manage Expense';
         return view('admin.expense.manage' , compact('pageTitle'));
     })->name('manage_expense');
@@ -339,7 +339,7 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         Route::post('store/{id?}', 'store')->name('store');
         Route::post('import', 'import')->name('import');
     });
-    Route::get('/manage/expense' , function(){
+    Route::get('/manage/expense-type' , function(){
         $pageTitle = 'Manage Expense Type';
         return view('admin.expense.e-type' , compact('pageTitle'));
     })->name('manage_expense_type');

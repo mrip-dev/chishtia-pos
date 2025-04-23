@@ -24,4 +24,20 @@ class BankTransactionDetails extends Component
     {
         return view('livewire.banks.bank-transaction-details');
     }
+    public function redirectDataModel($id, $dataModel)
+    {
+
+        switch ($dataModel) {
+
+            case 'Sale':
+                return redirect()->to('/admin/manage/sale/?module_id=' . $id.'#module_id_' . $id);
+                break;
+            case 'Purchase':
+                return  redirect()->to('/admin/manage/purchase/?module_id=' . $id.'#module_id_' . $id);
+                break;
+            case 'Expense':
+               return redirect()->to('/admin/manage/expense/?module_id=' . $id.'#module_id_' . $id);
+                break;
+        }
+    }
 }

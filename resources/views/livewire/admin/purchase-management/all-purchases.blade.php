@@ -56,7 +56,7 @@
                                 </thead>
                                 <tbody>
                                     @forelse($purchases as $purchase)
-                                        <tr>
+                                        <tr @include('partials.bank-history-color', ['id' => $purchase->id])>
                                             <td>
                                                 @if ($purchase->return_status == 1)
                                                     <small><i class="fa fa-circle text--danger" title="@lang('Returned')" aria-hidden="true"></i></small>
@@ -409,7 +409,7 @@
                                 <div class="form-group mb-3" id="bankNameField">
                                     <label for="bank_id">@lang('Bank Name')</label>
                                     <select name="bank_id" id="bank_id" class="form-control" wire:model="bankId">
-                                        <option value="" disabled selected>@lang('Select Bank')</option>
+                                        <option value="" selected>@lang('Select Bank')</option>
                                         @foreach($banks as $bank)
                                             <option value="{{ $bank->id }}">{{ $bank->name }}</option>
                                         @endforeach
@@ -441,22 +441,25 @@
                                     <div class="input-group">
                                         <button type="button" class="input-group-text">{{ gs('cur_sym') }}</button>
                                         <input type="number" step="any"
-                                        wire:model="modal_rec_bank"name="received_amount_bank" class="form-control">
+                                        wire:model="modal_rec_bank" name="received_amount_bank" class="form-control">
                                     </div>
                                     @error('modal_rec_bank')
                                     <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
                                 @endif
-                                @if($modal_payment_method=='cash' || $modal_payment_method=='both')
-                                <div class="form-group mb-3"  id="receivedAmount">
-                                    <label class="payingReceiving"></label>
+                                @if($modal_payment_method == 'cash' || $modal_payment_method == 'both')
+                                <div class="form-group mb-3" id="receivedAmount">
+                                    <label>@lang('Paid Amount Cash')</label>
                                     <div class="input-group">
                                         <button class="input-group-text" type="button">{{ gs('cur_sym') }}</button>
                                         <input class="form-control" wire:model="modal_paid_amount" type="number" step="any" required>
                                     </div>
+                                    @error('modal_paid_amount')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
                                 </div>
-                                @endif
+                            @endif
                             </div>
                         </div>
                     </div>

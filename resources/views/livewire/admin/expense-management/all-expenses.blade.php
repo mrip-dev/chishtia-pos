@@ -19,7 +19,7 @@
                             </thead>
                             <tbody>
                                 @forelse($expenses as $expense)
-                                    <tr>
+                                    <tr @include('partials.bank-history-color', ['id' => $expense->id])>
                                         <td>{{ $expenses->firstItem() + $loop->index }}</td>
                                         <td>{{ $expense->expenseType->name }}</td>
                                         <td>{{ showDateTime($expense->date_of_expense, 'd M, Y') }}</td>
