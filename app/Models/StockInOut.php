@@ -12,15 +12,8 @@ class StockInOut extends Model
     {
         return $this->belongsTo(Stock::class);
     }
-
-    public function supplier()
+    public function product()
     {
-        return $this->belongsTo(Supplier::class);
+        return $this->belongsTo(Product::class);
     }
-
-    public function warehouse()
-    {
-        return $this->belongsTo(Warehouse::class);
-    }
-
 }

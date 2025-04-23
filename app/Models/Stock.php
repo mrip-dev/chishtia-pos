@@ -9,23 +9,13 @@ class Stock extends Model
 {
     use ActionTakenBy;
     protected $guarded = [];
-    protected $casts = [
-        'stock_in' => 'integer',
-        'stock_out' => 'integer',
-        'stock_balance' => 'integer',
-        'stock_alert' => 'integer',
-        'cost_price' => 'float',
-        'sale_price' => 'float',
-    ];
-    public function product()
-    {
-        return $this->belongsTo(Product::class);
-    }
+
+
     public function warehouse()
     {
         return $this->belongsTo(Warehouse::class);
     }
-    public function stockInOut()
+    public function stockInOuts()
     {
         return $this->hasMany(StockInOut::class);
     }
@@ -37,4 +27,25 @@ class Stock extends Model
     {
         return $this->hasMany(StockInOut::class)->where('stock_in_out_type', 'out');
     }
+    public function user()
+    {
+        if ($this->user_model === 'Supplier') {
+            return $this->userSupplier();
+        } elseif ($this->user_model === 'Customer') {
+            return $this->userCustomer();
+        }
+
+        return null;
+    }
+    public function userSupplier()
+    {
+        return $this->belongsTo(Supplier::class, 'user_id');
+    }
+    public function userCustomer()
+    {
+        return $this->belongsTo(Customer::class, 'user_id');
+    }
+
+
+
 }
