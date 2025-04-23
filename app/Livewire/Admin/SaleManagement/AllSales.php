@@ -12,12 +12,14 @@ use App\Models\ProductStock;
 use App\Models\SaleDetail;
 use App\Lib\Action;
 use App\Livewire\Admin\CustomerTransactions\CustomerTransaction;
+use App\Livewire\Admin\WareHouse\WareHouseDetail;
 use App\Models\Action as ModelsAction;
 use App\Models\Bank;
 use App\Models\BankTransaction;
 use App\Models\CustomerPayment;
 use App\Models\CustomerTransaction as ModelsCustomerTransaction;
 use App\Models\SaleDetails;
+use App\Models\WareHouseDetailHistory;
 use Carbon\Carbon;
 use Illuminate\Validation\Rule;
 
@@ -393,6 +395,16 @@ class AllSales extends Component
 
             DB::commit();
 
+            $wareHouseDetail = new WareHouseDetailHistory();
+            $wareHouseDetail->ware_house_id = $this->warehouse_id;
+            $wareHouseDetail->product_id = $product['id'];
+            $wareHouseDetail->supplier_id = 0;
+            $wareHouseDetail->customer_id = $this->customer_id;
+            $wareHouseDetail->date = now();
+            $wareHouseDetail->stock_in = 0;
+            $wareHouseDetail->stock_out = $product['quantity'];
+            $wareHouseDetail->amount = $product['quantity'] * $product['price'];
+            $wareHouseDetail->save();
 
             // Notify the user of success
             $this->dispatch('notify', status: 'success', message: 'Sale saved successfully');
@@ -429,7 +441,7 @@ class AllSales extends Component
             }
 
             // How much more stock is needed?
-            $additionalQtyNeeded = $product->quantity - $oldQty;
+            $additionalQtyNeeded = (int)$product->quantity - (int)$oldQty;
 
             // Check if the additional quantity can be fulfilled
             if ($additionalQtyNeeded > 0 && (!$productStock || $additionalQtyNeeded > $productStock->quantity)) {

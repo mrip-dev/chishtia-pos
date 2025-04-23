@@ -31,7 +31,7 @@
                                             <div class="button--group">
                                                 @permit('admin.warehouse.store')
                                                     <button class="btn btn-sm btn-outline--primary editBtn cuModalBtn" data-resource="{{ $warehouse }}" data-modal_title="@lang('Edit warehouse')" type="button">
-                                                        <i class="la la-pencil"></i>@lang('Edit')
+                                                          <i class="la la-pencil"></i>@lang('Edit')
                                                     </button>
                                                 @endpermit
                                                 @permit('admin.warehouse.status')
@@ -45,6 +45,11 @@
                                                         </button>
                                                     @endif
                                                 @endpermit
+
+                                                <button class="btn btn-outline--success" onclick="window.location.href='{{ route('admin.warehouse.detail', ['id' => $warehouse->id]) }}'">
+                                                    View {{ $warehouse->name }} Details
+                                                </button>
+
                                             </div>
                                         </td>
                                     </tr>

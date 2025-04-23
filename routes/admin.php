@@ -6,6 +6,7 @@ use App\Livewire\Admin\CustomerTransactions\CustomerTransaction;
 use App\Models\Bank;
 use App\Models\Customer;
 use App\Models\Supplier;
+use App\Models\Warehouse;
 use Illuminate\Support\Facades\Route;
 
 
@@ -121,6 +122,13 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         Route::post('import', 'import')->name('import');
         Route::post('status/{id}', 'status')->name('status');
     });
+    Route::get('/admin/warehouse/warehouse-detail/{id}', function ($id) {
+        $warehouse = Warehouse::findOrFail($id);
+        $pageTitle = 'Warehouse Detail Page - ' . $warehouse->name;
+
+        return view('admin.warehouse.warehouse-detail', compact('pageTitle', 'warehouse'));
+    })->name('warehouse.detail');
+
     //Bank Manage
    Route::controller('BankController')->name('bank.')->prefix('bank')->group(function(){
        Route::get('manage' ,'index')->name('index');

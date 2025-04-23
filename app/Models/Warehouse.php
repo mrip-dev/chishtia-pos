@@ -17,5 +17,9 @@ class Warehouse extends Model
     {
         return $this->productStock()->sum('quantity');
     }
+    public function wareHouseDetailHistory()
+    {
+        return $this->hasMany(WareHouseDetailHistory::class, 'ware_house_id');
+    }
 
 }

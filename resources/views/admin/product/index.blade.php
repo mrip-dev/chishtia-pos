@@ -23,7 +23,8 @@
                                         <td>
                                             <div class="user justify-content-center">
                                                 <div class="thumb">
-                                                    <img src="{{ getImage(getFilePath('product') . '/' . $product->image, getFileSize('product')) }}">
+                                                    <img
+                                                        src="{{ getImage(getFilePath('product') . '/' . $product->image, getFileSize('product')) }}">
                                                 </div>
                                             </div>
                                         </td>
@@ -55,8 +56,9 @@
                                         <td>
                                             @permit('admin.product.edit')
                                                 <div class="button--group">
-                                                    <a class="btn btn-sm btn-outline--primary ms-1 editBtn" href="{{ route('admin.product.edit', $product->id) }}"><i
-                                                           class="las la-pen"></i> @lang('Edit')</a>
+                                                    <a class="btn btn-sm btn-outline--primary ms-1 editBtn"
+                                                        href="{{ route('admin.product.edit', $product->id) }}"><i
+                                                            class="las la-pen"></i> @lang('Edit')</a>
                                                 </div>
                                             @endpermit
                                         </td>
@@ -89,7 +91,8 @@
                         <i class="la la-times" aria-hidden="true"></i>
                     </button>
                 </div>
-                <form id="importForm" method="post" action="{{ route('admin.product.import') }}" enctype="multipart/form-data">
+                <form id="importForm" method="post" action="{{ route('admin.product.import') }}"
+                    enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body">
                         <div class="form-group">
@@ -105,14 +108,19 @@
                                     <li>
                                         <strong>@lang('Valid fields Tip'):</strong>
                                         <ul>
-                                            <li>@lang('Required'): <code>@lang('name')</code>, <code>@lang('category')</code>, <code>@lang('sku')</code>, <code>brand</code>, <code>unit</code>, <code>alert_quantity</code>, <code>note</code>.</li>
+                                            <li>@lang('Required'): <code>@lang('name')</code>,
+                                                <code>@lang('category')</code>, <code>@lang('sku')</code>,
+                                                <code>brand</code>, <code>unit</code>, <code>alert_quantity</code>,
+                                                <code>note</code>.</li>
                                             <li>@lang('Field names must match exactly') .</li>
                                         </ul>
                                     </li>
                                     <li>
                                         <strong>@lang('Required and Unique Fields'):</strong>
                                         <ul>
-                                            <li><code>name</code>, <code>category</code>, <code>sku</code>, <code>brand</code>, <code>unit</code>, <code>alert_quantity</code> @lang('cannot be empty').</li>
+                                            <li><code>name</code>, <code>category</code>, <code>sku</code>,
+                                                <code>brand</code>, <code>unit</code>, <code>alert_quantity</code>
+                                                @lang('cannot be empty').</li>
                                             <li><code>name</code> and <code>sku</code>@lang(' must be unique').</li>
                                         </ul>
                                     </li>
@@ -141,7 +149,8 @@
                                 </small>
                                 <small>
                                     @lang('Download sample template file from here')
-                                    <a class="text--primary" href="{{ asset('assets/files/sample/product.csv') }}" title="@lang('Download csv file')" download>
+                                    <a class="text--primary" href="{{ asset('assets/files/sample/product.csv') }}"
+                                        title="@lang('Download csv file')" download>
                                         <b>@lang('product.csv')</b>
                                     </a>
 
@@ -173,20 +182,21 @@
 
     @permit(['admin.product.import', 'admin.product.pdf', 'admin.product.csv'])
         <div class="btn-group">
-            <button class="btn btn-outline--success dropdown-toggle" data-bs-toggle="dropdown" type="button" aria-expanded="false">
+            <button class="btn btn-outline--success dropdown-toggle" data-bs-toggle="dropdown" type="button"
+                aria-expanded="false">
                 @lang('Action')
             </button>
             <ul class="dropdown-menu">
                 @permit('admin.product.pdf')
                     <li>
                         <a class="dropdown-item" href="{{ route('admin.product.pdf', $params) }}"><i
-                               class="la la-download"></i>@lang('Download PDF')</a>
+                                class="la la-download"></i>@lang('Download PDF')</a>
                     </li>
                 @endpermit
                 @permit('admin.product.csv')
                     <li>
                         <a class="dropdown-item" href="{{ route('admin.product.csv') }}"><i
-                               class="la la-download"></i>@lang('Download CSV')</a>
+                                class="la la-download"></i>@lang('Download CSV')</a>
                     </li>
                 @endpermit
                 @permit('admin.product.import')
