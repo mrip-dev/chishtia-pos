@@ -54,7 +54,7 @@
                             <tbody>
 
                                 @forelse($sales as $sale)
-                                <tr>
+                                <tr @include('partials.bank-history-color', ['id' => $sale->id])>
                                     <td>
                                         @if ($sale->return_status == 1)
                                         <small><i class="fa fa-circle text--danger" title="@lang('Returned')"
@@ -178,8 +178,11 @@
         </div>
     </div>
     @else
-    <div class="card p-4 shadow">
-        <form wire:submit.prevent="saveSale">
+    <div class="row gy-3">
+        <div class="col-lg-12 col-md-12 mb-30">
+            <div class="card">
+                <div class="card-body">
+          <form wire:submit.prevent="saveSale">
             <div class="row mb-3">
                 <div class="col-xl-3 col-sm-6">
                     <label>@lang('Invoice No.')</label>
@@ -238,8 +241,8 @@
             </div>
 
             {{-- Product Table --}}
-            <div class="table-responsive">
-                <table class="table table-bordered">
+
+                <table class="table table--light style--two bg-white">
                     <thead>
                         <tr>
                             <th>@lang('Product')</th>
@@ -252,7 +255,7 @@
                     </thead>
                     <tbody>
                         @foreach ($products as $index => $product)
-                        <tr>
+                        <tr >
                             <td>{{ $product['name'] }}</td>
                             <td>{{ $product['stock'] }}</td>
                             <td>
@@ -278,7 +281,7 @@
                         @endforeach
                     </tbody>
                 </table>
-            </div>
+
             <div class="row">
                 <div class="col-md-8 col-sm-6">
                     <div class="form-group">

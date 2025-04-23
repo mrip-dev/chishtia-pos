@@ -19,7 +19,17 @@
     <link rel="stylesheet" href="{{asset('assets/global/css/select2.min.css')}}">
     <link rel="stylesheet" href="{{asset('assets/admin/css/app.css')}}">
 
+    <style>
+        .bank-history {
+            background-color: #c7ffca !important;
+            box-shadow: 4px 4px 10px rgba(0, 128, 0, 0.3) !important;
+            font-weight: bold !important;
+            padding: 10px 15px  !important;
+            color: rgb(250, 248, 248) !important;
+            text-align: center  !important;
 
+        }
+    </style>
     @livewireStyles
     @stack('style')
 </head>

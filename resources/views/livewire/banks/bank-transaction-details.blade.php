@@ -1,7 +1,7 @@
 <div>
-    <div class="table-responsive">
-        <table class="table table-bordered">
-            <thead>
+    <div class="table-responsive table-responsive--lg" >
+        <table class="table table--light style--two bg-white" >
+            <thead >
                 <tr>
                     <th>S.No.</th>
                     <th>Opening Balance</th>
@@ -22,7 +22,9 @@
                         <td>{{ showAmount($transaction->debit) }}</td>
                         <td>{{ showAmount($transaction->credit) }}</td>
                         <td>{{ showAmount($transaction->amount) }}</td>
-                        <td>{{ $transaction->source }}</td>
+                        <td>
+                            <a href="#" wire:click="redirectDataModel({{ $transaction->module_id }},'{{ $transaction->data_model }}')">{{ $transaction->source }}</a>
+                        </td>
                         <td>{{ showDateTime($transaction->created_at, 'd M, Y') }}</td>
                     </tr>
                 @endforeach

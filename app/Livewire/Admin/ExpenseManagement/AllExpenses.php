@@ -96,6 +96,8 @@ class AllExpenses extends Component
         $bankTransaction->debit = $debitAmount;
         $bankTransaction->credit = $creditAmount;
         $bankTransaction->amount = $this->amount;
+        $bankTransaction->module_id = $expense->id;
+        $bankTransaction->data_model = 'Expense';
         $bankTransaction->source = 'Expense';
         $bankTransaction->save();
 
