@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 @section('panel')
-@livewire('admin.services.manage-stock', ['type' => 'out'])
+   @livewire('admin.services.manage-stock-transfer')
 @endsection
 
 

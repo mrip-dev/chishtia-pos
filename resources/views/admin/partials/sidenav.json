@@ -332,7 +332,7 @@
         "header": "Services",
         "icon": "la la-cogs",
         "menu_active": [
-            "admin.service.*"
+            "admin.services.*"
         ],
         "submenu": [
             {
@@ -358,6 +358,18 @@
                 "title": "Stock Out",
                 "route_name": "admin.manage_stock_out",
                 "menu_active": "admin.manage_stock_out"
+            },
+            {
+                "keyword": [
+                    "All Services",
+                    "Manage Service",
+                    "Service Configuration",
+                    "Add service",
+                    "Edit service"
+                ],
+                "title": "Transfer",
+                "route_name": "admin.manage_stock_transfer",
+                "menu_active": "admin.manage_stock_transfer"
             }
         ]
     },

@@ -13,17 +13,11 @@ return new class extends Migration
     {
         Schema::create('stock_in_outs', function (Blueprint $table) {
             $table->id();
-            $table->integer('supplier_id')->nullable();
+            $table->integer('stock_id')->nullable();
             $table->integer('product_id')->nullable();
             $table->integer('quantity')->nullable();
-            $table->integer('stock_id')->nullable();
-            $table->string('status')->nullable();
-            $table->string('labour')->nullable();
-            $table->string('vehicle_number')->nullable();
-            $table->string('driver_name')->nullable();
-            $table->string('driver_contact')->nullable();
-            $table->string('fare')->nullable();
-            $table->enum('stock_type', ['in', 'out'])->nullable();
+            $table->double('unit_price')->nullable();
+            $table->double('total_amount')->nullable();
             $table->timestamps();
         });
     }

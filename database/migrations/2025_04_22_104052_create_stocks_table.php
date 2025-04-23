@@ -13,11 +13,18 @@ return new class extends Migration
     {
         Schema::create('stocks', function (Blueprint $table) {
             $table->id();
-            $table->string('tracking_id')->nullable();
-            $table->integer('wharehouse_id')->nullable();
             $table->string('title')->nullable();
             $table->string('description')->nullable();
             $table->enum('stock_type', ['in', 'out'])->nullable();
+            $table->string('tracking_id')->nullable();
+            $table->integer('warehouse_id')->nullable();
+            $table->integer('user_id')->nullable();
+            $table->string('user_model')->nullable();
+            $table->string('labour')->nullable();
+            $table->string('vehicle_number')->nullable();
+            $table->string('driver_name')->nullable();
+            $table->string('driver_contact')->nullable();
+            $table->string('fare')->nullable();
             $table->timestamps();
         });
     }

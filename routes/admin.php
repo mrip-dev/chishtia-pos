@@ -143,6 +143,10 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         $pageTitle = 'Manage Stock Out';
         return view('admin.services.stock-out' , compact('pageTitle'));
     })->name('manage_stock_out');
+    Route::get('/services/stock-transfer' , function(){
+        $pageTitle = 'Manage Stock Transfer';
+        return view('admin.services.stock-transfer' , compact('pageTitle'));
+    })->name('manage_stock_transfer');
 
 
 
