@@ -33,15 +33,15 @@
                                     <tr>
 
                                         <td>
-                                            <span class="fw-bold">{{ $item->supplier?->name }}</span>
+                                            <span class="fw-bold">{{ $item->fromUser?->name }}</span>
                                         </td>
                                         <td>
-                                            {{ $item->warehouse->name }}
+                                            {{ $item->fromWarehouse?->name }}
                                         </td>
                                         <td>
-                                            <span class="fw-bold">{{ $item->supplier?->name }}</span>
+                                            <span class="fw-bold">{{ $item->toUser?->name }}</span>
                                         </td>
-                                        <td> {{ $item->warehouse->name }}
+                                        <td> {{ $item->toWarehouse?->name }}
                                         </td>
 
 
@@ -77,42 +77,48 @@
     @else
     @if($showDetails && $selectedStock)
     <div class="card mt-4">
+
         <div class="card-header">
-            <strong>Title :</strong> {{ $selectedStock->title }}<br>
-            <strong>Warehouse:</strong> {{ $selectedStock->warehouse->name }}
-            <button wire:click="$set('showDetails', false)" class="btn btn-sm btn-secondary float-end">Close</button>
+            <div class="d-flex justify-content-end">
+                <button wire:click="$set('showDetails', false)" class="btn btn-sm btn-secondary"><i class="las la-times"></i> Close</button>
+            </div>
+            <div class="justify-content-between align-items-start">
+                <div class="row">
+                    <div class="col-12 col-md-4 col-lg-4 col-xl-4">
+                        <p class="mb-1"><strong>From :</strong> {{ $selectedStock->fromUser?->name }}</p>
+                        <p class="mb-1"><strong>Warehouse:</strong> {{ $selectedStock->fromWarehouse?->name }}</p>
+
+                    </div>
+                    <div class="col-12 col-md-4 col-lg-4 col-xl-4">
+                        <p class="mb-1"><strong>To:</strong> {{ $selectedStock->toUser?->name }}</p>
+                        <p class="mb-1"><strong>Warehouse:</strong> {{ $selectedStock->toWarehouse?->name }}</p>
+                    </div>
+                    <div class="col-12 col-md-4 col-lg-4 col-xl-4">
+                        <h3 class="mb-1 "><strong>Total :</strong> {{ number_format($this->stockTotalAmount(),2) }}</h3>
+
+                    </div>
+                </div>
+            </div>
         </div>
+
         <div class="card-body">
             <table class="table table--light style--two bg--white">
                 <thead>
                     <tr>
                         <th>Product</th>
-                        <th>
-                            @if ($stock_type === 'in')
-                            Supplier
-                            @elseif ($stock_type === 'out')
-                            Customer
-                            @endif
-                        </th>
                         <th>Quantity</th>
-                        <th>Driver</th>
-                        <th>Vehicle</th>
+                        <th>Unit Price</th>
+                        <th>Total Amount</th>
+
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($selectedStock->stockInOuts as $entry)
+                    @foreach ($selectedStock->stockTransferDetails as $entry)
                     <tr>
                         <td>{{ $entry->product?->name }}</td>
-                        <td>
-                            @if ($stock_type === 'in')
-                            {{ $entry->supplier->name ?? '-' }}
-                            @elseif ($stock_type === 'out')
-                            {{ $entry->client->name ?? '-' }}
-                            @endif
-                        </td>
                         <td>{{ $entry->quantity }}</td>
-                        <td>{{ $entry->driver_name }}</td>
-                        <td>{{ $entry->vehicle_number }}</td>
+                        <td>{{ $entry->unit_price }}</td>
+                        <td>{{ $entry->total_amount }}</td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -125,41 +131,113 @@
             <div class="card">
                 <div class="card-body">
                     <form wire:submit.prevent="saveStock">
+                        <div class="row mb-3">
+                            <div class="col-xl-3 col-sm-6">
+                                <div class="form-group" id="Users-wrapper">
+                                    <label class="form-label">@lang('From User')</label>
+                                    <select class="select2 form-control" wire:model.live="from_user_id" required>
+                                        <option value="" selected>@lang('Select One')</option>
+                                        @foreach ($users as $index => $user)
+                                        <option value="{{ $index }}" @selected($index==@$item->from_user_id)>
+                                            {{ $user['name'] }}
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-sm-6">
+                                <div class="form-group" id="Users-wrapper">
+                                    <label class="form-label">@lang('To User')</label>
+                                    <select class="select2 form-control" wire:model.live="to_user_id" required>
+                                        <option value="" selected>@lang('Select One')</option>
+                                        @foreach ($users as $index => $user)
+                                        <option value="{{ $index }}" @selected($index==@$item->to_user_id)>
+                                            {{ $user['name'] }}
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-sm-6">
+                                <div class="form-group">
+                                    <label class="form-label">@lang('From Warehouse')</label>
+                                    <select class="form-control select2" wire:model.live="from_warehouse_id" data-minimum-results-for-search="-1" required>
+                                        <option value="">@lang('Select One')</option>
+                                        @foreach ($warehouses as $warehouse)
+                                        <option value="{{ $warehouse->id }}" @selected($warehouse->id == @$item->from_warehouse_id)>
+                                            {{ __($warehouse->name) }}
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-sm-6">
+                                <div class="form-group">
+                                    <label class="form-label">@lang('To Warehouse')</label>
+                                    <select class="form-control select2" wire:model.live="to_warehouse_id" data-minimum-results-for-search="-1" required>
+                                        <option value="">@lang('Select One')</option>
+                                        @foreach ($warehouses as $warehouse)
+                                        <option value="{{ $warehouse->id }}" @selected($warehouse->id == @$item->to_warehouse_id)>
+                                            {{ __($warehouse->name) }}
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
                         @foreach ($stockItems as $index => $item)
-
+                        <div class="card shadow-sm mt-1">
+                            <div class="card-body">
                                 <div class="row mb-3">
+                                    <div class="col-xl-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">@lang('Product')</label>
+                                            <select class="form-control select2" wire:model="stockItems.{{ $index }}.product_id" data-minimum-results-for-search="-1" required>
+                                                <option value="">@lang('Select One')</option>
+                                                @foreach ($products as $product)
+                                                <option value="{{ $product->id }}" @selected($product->id == @$item->product_id)>
+                                                    {{ __($product->name) }}
+                                                </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">@lang('Quantity')</label>
+                                            <input type="number" class="form-control" min="0" wire:model.live="stockItems.{{ $index }}.quantity" placeholder="@lang('Quantity')" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">@lang('Unit Price')</label>
+                                            <input type="number" class="form-control" min="0" wire:model.live="stockItems.{{ $index }}.unit_price" placeholder="@lang('Unit Price')" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-3 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">@lang('Amount')</label>
+                                            <input type="text" class="form-control" wire:model.live="stockItems.{{ $index }}.total_amount" readonly placeholder="@lang('Total Amount')">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-end mb-3 mt-3 mx-4">
 
-                                    <div class="col-xl-3 col-sm-6">
-                                        <div class="form-group" id="Users-wrapper">
-                                            <label class="form-label">@lang('From User')</label>
-                                            <select class="select2 form-control" wire:model="stockItems.{{ $index }}.from_user_id" required>
-                                                <option value="" selected>@lang('Select One')</option>
-                                                @foreach ($users as $index => $user)
-                                                <option value="{{ $user['id'] }}">
-                                                    {{ $user['name'] }}
-                                                </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-3 col-sm-6">
-                                        <div class="form-group" id="Users-wrapper">
-                                            <label class="form-label">@lang('To User')</label>
-                                            <select class="select2 form-control" wire:model="stockItems.{{ $index }}.to_user_id" required>
-                                                <option value="" selected>@lang('Select One')</option>
-                                                @foreach ($users as $index => $user)
-                                                <option value="{{ $user['id'] }}">
-                                                    {{ $user['name'] }}
-                                                </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
+                                    <h5>Grand Total : {{ number_format($this->recalculateTotalAmount(),2) }}</h5>
 
                                 </div>
-
-
+                                <div class="d-flex justify-content-end mt-2">
+                                    @if ($loop->last)
+                                    <button type="button" wire:click="addItem" class="btn btn--primary">Add More</button>
+                                    @else
+                                    <button type="button" wire:click="removeItem({{ $index }})" class="btn btn-danger"><i class="las la-times"></i></button>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
                         @endforeach
+
 
 
                         {{-- Submit --}}

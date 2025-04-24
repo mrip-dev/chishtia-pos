@@ -29,23 +29,6 @@ class Stock extends Model
     }
     public function user()
     {
-        if ($this->user_model === 'Supplier') {
-            return $this->userSupplier();
-        } elseif ($this->user_model === 'Customer') {
-            return $this->userCustomer();
-        }
-
-        return null;
+        return $this->morphTo(__FUNCTION__, 'user_model', 'user_id');
     }
-    public function userSupplier()
-    {
-        return $this->belongsTo(Supplier::class, 'user_id');
-    }
-    public function userCustomer()
-    {
-        return $this->belongsTo(Customer::class, 'user_id');
-    }
-
-
-
 }

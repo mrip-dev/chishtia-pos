@@ -155,6 +155,10 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         $pageTitle = 'Manage Stock Transfer';
         return view('admin.services.stock-transfer' , compact('pageTitle'));
     })->name('manage_stock_transfer');
+    Route::get('/services/stock-details' , function(){
+        $pageTitle = 'Manage Stock Details';
+        return view('admin.services.stock-details' , compact('pageTitle'));
+    })->name('manage_stock_details');
 
 
 

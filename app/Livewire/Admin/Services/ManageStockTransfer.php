@@ -4,8 +4,11 @@ namespace App\Livewire\Admin\Services;
 
 use App\Models\Customer;
 use App\Models\Product;
+use App\Models\ServiceStockDetail;
 use App\Models\Stock;
 use App\Models\StockInOut;
+use App\Models\StockTransfer;
+use App\Models\StockTransferDetail;
 use App\Models\Supplier;
 use App\Models\Warehouse;
 use Carbon\Carbon;
@@ -38,28 +41,19 @@ class ManageStockTransfer extends Component
 
     public $client_id;
 
+    public $from_user_id;
+    public $from_warehouse_id;
+
+    public $to_user_id;
+    public $to_warehouse_id;
+
+    public $fromUserId;
+    public $fromUserModel;
+    public $toUserId;
+    public $toUserModel;
 
 
 
-
-    protected function rules()
-    {
-        $rules = [
-            'stock_type' => 'required|in:in,out',
-            'product_id' => 'required|integer',
-
-        ];
-
-        if ($this->stock_type === 'in') {
-            $rules['supplier_id'] = 'required|integer';
-        }
-
-        if ($this->stock_type === 'out') {
-            $rules['client_id'] = 'required|integer';
-        }
-
-        return $rules;
-    }
 
     public function mount()
     {
@@ -67,38 +61,71 @@ class ManageStockTransfer extends Component
     }
     public function loadStocks()
     {
-
-
+        $this->stocks = StockTransfer::with([
+            'fromWarehouse',
+            'toWarehouse',
+            'fromUser',
+            'toUser',
+        ])
+            ->when($this->searchTerm, function ($query) {
+                $query->where(function ($q) {
+                    $q->whereHas('fromUser', function ($q) {
+                        $q->where('name', 'like', '%' . $this->searchTerm . '%');
+                    })
+                        ->orWhereHas('toUser', function ($q) {
+                            $q->where('name', 'like', '%' . $this->searchTerm . '%');
+                        });
+                });
+            })
+            ->when($this->searchByDate, function ($query) {
+                $query->whereDate('created_at', Carbon::parse($this->searchByDate));
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
 
     }
     public function createStock()
     {
         $this->isCreating = !$this->isCreating;
+        $this->showDetails = false;
+
+        $this->getProducts();
         $this->stockItems = [
-            ['from_user_id' => null, 'from_warehouse_id' => null,'to_user_id' => null, 'to_warehouse_id' => null, 'product_id' => null, 'quantity' => 1]
+            ['product_id' => null, 'quantity' => 1, 'unit_price' => 0, 'total_amount' => 0]
         ];
-        $suppliers = Supplier::select('id', 'name', 'mobile')->get();
-        $clients = Customer::select('id', 'name', 'mobile')->get();
-        foreach ($suppliers as $supplier) {
-            $this->users[] =[
-                'id' => $supplier->id,
-                'name' => $supplier->name,
-                'model' => 'Supplier',
-            ];
-        }
-        foreach ($clients as $client) {
-            $this->users[] = [
-                'id' => $client->id,
-                'name' => $client->name,
-                'model' => 'Customer',
-            ];
-        }
 
         $this->warehouses =  Warehouse::active()->orderBy('name')->get();
+        $this->getusers();
     }
 
 
+    public function getusers()
+    {
+        $suppliers = Supplier::select('id', 'name', 'mobile')->get();
+        $clients = Customer::select('id', 'name', 'mobile')->get();
+        $this->users = [];
+        $supplierUsers = $suppliers->mapWithKeys(function ($supplier) {
+            $uniqueName = $supplier->name . '_Supplier_' . $supplier->id;
+            return [$uniqueName => [
+                'id' => $supplier->id,
+                'name' => $supplier->name,
+                'unique_name' => $uniqueName,
+                'model' => 'Supplier',
+            ]];
+        });
 
+        $customerUsers = $clients->mapWithKeys(function ($client) {
+            $uniqueName = $client->name . '_Customer_' . $client->id;
+            return [$uniqueName => [
+                'id' => $client->id,
+                'name' => $client->name,
+                'unique_name' => $uniqueName,
+                'model' => 'Customer',
+            ]];
+        });
+
+        $this->users = $supplierUsers->merge($customerUsers)->all();
+    }
     public function updated($name, $value)
     {
         if ($name === 'searchTerm') {
@@ -107,18 +134,182 @@ class ManageStockTransfer extends Component
         if ($name === 'searchByDate') {
             $this->loadStocks();
         }
-        if ($name === 'warehouse_id') {
-            $this->getProducts();
+        if ($name === 'from_user_id' || $name === 'to_user_id') {
+
+            //// Check from and to user are not same
+            if ($this->from_user_id == $this->to_user_id) {
+                $this->dispatch('notify', status: 'error', message: 'From and To user cannot be same');
+                $this->from_user_id = null;
+                $this->to_user_id = null;
+            }
+            $this->fromUserId = $this->users[$this->from_user_id]['id'] ?? null;
+            $this->fromUserModel = $this->users[$this->from_user_id]['model'] ?? null;
+            $this->toUserId = $this->users[$this->to_user_id]['id'] ?? null;
+            $this->toUserModel = $this->users[$this->to_user_id]['model'] ?? null;
+        }
+
+        if (str_starts_with($name, 'stockItems.')) {
+
+            $index = explode('.', $name)[1];
+            $quant = (float)$this->stockItems[$index]['quantity'];
+            $product_id = (float)$this->stockItems[$index]['product_id'];
+            $availableStock = $this->checkAvailableStock($product_id, $this->from_warehouse_id, $this->fromUserId, $this->fromUserModel);
+            if ($availableStock < $quant) {
+                ///// Product
+                $product = Product::find($product_id);
+                if ($product) {
+                    $productName = $product->name;
+                } else {
+                    $productName = 'Unknown Product';
+                }
+                $this->dispatch('notify', status: 'error', message: 'Insufficient stock for product: ' . $productName);
+                $this->stockItems[$index]['quantity'] = 1;
+                $this->stockItems[$index]['unit_price'] = 0;
+            }
+            $unit_price = (float)$this->stockItems[$index]['unit_price'];
+            $this->stockItems[$index]['total_amount'] = $quant * $unit_price;
+            $this->recalculateTotalAmount();
         }
     }
     public function getProducts()
     {
-        $warehouse = $this->warehouse_id;
-        if (!$warehouse) {
-            $this->products = [];
-            $this->dispatch('notify', status: 'error', message: 'Select Whereouse First');
-        }
+
         $this->products = Product::all();
+    }
+    public function addItem()
+    {
+        $this->stockItems[] = ['product_id' => null, 'quantity' => 1, 'unit_price' => 0, 'total_amount' => 0];
+    }
+
+    public function removeItem($index)
+    {
+        unset($this->stockItems[$index]);
+        $this->stockItems = array_values($this->stockItems); // reindex
+    }
+    public function saveStock()
+    {
+
+        $this->validate([
+            'from_warehouse_id' => 'required|integer',
+            'to_warehouse_id' => 'required|integer',
+            'from_user_id' => 'required',
+            'to_user_id' => 'required',
+            'stockItems.*.product_id' => 'required|integer',
+            'stockItems.*.quantity' => 'required|numeric|min:1',
+        ]);
+
+        /////////////////  Check Stock Availability for all Products
+        foreach ($this->stockItems as $item) {
+            $availableStock = $this->checkAvailableStock($item['product_id'], $this->from_warehouse_id, $this->fromUserId, $this->fromUserModel);
+            if ($availableStock < $item['quantity']) {
+                ///// Product
+                $product = Product::find($item['product_id']);
+                if ($product) {
+                    $productName = $product->name;
+                } else {
+                    $productName = 'Unknown Product';
+                }
+                $this->dispatch('notify', status: 'error', message: 'Insufficient stock for product: ' . $productName);
+                return;
+            }
+        }
+
+        $stock = StockTransfer::create([
+            'from_user_id' => $this->fromUserId,
+            'from_user_model'   => $this->fromUserModel,
+            'to_user_id' => $this->toUserId,
+            'to_user_model' => $this->toUserModel,
+            'from_warehouse_id' => $this->from_warehouse_id,
+            'to_warehouse_id' => $this->to_warehouse_id,
+        ]);
+
+        foreach ($this->stockItems as $item) {
+            StockTransferDetail::create([
+                'stock_transfer_id' => $stock->id,
+                'product_id' => $item['product_id'],
+                'quantity' => $item['quantity'],
+                'unit_price' => $item['unit_price'],
+                'total_amount' => $item['total_amount'],
+
+            ]);
+
+            //////  update Stoc for from user
+            $this->updateServiceStock($item['product_id'], $item['quantity'], 'out', $this->from_warehouse_id, $this->fromUserId, $this->fromUserModel);
+            //////  update Stoc for to user
+            $this->updateServiceStock($item['product_id'], $item['quantity'], 'in', $this->to_warehouse_id, $this->toUserId, $this->toUserModel);
+        }
+
+        $this->dispatch('notify', status: 'success', message: 'Stock saved successfully');
+
+        $this->isCreating = false;
+        $this->loadStocks(); // reload stocks
+    }
+
+
+    public function viewDetails($stockId)
+    {
+        $this->selectedStock = StockTransfer::with('stockTransferDetails')->find($stockId);
+        $this->showDetails = true;
+        $this->isCreating = false;
+    }
+    public function recalculateTotalAmount()
+    {
+
+        $total = 0;
+        foreach ($this->stockItems as $item) {
+            $total += $item['total_amount'];
+        }
+        return $total;
+    }
+    public function stockTotalAmount()
+    {
+        $stock =  StockTransfer::with('stockTransferDetails')->find($this->selectedStock->id);
+        if (!$stock) {
+            return 0;
+        }
+        $total = 0;
+        foreach ($stock->stockTransferDetails as $item) {
+            $total += $item->total_amount;
+        }
+        return $total;
+    }
+
+    public function updateServiceStock($product_id, $quantity, $stock_type, $warehouse_id, $user_id, $user_model)
+    {
+        $stockDetail = ServiceStockDetail::where('product_id', $product_id)
+            ->where('warehouse_id', $warehouse_id)
+            ->where('user_id', $user_id)
+            ->where('user_model', $user_model)
+            ->first();
+
+        if ($stockDetail) {
+            if ($stock_type == 'in') {
+                $stockDetail->increment('quantity', $quantity);
+            } else {
+                $stockDetail->decrement('quantity', $quantity);
+            }
+        } else {
+            ServiceStockDetail::create([
+                'product_id' => $product_id,
+                'warehouse_id' => $warehouse_id,
+                'user_id' => $user_id,
+                'user_model' => $user_model,
+                'quantity' => ($stock_type == 'in') ? $quantity : -$quantity,
+            ]);
+        }
+    }
+    public function checkAvailableStock($product_id, $warehouse_id, $user_id, $user_model)
+    {
+        $stockDetail = ServiceStockDetail::where('product_id', $product_id)
+            ->where('warehouse_id', $warehouse_id)
+            ->where('user_id', $user_id)
+            ->where('user_model', $user_model)
+            ->first();
+
+        if ($stockDetail) {
+            return $stockDetail->quantity;
+        }
+        return 0;
     }
 
 

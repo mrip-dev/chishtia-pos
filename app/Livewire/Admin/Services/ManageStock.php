@@ -4,6 +4,7 @@ namespace App\Livewire\Admin\Services;
 
 use App\Models\Customer;
 use App\Models\Product;
+use App\Models\ServiceStockDetail;
 use App\Models\Stock;
 use App\Models\StockInOut;
 use App\Models\Supplier;
@@ -64,10 +65,12 @@ class ManageStock extends Component
     public function loadStocks()
     {
 
-        $this->stocks = Stock::with(['warehouse'])->where('stock_type', $this->stock_type)
+        $this->stocks = Stock::with(['warehouse','user'])->where('stock_type', $this->stock_type)
             ->where(function ($query) {
                 $query->orWhereHas('warehouse', function ($q) {
-                    $q->where('title', 'like', '%' . $this->searchTerm . '%');
+                    $q->where('name', 'like', '%' . $this->searchTerm . '%');
+                })->orWhereHas('user', function ($q) {
+                    $q->where('name', 'like', '%' . $this->searchTerm . '%');
                 });
             })
             ->when($this->searchByDate, function ($query) {
@@ -90,7 +93,7 @@ class ManageStock extends Component
         $suppliers = Supplier::select('id', 'name', 'mobile')->get();
         $clients = Customer::select('id', 'name', 'mobile')->get();
         foreach ($suppliers as $supplier) {
-            $this->users[] =[
+            $this->users[] = [
                 'id' => $supplier->id,
                 'name' => $supplier->name,
                 'model' => 'Supplier',
@@ -123,11 +126,10 @@ class ManageStock extends Component
         if (str_starts_with($name, 'stockItems.')) {
 
             $index = explode('.', $name)[1];
-            $quant=(float)$this->stockItems[$index]['quantity'];
-            $unit_price=(float)$this->stockItems[$index]['unit_price'];
+            $quant = (float)$this->stockItems[$index]['quantity'];
+            $unit_price = (float)$this->stockItems[$index]['unit_price'];
             $this->stockItems[$index]['total_amount'] = $quant * $unit_price;
             $this->recalculateTotalAmount();
-
         }
     }
     public function getProducts()
@@ -164,13 +166,31 @@ class ManageStock extends Component
             'stockItems.*.product_id' => 'required|integer',
             'stockItems.*.quantity' => 'required|numeric|min:1',
         ]);
+        $selecteduserId = $this->users[$this->user_id]['id'];
+        $selecteduserModel = $this->users[$this->user_id]['model'];
+        /////////////////  Check Stock Availability for all Products
+        foreach ($this->stockItems as $item) {
+            $availableStock = $this->checkAvailableStock($item['product_id'], $this->warehouse_id, $selecteduserId, $selecteduserModel);
+            if ($this->stock_type == 'out' && $availableStock < $item['quantity']) {
+                ///// Product
+                $product = Product::find($item['product_id']);
+                if ($product) {
+                    $productName = $product->name;
+                } else {
+                    $productName = 'Unknown Product';
+                }
+                $this->dispatch('notify', status: 'error', message: 'Insufficient stock for product: ' . $productName);
+                return;
+
+            }
+        }
 
         $stock = Stock::create([
             'title' => $this->title,
             'stock_type' => $this->stock_type,
             'warehouse_id' => $this->warehouse_id,
-            'user_id' => $this->users[$this->user_id]['id'],
-            'user_model'   => $this->users[$this->user_id]['model'],
+            'user_id' => $selecteduserId,
+            'user_model'   => $selecteduserModel,
             'labour' => $this->labour,
             'vehicle_number' => $this->vehicle_number,
             'driver_name' => $this->driver_name,
@@ -186,6 +206,8 @@ class ManageStock extends Component
                 'total_amount' => $item['total_amount'],
 
             ]);
+            ///////////   Update Service Stock Detail
+            $stockdetail = $this->updateServiceStock($item['product_id'], $item['quantity'], $this->stock_type, $this->warehouse_id, $selecteduserId, $selecteduserModel);
         }
 
         $this->dispatch('notify', status: 'success', message: 'Stock saved successfully');
@@ -201,7 +223,8 @@ class ManageStock extends Component
         $this->showDetails = true;
         $this->isCreating = false;
     }
-    public function recalculateTotalAmount(){
+    public function recalculateTotalAmount()
+    {
 
         $total = 0;
         foreach ($this->stockItems as $item) {
@@ -209,7 +232,8 @@ class ManageStock extends Component
         }
         return $total;
     }
-    public function stockTotalAmount(){
+    public function stockTotalAmount()
+    {
         $stock = Stock::with('stockInOuts')->find($this->selectedStock->id);
         if (!$stock) {
             return 0;
@@ -220,6 +244,45 @@ class ManageStock extends Component
         }
         return $total;
     }
+
+    public function updateServiceStock($product_id, $quantity, $stock_type, $warehouse_id, $user_id, $user_model)
+    {
+        $stockDetail = ServiceStockDetail::where('product_id', $product_id)
+            ->where('warehouse_id', $warehouse_id)
+            ->where('user_id', $user_id)
+            ->where('user_model', $user_model)
+            ->first();
+
+        if ($stockDetail) {
+            if ($stock_type == 'in') {
+                $stockDetail->increment('quantity', $quantity);
+            } else {
+                $stockDetail->decrement('quantity', $quantity);
+            }
+        } else {
+            ServiceStockDetail::create([
+                'product_id' => $product_id,
+                'warehouse_id' => $warehouse_id,
+                'user_id' => $user_id,
+                'user_model' => $user_model,
+                'quantity' => ($stock_type == 'in') ? $quantity : -$quantity,
+            ]);
+        }
+    }
+    public function checkAvailableStock($product_id, $warehouse_id, $user_id, $user_model)
+    {
+        $stockDetail = ServiceStockDetail::where('product_id', $product_id)
+            ->where('warehouse_id', $warehouse_id)
+            ->where('user_id', $user_id)
+            ->where('user_model', $user_model)
+            ->first();
+
+        if ($stockDetail) {
+            return $stockDetail->quantity;
+        }
+        return 0;
+    }
+
 
     public function render()
     {
