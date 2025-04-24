@@ -1,8 +1,8 @@
 <div>
-    <h3>Warehouse History</h3>
+
 
     <!-- Table to display warehouse history details -->
-    <table class="table table-bordered">
+    <table class="table table--light style--two bg-white">
         <thead>
             <tr>
                 <th>#</th>
