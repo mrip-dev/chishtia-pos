@@ -282,7 +282,7 @@
                     </tbody>
                 </table>
 
-            <div class="row">
+            <div class="row mt-3">
                 <div class="col-md-8 col-sm-6">
                     <div class="form-group">
                         <label>@lang('Note')</label>
@@ -312,7 +312,7 @@
                             </div>
                         </div>
 
-                        <div class="col-sm-12">
+                        {{-- <div class="col-sm-12">
                             <div class="form-group">
                                 <label>@lang('Receivable Amount')</label>
                                 <div class="input-group">
@@ -330,7 +330,7 @@
                                     <input class="form-control" type="number" wire:model.live="received_amount">
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <div class="col-sm-12">
                             <div class="form-group">
@@ -355,7 +355,7 @@
                     </ul>
                 </div>
                 @endif
-                <button class="btn btn-primary" type="submit">@lang('Save Sale')</button>
+                <button class="btn btn--primary" type="submit">@lang('Save Sale')</button>
             </div>
         </form>
 
