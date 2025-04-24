@@ -12,6 +12,7 @@ use App\Models\PurchaseDetails;
 use App\Models\Supplier;
 use App\Models\SupplierPayment;
 use App\Models\Warehouse;
+use App\Models\WareHouseDetailHistory;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -365,6 +366,19 @@ class AllPurchases extends Component
             PurchaseDetails::insert($purchaseDetailData);
 
             DB::commit();
+
+            $wareHouseDetail = new WareHouseDetailHistory();
+            $wareHouseDetail->ware_house_id = $this->warehouse_id;
+            $wareHouseDetail->product_id = $product['id'];
+            $wareHouseDetail->supplier_id = $this->supplier_id;
+            $wareHouseDetail->customer_id = 0;
+            $wareHouseDetail->date = now();
+            $wareHouseDetail->stock_in = $product['quantity'];
+            $wareHouseDetail->stock_out = 0;
+            $wareHouseDetail->amount = $product['quantity'] * $product['price'];
+            $wareHouseDetail->save();
+
+
 
 
             // Notify the user of success
