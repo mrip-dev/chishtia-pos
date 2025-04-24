@@ -1,4 +1,45 @@
 <div>
+    <div class="row mb-3">
+        <div class="col-md-12 d-flex justify-content-end align-items-start gap-2">
+
+            {{-- Date: Start --}}
+            <div class="input-group w-auto">
+                <span class="input-group-text bg--primary text-white">
+                    <i class="fas fa-calendar-alt"></i>
+                </span>
+                <input type="date" class="form-control custom-date-input" wire:model.live="startDate" placeholder="Start Date">
+            </div>
+
+            {{-- Date: End --}}
+            <div class="input-group w-auto">
+                <span class="input-group-text bg--primary text-white">
+                    <i class="fas fa-calendar-alt"></i>
+                </span>
+                <input type="date"  class="form-control custom-date-input" wire:model.live="endDate" placeholder="End Date">
+            </div>
+            {{-- Search Input --}}
+            <div class="input-group w-50">
+                <span class="input-group-text bg--primary">
+                    <i class="fas fa-search text-white"></i>
+                </span>
+                <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Search by Customer or Bank"
+                    wire:model.live="search"
+                >
+            </div>
+
+            {{-- Clear All --}}
+            @if($search || $startDate || $endDate)
+            <button class="btn btn-outline--primary" wire:click="clearFilters">
+                <i class="fas fa-times me-1"></i> Clear All
+            </button>
+        @endif
+        </div>
+    </div>
+
+
 <div class="container mt-4">
 
     <div class="table-responsive">
@@ -38,9 +79,25 @@
         </table>
     </div>
 
-    {{-- Pagination (if applicable) --}}
-    {{-- <div class="d-flex justify-content-center mt-3">
+    <div class="d-flex justify-content-end mt-3">
         {{ $transactions->links() }}
-    </div> --}}
+    </div>
+
+
 </div>
+<style>
+    .pagination {
+        justify-content: end;
+    }
+
+    .pagination .page-link {
+        color: #0d6efd;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+        color: white;
+    }
+</style>
 </div>

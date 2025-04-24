@@ -1,5 +1,29 @@
 
     <div>
+        <div class="row mb-3">
+            <div class="col-md-12 d-flex justify-content-end align-items-start gap-2 flex-wrap">
+
+                {{-- Date Filters --}}
+                <input type="date" class="form-control w-auto" wire:model.live="startDate" placeholder="Start Date">
+                <input type="date" class="form-control w-auto" wire:model.live="endDate" placeholder="End Date">
+
+                {{-- Search Bar --}}
+                <div class="input-group w-50">
+                    <span class="input-group-text bg--primary">
+                        <i class="fas fa-search text-white"></i>
+                    </span>
+                    <input type="text" class="form-control" placeholder="Search by Bank or Supplier" wire:model.live="search">
+                </div>
+
+                {{-- Clear All Button --}}
+                @if($search || $startDate || $endDate)
+                    <button class="btn btn-outline--primary" wire:click="clearFilters">
+                        <i class="fas fa-times me-1"></i> Clear All
+                    </button>
+                @endif
+            </div>
+        </div>
+
         <div class="container mt-4">
 
             <div class="table-responsive">
