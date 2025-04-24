@@ -343,6 +343,18 @@
                     "Add service",
                     "Edit service"
                 ],
+                "title": "Stock Details",
+                "route_name": "admin.manage_stock_details",
+                "menu_active": "admin.manage_stock_details"
+            },
+            {
+                "keyword": [
+                    "All Services",
+                    "Manage Service",
+                    "Service Configuration",
+                    "Add service",
+                    "Edit service"
+                ],
                 "title": "Stock In",
                 "route_name": "admin.manage_stock_in",
                 "menu_active": "admin.manage_stock_in"

@@ -122,6 +122,7 @@
                         <th>Quantity</th>
                         <th>Unit Price</th>
                         <th>Total Amount</th>
+
                     </tr>
                 </thead>
                 <tbody>

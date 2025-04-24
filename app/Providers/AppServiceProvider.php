@@ -6,7 +6,10 @@ use App\Constants\Status;
 use App\Lib\Searchable;
 use App\Models\Role;
 use App\Models\AdminNotification;
+use App\Models\Customer;
+use App\Models\Supplier;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
@@ -56,11 +59,10 @@ class AppServiceProvider extends ServiceProvider
                 'adminNotificationCount' => AdminNotification::where('is_read', Status::NO)->count(),
             ]);
         });
-
-
-    
-
-
+        Relation::morphMap([
+            'Supplier' => Supplier::class,
+            'Customer' => Customer::class,
+        ]);
         Paginator::useBootstrapFive();
     }
 }
