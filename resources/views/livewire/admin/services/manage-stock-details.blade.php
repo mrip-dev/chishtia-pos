@@ -15,7 +15,15 @@
                 <div class="row">
 
 
+                    <div class="justify-content-between align-items-start">
+                        <div class="row">
+                            <div class="col-12 col-md-4 col-lg-4 col-xl-4">
+                                <p class="mb-1"><strong>User :</strong> {{ $selectedUser?->name }}</p>
 
+                            </div>
+
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -29,7 +37,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($selectedStock->stockInOuts as $entry)
+                    @foreach ($selectedStock as $entry)
                     <tr>
                         <td>{{ $entry->product?->name }}</td>
                         <td>{{ $entry->quantity }}</td>
@@ -50,6 +58,8 @@
                                 <thead>
                                     <tr>
                                         <th>@lang('User')</th>
+                                        <th>@lang('Product Count')</th>
+                                        <th>@lang('Total Quantity')</th>
                                         <th>@lang('Action')</th>
                                     </tr>
                                 </thead>
@@ -60,11 +70,17 @@
                                             <span class="fw-bold">{{ $item->user->name }}</span>
                                         </td>
                                         <td>
+                                            <span class="fw-bold">{{ $item->product_count }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="fw-bold">{{ $item->quantity }}</span>
+                                        </td>
+                                        <td>
                                             <div class="button--group">
-                                                <!-- <button wire:click="viewDetails({{ $item->id }})" class="btn btn-sm btn-outline--info ms-1 " type="button"
+                                                <button wire:click="viewDetails({{ $item->user_id }},'{{ $item->user_model }}')" class="btn btn--sm btn-outline--info ms-1 " type="button"
                                                     aria-expanded="false">
                                                     @lang('Details')
-                                                </button> -->
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>

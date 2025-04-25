@@ -19,6 +19,7 @@ class ManageStockDetails extends Component
     public $searchTerm = '';
     public $searchByDate = '';
     public $selectedStock = null;
+    public $selectedUser = null;
     public $showDetails = false;
 
     public function mount()
@@ -30,7 +31,7 @@ class ManageStockDetails extends Component
         $this->stocks = ServiceStockDetail::where('quantity', '>', 0)
             ->when($this->searchTerm, function ($query) {
                 $query->where(function ($query) {
-                    $query->whereHas('product', function ($q) {
+                    $query->whereHas('user', function ($q) {
                         $q->where('name', 'like', '%' . $this->searchTerm . '%');
                     })
                     ->orWhereHas('warehouse', function ($q) {
@@ -44,7 +45,7 @@ class ManageStockDetails extends Component
             ->with(['product', 'warehouse'])
             ->groupBy(['user_id','user_model'])
             ->orderBy('created_at', 'desc')
-            ->selectRaw('sum(quantity) as quantity, user_id, user_model')
+            ->selectRaw('sum(quantity) as quantity,count(id) as product_count, user_id, user_model')
             ->get();
     }
     public function updated($name, $value)
@@ -55,13 +56,38 @@ class ManageStockDetails extends Component
         if ($name === 'searchByDate') {
             $this->loadStockDetails();
         }
+        if ($name === 'showDetails') {
+            $this->loadStockDetails();
+        }
     }
-    public function viewDetails($stockId)
+    public function viewDetails($user_id, $user_model)
     {
-        $this->selectedStock = StockTransfer::with('stockTransferDetails')->find($stockId);
-        $this->showDetails = true;
+        // Fetch records
+        $this->selectedStock = ServiceStockDetail::where('user_id', $user_id)
+            ->where('user_model', $user_model)
+            ->get();
 
+        // Check if any record was found
+        if ($this->selectedStock->isEmpty()) {
+            // Handle the case where no data is found
+            session()->flash('error', 'No stock details found for the given user.');
+            $this->showDetails = false;
+            return;
+        }
+
+        // Proceed safely now that we know at least one record exists
+        $this->selectedUser = $this->selectedStock[0]->user ?? null;
+
+        // Validate if user exists
+        if (!$this->selectedUser) {
+            session()->flash('error', 'User associated with the stock could not be found.');
+            $this->showDetails = false;
+            return;
+        }
+
+        $this->showDetails = true;
     }
+
     public function render()
     {
         return view('livewire.admin.services.manage-stock-details');
