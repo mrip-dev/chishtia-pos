@@ -160,7 +160,11 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         return view('admin.services.stock-details' , compact('pageTitle'));
     })->name('manage_stock_details');
 
+    Route::controller('PdfController')->name('pdf.')->prefix('pdf')->group(function () {
 
+        Route::get('pdf-stock-detail', 'stockDetailPDF')->name('stock-detail');
+
+    });
 
 
     // Manage Purchase
