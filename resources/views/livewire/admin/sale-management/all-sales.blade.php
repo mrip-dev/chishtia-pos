@@ -46,6 +46,8 @@
                                 <tr>
                                     <th>@lang('Invoice No.') | @lang('Date')</th>
                                     <th>@lang('Customer') | @lang('Mobile')</th>
+                                    <th>@lang('Driver Name') | @lang('Mobile')</th>
+                                    <th>@lang('Vehicle No') | @lang('Fare')</th>
                                     <th>@lang('Warehouse') | @lang('Total Amount')</th>
                                     <th>@lang('Discount') | @lang('Receivable')</th>
                                     <th>@lang('Received') | @lang('Due')</th>
@@ -69,6 +71,16 @@
                                         <span class="text--primary fw-bold"> {{ $sale->customer->name }}</span>
                                         <br>
                                         +{{ $sale->customer->mobile }}
+                                    </td>
+                                    <td>
+                                        <span class="text--success fw-bold"> {{ $sale->driver_name }}</span>
+                                        <br>
+                                        +{{ $sale->driver_contact }}
+                                    </td>
+                                    <td>
+                                       {{ $sale->vehicle_number }}
+                                        <br>
+                                        {{ $sale->fare }}
                                     </td>
 
                                     <td>
@@ -281,69 +293,70 @@
                         @endforeach
                     </tbody>
                 </table>
+                <div class="row mt-3">
+                    {{-- Row 1: Vehicle & Driver Details (2 columns per row) --}}
+                    <div class="col-md-6 col-sm-6">
+                        <div class="form-group">
+                            <label>@lang('Vehicle Number')</label>
+                            <input class="form-control" wire:model.defer="vehicle_number">
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6">
+                        <div class="form-group">
+                            <label>@lang('Driver Name')</label>
+                            <input class="form-control" wire:model.defer="driver_name">
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6">
+                        <div class="form-group">
+                            <label>@lang('Driver Contact')</label>
+                            <input class="form-control" wire:model.defer="driver_contact">
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6">
+                        <div class="form-group">
+                            <label>@lang('Fare')</label>
+                        <input class="form-control" wire:model.defer="fare"></input>
+                        </div>
+                    </div>
 
-            <div class="row mt-3">
-                <div class="col-md-8 col-sm-6">
-                    <div class="form-group">
-                        <label>@lang('Note')</label>
-                        <textarea class="form-control" wire:model.defer="note"></textarea>
+                    {{-- Row 2: Left = Amount Fields | Right = Note --}}
+
+
+                    <div class="col-md-7 col-sm-6">
+                        <div class="form-group">
+                            <label>@lang('Note')</label>
+                            <textarea class="form-control" wire:model.defer="note" rows="7"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-5 col-sm-6">
+                        <div class="form-group">
+                            <label>@lang('Total Price')</label>
+                            <div class="input-group">
+                                <span class="input-group-text">{{ gs('cur_sym') }}</span>
+                                <input class="form-control" type="number" wire:model="total_price" readonly>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>@lang('Discount')</label>
+                            <div class="input-group">
+                                <span class="input-group-text">{{ gs('cur_sym') }}</span>
+                                <input class="form-control" type="number" step="any" wire:model.live="discount">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>@lang('Due Amount')</label>
+                            <div class="input-group">
+                                <span class="input-group-text">{{ gs('cur_sym') }}</span>
+                                <input class="form-control" type="number" wire:model="due_amount" readonly>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="col-md-4 col-sm-6">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="form-group">
-                                <label>@lang('Total Price')</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                    <input class="form-control" type="number" wire:model="total_price" readonly>
-                                </div>
-                            </div>
-                        </div>
 
-                        <div class="col-sm-12">
-                            <div class="form-group">
-                                <label>@lang('Discount')</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                    <input class="form-control" type="number" step="any" wire:model.live="discount">
-                                </div>
-                            </div>
-                        </div>
-
-                        {{-- <div class="col-sm-12">
-                            <div class="form-group">
-                                <label>@lang('Receivable Amount')</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                    <input class="form-control" type="number" wire:model="receivable_amount" readonly>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-sm-12">
-                            <div class="form-group">
-                                <label>@lang('Received Amount')</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                    <input class="form-control" type="number" wire:model.live="received_amount">
-                                </div>
-                            </div>
-                        </div> --}}
-
-                        <div class="col-sm-12">
-                            <div class="form-group">
-                                <label>@lang('Due Amount')</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                    <input class="form-control" type="number" wire:model="due_amount" readonly>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
             {{-- Submit --}}
             <div class="mt-4">
                 @if ($errors->any())

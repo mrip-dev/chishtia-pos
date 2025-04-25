@@ -58,6 +58,10 @@ class AllSales extends Component
     public $received_amount = 0;
     public $due_amount = 0;
     public $receivable_amount = 0;
+    public $vehicle_number = '';
+    public $driver_name = '';
+    public $driver_contact = '';
+    public $fare = 0;
 
     public $editMode = false;
     public $saleId = null;
@@ -171,7 +175,12 @@ class AllSales extends Component
         $this->total_price = $sale->total_price;
         $this->received_amount = $sale->received_amount;
         $this->receivable_amount = $sale->receivable_amount;
+        $this->vehicle_number = $sale->vehicle_number;
+        $this->driver_name = $sale->driver_name;
+        $this->driver_contact = $sale->driver_contact;
+        $this->fare = $sale->fare;
         $this->due_amount = $sale->due_amount;
+
         $this->products = [];
 
         foreach ($sale->saleDetails as $item) {
@@ -369,6 +378,10 @@ class AllSales extends Component
             $sale->receivable_amount = $this->receivable_amount;
             $sale->due_amount = $this->due_amount;
             $sale->received_amount = $this->received_amount ?? 0;
+            $sale->vehicle_number = $this->vehicle_number;
+            $sale->driver_name = $this->driver_name;
+            $sale->driver_contact = $this->driver_contact;
+            $sale->fare = $this->fare;
             $sale->save();
 
             // Prepare sale details data

@@ -57,6 +57,10 @@ class AllPurchases extends Component
     public $modal_payment_method = '';
     public $modal_rec_bank;
     public $modal_payable_amount;
+    public $vehicle_number = '';
+    public $driver_name = '';
+    public $driver_contact = '';
+    public $fare = 0;
 
     protected function rules()
     {
@@ -152,6 +156,10 @@ class AllPurchases extends Component
         $this->paid_amount = $purchase->paid_amount;
         $this->payable_amount = $purchase->payable_amount;
         $this->due_amount = $purchase->due_amount;
+        $this->vehicle_number = $purchase->vehicle_number;
+        $this->driver_name = $purchase->driver_name;
+        $this->driver_contact = $purchase->driver_contact;
+        $this->fare = $purchase->fare;
         $this->products = [];
 
         foreach ($purchase->purchaseDetails as $item) {
@@ -341,6 +349,10 @@ class AllPurchases extends Component
             $purchase->payable_amount = $this->payable_amount;
             $purchase->due_amount = $this->due_amount;
             $purchase->paid_amount = $this->paid_amount ?? 0;
+            $purchase->vehicle_number = $this->vehicle_number;
+            $purchase->driver_name = $this->driver_name;
+            $purchase->driver_contact = $this->driver_contact;
+            $purchase->fare = $this->fare;
             $purchase->save();
 
             // Prepare sale details data

@@ -48,6 +48,8 @@
                                     <tr>
                                         <th>@lang('Invoice No.') | @lang('Date')</th>
                                         <th>@lang('Supplier') | @lang('Mobile')</th>
+                                        <th>@lang('Driver Name') | @lang('Contact')</th>
+                                        <th>@lang('Vehicle No') | @lang('Fare')</th>
                                         <th>@lang('Total Amount') | @lang('Warehouse')</th>
                                         <th>@lang('Discount') | @lang('Payable') </th>
                                         <th>@lang('Paid') | @lang('Due')</th>
@@ -72,6 +74,16 @@
                                                 <span class="text--primary fw-bold"> {{ $purchase->supplier->name }}</span>
                                                 <br>
                                                 +{{ $purchase->supplier->mobile }}
+                                            </td>
+                                            <td>
+                                                <span class="text--success fw-bold"> {{ $purchase->driver_name }}</span>
+                                                <br>
+                                                +{{ $purchase->driver_contact }}
+                                            </td>
+                                            <td>
+                                                {{ $purchase->vehicle_number }}
+                                                <br>
+                                                {{ $purchase->fare }}
                                             </td>
 
                                             <td>
@@ -290,75 +302,85 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-8 col-sm-6">
+                            {{-- Vehicle & Driver Info Row --}}
+                            <div class="col-md-6 col-sm-6">
+                                <div class="form-group">
+                                    <label>@lang('Vehicle Number')</label>
+                                    <input class="form-control" wire:model.defer="vehicle_number" type="text">
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-6">
+                                <div class="form-group">
+                                    <label>@lang('Driver Name')</label>
+                                    <input class="form-control" wire:model.defer="driver_name" type="text">
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-6">
+                                <div class="form-group">
+                                    <label>@lang('Driver Contact')</label>
+                                    <input class="form-control" wire:model.defer="driver_contact" type="text">
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-6">
+                                <div class="form-group">
+                                    <label>@lang('Fare')</label>
+                                    <input class="form-control" wire:model.defer="fare" type="number" step="any">
+                                </div>
+                            </div>
+
+                            {{-- Note & Pricing Row --}}
+                            <div class="col-md-7 col-sm-6">
                                 <div class="form-group">
                                     <label>@lang('Note')</label>
-                                    <textarea class="form-control"  wire:model.defer="note">{{ old('note', @$purchase->note) }}</textarea>
+                                    <textarea class="form-control" wire:model.defer="note" rows="8">{{ old('note', @$purchase->note) }}</textarea>
                                 </div>
                             </div>
 
-                            <div class="col-md-4 col-sm-6">
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        <div class="form-group">
-                                            <label> @lang('Total Price')</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                                <input class="form-control total_price" type="number"  wire:model="total_price"  required
-                                                   readonly>
-                                            </div>
-                                        </div>
+                            <div class="col-md-5 col-sm-6">
+                                <div class="form-group">
+                                    <label>@lang('Total Price')</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">{{ gs('cur_sym') }}</span>
+                                        <input class="form-control total_price" type="number" wire:model="total_price" readonly>
                                     </div>
-
-                                    <div class="col-sm-12">
-                                        <div class="form-group">
-                                            <label> @lang('Discount')</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                                <input class="form-control"  type="number"
-                                                step="any" wire:model.live="discount">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-sm-12">
-                                        <div class="form-group">
-                                            <label>@lang('Payable Amount')</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                                <input class="form-control " type="number"
-                                                wire:model="payable_amount" disabled>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    @isset($purchase)
-                                        <div class="col-sm-12">
-                                            <div class="form-group">
-                                                <label>@lang('Paid Amount')</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                                    <input class="form-control" wire:model.live="paid_amount" type="number"
-                                                        disabled>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-sm-12">
-                                            <div class="form-group">
-                                                <label>@lang('Due Amount')</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                                    <input class="form-control "  wire:model="due_amount" type="number"
-                                                        disabled>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endisset
-
                                 </div>
+
+                                <div class="form-group">
+                                    <label>@lang('Discount')</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">{{ gs('cur_sym') }}</span>
+                                        <input class="form-control" type="number" step="any" wire:model.live="discount">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>@lang('Payable Amount')</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">{{ gs('cur_sym') }}</span>
+                                        <input class="form-control" type="number" wire:model="payable_amount" disabled>
+                                    </div>
+                                </div>
+
+                                @isset($purchase)
+                                    <div class="form-group">
+                                        <label>@lang('Paid Amount')</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">{{ gs('cur_sym') }}</span>
+                                            <input class="form-control" wire:model.live="paid_amount" type="number" disabled>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>@lang('Due Amount')</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">{{ gs('cur_sym') }}</span>
+                                            <input class="form-control" wire:model="due_amount" type="number" disabled>
+                                        </div>
+                                    </div>
+                                @endisset
                             </div>
                         </div>
+
 
                          {{-- Submit --}}
                         <div class="mt-4">
@@ -371,7 +393,7 @@
                                 </ul>
                             </div>
                             @endif
-                            <button class="btn btn-primary" type="submit">@lang('Save Purchase')</button>
+                            <button class="btn btn--primary" type="submit">@lang('Save Purchase')</button>
                         </div>
                     </form>
                 </div>
