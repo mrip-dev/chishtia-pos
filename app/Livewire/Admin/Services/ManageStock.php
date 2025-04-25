@@ -25,7 +25,8 @@ class ManageStock extends Component
     public $warehouses = [];
 
     public $searchTerm = '';
-    public $searchByDate = '';
+    public $startDate = '';
+    public $endDate = '';
     public $isCreating = false;
     public $editMode = false;
     public $warehouse_id;
@@ -65,7 +66,7 @@ class ManageStock extends Component
     public function loadStocks()
     {
 
-        $this->stocks = Stock::with(['warehouse','user'])->where('stock_type', $this->stock_type)
+        $this->stocks = Stock::with(['warehouse', 'user'])->where('stock_type', $this->stock_type)
             ->where(function ($query) {
                 $query->orWhereHas('warehouse', function ($q) {
                     $q->where('name', 'like', '%' . $this->searchTerm . '%');
@@ -73,14 +74,12 @@ class ManageStock extends Component
                     $q->where('name', 'like', '%' . $this->searchTerm . '%');
                 });
             })
-            ->when($this->searchByDate, function ($query) {
-                // Parse the date range
-                [$start, $end] = explode(' - ', $this->searchByDate);
-                $startDate = Carbon::parse($start)->startOfDay();
-                $endDate = Carbon::parse($end)->endOfDay();
-
+            ->when($this->startDate && $this->endDate, function ($query) {
+                $startDate = Carbon::parse($this->startDate)->startOfDay();
+                $endDate = Carbon::parse($this->endDate)->endOfDay();
                 $query->whereBetween('created_at', [$startDate, $endDate]);
-            })->get();
+            })
+            ->get();
     }
     public function createStock()
     {
@@ -114,10 +113,7 @@ class ManageStock extends Component
 
     public function updated($name, $value)
     {
-        if ($name === 'searchTerm') {
-            $this->loadStocks();
-        }
-        if ($name === 'searchByDate') {
+        if ($name === 'searchTerm' || $name === 'startDate' || $name === 'endDate') {
             $this->loadStocks();
         }
         if ($name === 'warehouse_id') {
@@ -181,7 +177,6 @@ class ManageStock extends Component
                 }
                 $this->dispatch('notify', status: 'error', message: 'Insufficient stock for product: ' . $productName);
                 return;
-
             }
         }
 
@@ -282,7 +277,13 @@ class ManageStock extends Component
         }
         return 0;
     }
-
+    public function clearFilters()
+    {
+        $this->searchTerm = '';
+        $this->startDate = '';
+        $this->endDate = '';
+        $this->loadStocks();
+    }
 
     public function render()
     {

@@ -17,7 +17,8 @@ class ManageStockDetails extends Component
 
     public $stocks = [];
     public $searchTerm = '';
-    public $searchByDate = '';
+    public $startDate = '';
+    public $endDate = '';
     public $selectedStock = null;
     public $selectedUser = null;
     public $showDetails = false;
@@ -39,8 +40,17 @@ class ManageStockDetails extends Component
                     });
                 });
             })
-            ->when($this->searchByDate, function ($query) {
-                $query->whereDate('created_at', Carbon::parse($this->searchByDate));
+            ->when($this->startDate && $this->endDate, function ($query) {
+                $query->whereBetween('created_at', [
+                    Carbon::parse($this->startDate)->startOfDay(),
+                    Carbon::parse($this->endDate)->endOfDay()
+                ]);
+            })
+            ->when($this->startDate && !$this->endDate, function ($query) {
+                $query->whereDate('created_at', '>=', Carbon::parse($this->startDate)->startOfDay());
+            })
+            ->when(!$this->startDate && $this->endDate, function ($query) {
+                $query->whereDate('created_at', '<=', Carbon::parse($this->endDate)->endOfDay());
             })
             ->with(['product', 'warehouse'])
             ->groupBy(['user_id','user_model'])
@@ -50,10 +60,7 @@ class ManageStockDetails extends Component
     }
     public function updated($name, $value)
     {
-        if ($name === 'searchTerm') {
-            $this->loadStockDetails();
-        }
-        if ($name === 'searchByDate') {
+        if ($name === 'searchTerm' || $name === 'startDate' || $name === 'endDate') {
             $this->loadStockDetails();
         }
         if ($name === 'showDetails') {
@@ -86,6 +93,13 @@ class ManageStockDetails extends Component
         }
 
         $this->showDetails = true;
+    }
+    public function clearFilters()
+    {
+        $this->searchTerm = '';
+        $this->startDate = '';
+        $this->endDate = '';
+        $this->loadStockDetails();
     }
 
     public function render()

@@ -1,20 +1,61 @@
 <div>
     <div class="d-flex mb-30 flex-wrap gap-3 justify-content-end align-items-center">
-        <div class="d-flex flex-wrap justify-content-end gap-2 align-items-center breadcrumb-plugins">
-            <x-search-form dateSearch='yes' />
+        <div class="d-flex flex-wrap justify-content-end gap-2 align-items-center breadcrumb-plugins w-100">
+            <!-- Date: Start -->
+            <div class="input-group w-auto">
+                <span class="input-group-text bg--primary text-white">
+                    <i class="fas fa-calendar-alt"></i>
+                </span>
+                <input
+                    type="date"
+                    class="form-control custom-date-input"
+                    wire:model.live="startDate"
+                    placeholder="Start Date"
+                >
+            </div>
 
+            <!-- Date: End -->
+            <div class="input-group w-auto">
+                <span class="input-group-text bg--primary text-white">
+                    <i class="fas fa-calendar-alt"></i>
+                </span>
+                <input
+                    type="date"
+                    class="form-control custom-date-input"
+                    wire:model.live="endDate"
+                    placeholder="End Date"
+                >
+            </div>
+
+            <!-- Search Input -->
+            <div class="input-group w-50">
+                <span class="input-group-text bg--primary">
+                    <i class="fas fa-search text-white"></i>
+                </span>
+                <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Search by From/To User"
+                    wire:model.live="searchTerm"
+                >
+            </div>
+
+            <!-- Clear All Button -->
+            @if($searchTerm || $startDate || $endDate)
+                <button class="btn btn-outline--primary" wire:click="clearFilters">
+                    <i class="fas fa-times me-1"></i> Clear All
+                </button>
+            @endif
+
+            <!-- Add New/Close Button -->
             <button type="button" wire:click.prevent="createStock" class="btn btn-sm btn-outline--primary m-2">
-
                 @if(!$isCreating)
-                <i class="las la-plus"></i>
+                    <i class="las la-plus"></i>
                 @else
-                <i class="las la-times"></i>
+                    <i class="las la-times"></i>
                 @endif
-
                 {{ $isCreating ? __('Close') : __('Add New') }}
             </button>
-
-
         </div>
     </div>
 
@@ -32,6 +73,7 @@
                                         <th>@lang('Vendor / Client')</th>
                                         <th>@lang('Warehouse')</th>
                                         <th>@lang('Type')</th>
+                                        <th>@lang('Date')</th>
                                         <th>@lang('Action')</th>
                                     </tr>
                                 </thead>
@@ -55,7 +97,10 @@
                                         <td>
                                             {{ $item->stock_type ? $item->stock_type== 'in' ? 'Stock In' : 'Stock Out' : '' }}
                                         </td>
+                                        <td>
+                                            {{ $item->created_at->format('d M, Y') }}
 
+                                        </td>
 
                                         <td>
                                             <div class="button--group">

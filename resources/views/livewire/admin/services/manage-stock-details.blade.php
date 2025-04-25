@@ -1,9 +1,57 @@
 <div>
-    <div class="d-flex mb-30 flex-wrap gap-3 justify-content-end align-items-center">
-        <div class="d-flex flex-wrap justify-content-end gap-2 align-items-center breadcrumb-plugins">
-            <x-search-form dateSearch='yes' />
+    <div class="d-flex justify-content-end align-items-center gap-3 mb-30">
+        <div class="d-flex align-items-center gap-3">
+
+            {{-- Date: Start --}}
+            <div class="input-group w-auto">
+                <span class="input-group-text bg--primary text-white">
+                    <i class="fas fa-calendar-alt"></i>
+                </span>
+                <input
+                    type="date"
+                    class="form-control custom-date-input"
+                    wire:model.live="startDate"
+                    placeholder="Start Date"
+                >
+            </div>
+
+            {{-- Date: End --}}
+            <div class="input-group w-auto">
+                <span class="input-group-text bg--primary text-white">
+                    <i class="fas fa-calendar-alt"></i>
+                </span>
+                <input
+                    type="date"
+                    class="form-control custom-date-input"
+                    wire:model.live="endDate"
+                    placeholder="End Date"
+                >
+            </div>
+
+            {{-- Search Input --}}
+            <div class="input-group w-auto">
+                <span class="input-group-text bg--primary">
+                    <i class="fas fa-search text-white"></i>
+                </span>
+                <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Search by From/To User"
+                    wire:model.live="searchTerm"
+                >
+            </div>
+
+            {{-- Clear All --}}
+            @if($searchTerm || $startDate || $endDate)
+                <button class="btn btn-outline--primary" wire:click="clearFilters">
+                    <i class="fas fa-times me-1"></i> Clear All
+                </button>
+            @endif
         </div>
     </div>
+
+
+
     @if($showDetails && $selectedStock)
     <div class="card mt-4">
 

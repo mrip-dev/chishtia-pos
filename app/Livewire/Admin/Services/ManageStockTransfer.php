@@ -27,7 +27,9 @@ class ManageStockTransfer extends Component
     public $warehouses = [];
 
     public $searchTerm = '';
-    public $searchByDate = '';
+    public $start_date = '';
+    public $end_date = '';
+
     public $isCreating = false;
     public $editMode = false;
     public $warehouse_id;
@@ -55,6 +57,7 @@ class ManageStockTransfer extends Component
 
 
 
+
     public function mount()
     {
         $this->loadStocks();
@@ -67,22 +70,24 @@ class ManageStockTransfer extends Component
             'fromUser',
             'toUser',
         ])
-            ->when($this->searchTerm, function ($query) {
-                $query->where(function ($q) {
-                    $q->whereHas('fromUser', function ($q) {
-                        $q->where('name', 'like', '%' . $this->searchTerm . '%');
-                    })
-                        ->orWhereHas('toUser', function ($q) {
-                            $q->where('name', 'like', '%' . $this->searchTerm . '%');
-                        });
+           ->when($this->searchTerm, function ($query) {
+            $query->where(function ($q) {
+                $q->whereHas('fromUser', function ($q) {
+                    $q->where('name', 'like', '%' . $this->searchTerm . '%');
+                })
+                ->orWhereHas('toUser', function ($q) {
+                    $q->where('name', 'like', '%' . $this->searchTerm . '%');
                 });
-            })
-            ->when($this->searchByDate, function ($query) {
-                $query->whereDate('created_at', Carbon::parse($this->searchByDate));
-            })
-            ->orderBy('created_at', 'desc')
-            ->get();
-
+            });
+        })
+        ->when($this->start_date, function ($query) {
+            $query->whereDate('created_at', '>=', Carbon::parse($this->start_date));
+        })
+        ->when($this->end_date, function ($query) {
+            $query->whereDate('created_at', '<=', Carbon::parse($this->end_date));
+        })
+        ->orderBy('created_at', 'desc')
+        ->get();
     }
     public function createStock()
     {
@@ -131,7 +136,7 @@ class ManageStockTransfer extends Component
         if ($name === 'searchTerm') {
             $this->loadStocks();
         }
-        if ($name === 'searchByDate') {
+        if (in_array($name, ['searchTerm', 'start_date', 'end_date'])) {
             $this->loadStocks();
         }
         if ($name === 'from_user_id' || $name === 'to_user_id') {
@@ -310,6 +315,12 @@ class ManageStockTransfer extends Component
             return $stockDetail->quantity;
         }
         return 0;
+    }
+    public function clearFilters()
+    {
+        $this->searchTerm = '';  // Reset search term
+        $this->start_date = '';   // Reset start date
+        $this->end_date = '';     // Reset end date
     }
 
 
