@@ -101,6 +101,14 @@ class ManageStockDetails extends Component
         $this->endDate = '';
         $this->loadStockDetails();
     }
+    public function stockPDF()
+    {
+        session()->put('pdf_data', [
+            'user' => $this->selectedUser,
+            'stock' => $this->selectedStock,
+        ]);
+        return redirect()->route('admin.pdf.stock-detail', ['data' => $data ?? null]);
+    }
 
     public function render()
     {

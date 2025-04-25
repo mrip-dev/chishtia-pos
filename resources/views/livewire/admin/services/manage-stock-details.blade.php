@@ -11,8 +11,7 @@
                     type="date"
                     class="form-control custom-date-input"
                     wire:model.live="startDate"
-                    placeholder="Start Date"
-                >
+                    placeholder="Start Date">
             </div>
 
             {{-- Date: End --}}
@@ -24,8 +23,7 @@
                     type="date"
                     class="form-control custom-date-input"
                     wire:model.live="endDate"
-                    placeholder="End Date"
-                >
+                    placeholder="End Date">
             </div>
 
             {{-- Search Input --}}
@@ -37,15 +35,34 @@
                     type="text"
                     class="form-control"
                     placeholder="Search by From/To User"
-                    wire:model.live="searchTerm"
-                >
+                    wire:model.live="searchTerm">
             </div>
 
             {{-- Clear All --}}
             @if($searchTerm || $startDate || $endDate)
-                <button class="btn btn-outline--primary" wire:click="clearFilters">
-                    <i class="fas fa-times me-1"></i> Clear All
+            <button class="btn btn-outline--primary" wire:click="clearFilters">
+                <i class="fas fa-times me-1"></i> Clear All
+            </button>
+            @endif
+
+
+            {{-- CSV AND PDF --}}
+            @if($showDetails && $selectedStock)
+            <div class="btn-group">
+                <button class="btn btn-outline--success dropdown-toggle" data-bs-toggle="dropdown" type="button" aria-expanded="false">
+                    @lang('Action')
                 </button>
+                <ul class="dropdown-menu">
+                    @permit('admin.purchase.pdf')
+                    <li wire:click="stockPDF">
+                        <a class="dropdown-item" ><i
+                                class="la la-download" ></i>@lang('Download PDF')</a>
+                    </li>
+                    @endpermit
+
+
+                </ul>
+            </div>
             @endif
         </div>
     </div>

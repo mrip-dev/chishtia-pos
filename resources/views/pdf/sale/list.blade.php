@@ -9,6 +9,10 @@
                 <th>@lang('Date')</th>
                 <th>@lang('Customer')</th>
                 <th>@lang('Warehouse')</th>
+                <th>@lang('Driver Name')</th>
+                <th>@lang('Driver Contact')</th>
+                <th>@lang('V.No.')</th>
+                <th>@lang('Fare')</th>
                 <th>@lang('Receivable')</th>
                 <th>@lang('Due')</th>
             </tr>
@@ -21,6 +25,10 @@
                     <td>{{ showDateTime($sale->sale_date, 'm/d/Y') }}</td>
                     <td>{{ $sale->customer->name }} </td>
                     <td>{{ $sale->warehouse->name }} </td>
+                    <td>{{ $sale->driver_name }} </td>
+                    <td>{{ $sale->driver_contact }} </td>
+                    <td>{{ $sale->vehicle_number }} </td>
+                    <td>{{ $sale->fare }} </td>
                     <td>{{ showAmount($sale->receivable_amount) }}</td>
                     <td>
                         @if ($sale->due_amount < 0)
