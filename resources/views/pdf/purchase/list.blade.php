@@ -9,10 +9,8 @@
                 <th>@lang('Date')</th>
                 <th>@lang('Supplier')</th>
                 <th>@lang('Warehouse')</th>
-                <th>@lang('Driver Name')</th>
-                <th>@lang('Driver Phone')</th>
-                <th>@lang('V.No')</th>
-                <th>@lang('Fare')</th>
+                <th>@lang('Driver Name') | @lang('Contact')</th>
+                <th>@lang('Vehicle No') | @lang('Fare')</th>
                 <th>@lang('Payable')</th>
                 <th>@lang('Due')</th>
             </tr>
@@ -25,12 +23,16 @@
                     <td> {{ showDateTime($purchase->purchase_date, 'm/d/Y') }} </td>
                     <td> {{ $purchase->supplier->name }} </td>
                     <td> {{ $purchase->warehouse->name }} </td>
-                    <td> {{ $purchase->driver_name }} </td>
-                    <td> {{ $purchase->driver_phone }} </td>
-                    <td> {{ $purchase->vehicle_no }} </td>
                     <td>
-                        {{  $purchase->fare  }}
+                        <span class="text--success fw-bold"> {{ $purchase->driver_name }}</span>
+                        <br>
+                        +{{ $purchase->driver_contact }}
+                    </td>
                     <td>
+                        {{ $purchase->vehicle_number }}
+                        <br>
+                        {{ $purchase->fare }}
+                    </td>
                     </td>
                     <td> {{ showAmount($purchase->payable_amount) }} </td>
                     <td>
