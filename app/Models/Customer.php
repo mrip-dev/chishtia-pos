@@ -4,8 +4,10 @@ namespace App\Models;
 
 use App\Traits\ActionTakenBy;
 use App\Traits\UserNotify;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Customer extends Model
 {
@@ -68,5 +70,24 @@ class Customer extends Model
         return new Attribute(
             get: fn () =>  $this->mobile,
         );
+    }
+    public function generateInvoice($startDate,$endDate,$search)
+    {
+
+        $directory = 'customer_pdf';
+        $pdf = Pdf::loadView('partials.customer-pdf', ['customer' => $this, 'startDate' => $startDate, 'endDate'=>$endDate, 'search'=>$search]);
+
+        if (!Storage::disk('public')->exists($directory)) {
+            Storage::disk('public')->makeDirectory($directory);
+        }
+
+        $filename = 'customer'. $this->customer->name . '.pdf';
+        $filepath = $directory . '/' . $filename;
+
+        Storage::disk('public')->put($filepath, $pdf->output());
+
+
+        // $this->update(['customer' => $filepath]);
+
     }
 }

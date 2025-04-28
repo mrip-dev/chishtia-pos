@@ -1,7 +1,10 @@
 <div>
     <div class="row mb-3">
         <div class="col-md-12 d-flex justify-content-end align-items-start gap-2">
-
+            <a href="{{ route('admin.customers.pdf') }}" class="btn btn-primary">
+                Download Customer PDF
+            </a>
+            <button wire:click="generateInvoice(1,2,3)"  class="btn btn-primary">Download</button>
             {{-- Date: Start --}}
             <div class="input-group w-auto">
                 <span class="input-group-text bg--primary text-white">

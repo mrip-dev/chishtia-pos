@@ -5,6 +5,7 @@ use App\Http\Controllers\SupplierViewController;
 use App\Livewire\Admin\CustomerTransactions\CustomerTransaction;
 use App\Models\Bank;
 use App\Models\Customer;
+use App\Models\CustomerTransaction as ModelsCustomerTransaction;
 use App\Models\Supplier;
 use App\Models\Warehouse;
 use Illuminate\Support\Facades\Route;
@@ -298,6 +299,16 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
             'pageTitle' => $pageTitle,
         ]);
     })->name('customer.view');
+    Route::get('/customers-pdf', function () {
+        $pageTitle = 'Customer Transaction PDF';
+
+        // Fetching customer transactions
+        $customerTransactions = ModelsCustomerTransaction::all(); // Replace this with your actual logic to get the data
+
+        return view('admin.partials.customer-pdf', compact('pageTitle', 'customerTransactions'));
+    })->name('customers.pdf');
+
+
 
     //Payment - Supplier
     Route::controller('SupplierPaymentController')->name('supplier.payment.')->prefix('supplier/payment')->group(function () {
