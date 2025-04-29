@@ -91,12 +91,8 @@ class CustomerTransaction extends Component
 
         ModalCustomerTransaction::where('customer_id', $customerId)
             ->update(['pdf_path' => $filepath]);
-
-            $this->dispatch('notify', [
-                'type' => 'success',
-                'message' => 'Customer PDF generated successfully!',
-            ]);
-
+            $this->dispatch('notify', status: 'success', message: 'Customer PDF generated successfully!');
+        // return response()->download(storage_path('app/public/' . $filepath), $filename);
     }
 
 

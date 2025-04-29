@@ -6,8 +6,10 @@ use App\Models\Customer;
 use App\Models\ServiceStockDetail;
 use App\Models\StockTransfer;
 use App\Models\Supplier;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 use Livewire\Component;
@@ -101,13 +103,33 @@ class ManageStockDetails extends Component
         $this->endDate = '';
         $this->loadStockDetails();
     }
+
     public function stockPDF()
     {
-        session()->put('pdf_data', [
-            'user' => $this->selectedUser,
-            'stock' => $this->selectedStock,
-        ]);
-        return redirect()->route('admin.pdf.stock-detail', ['data' => $data ?? null]);
+
+        $directory = 'stock_details_pdf';
+        // Generate PDF
+        $pdf = Pdf::loadView('pdf.services.stock-details', [
+            'pageTitle' => 'Stock Detail Invoice',
+            'selectedUser' => $this->selectedUser,
+            'selectedStock' => $this->selectedStock,
+        ])->setOption('defaultFont', 'Arial');
+
+        // Ensure the directory exists
+        if (!Storage::disk('public')->exists($directory)) {
+            Storage::disk('public')->makeDirectory($directory);
+        }
+
+        $filename = 'stock_details_invoice_' . now()->format('Ymd_His') . '.pdf'; // Unique filename
+        $filepath = $directory . '/' . $filename;
+
+        // Save the PDF to storage
+        Storage::disk('public')->put($filepath, $pdf->output());
+        // ServiceStockDetail::where('customer_id', $customerId)
+        // ->update(['pdf_path' => $filepath]);
+
+        $this->dispatch('notify', status: 'success', message: 'PDF generated successfully!');
+         return response()->download(storage_path('app/public/' . $filepath), $filename);
     }
 
     public function render()

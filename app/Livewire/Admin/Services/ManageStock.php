@@ -9,8 +9,10 @@ use App\Models\Stock;
 use App\Models\StockInOut;
 use App\Models\Supplier;
 use App\Models\Warehouse;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 use Livewire\Component;
@@ -283,6 +285,30 @@ class ManageStock extends Component
         $this->startDate = '';
         $this->endDate = '';
         $this->loadStocks();
+    }
+    public function stockPDF()
+    {
+
+        $directory = 'stock_'.$this->stock_type.'_pdf';
+        // Generate PDF
+        $pdf = Pdf::loadView('pdf.services.stock-in-out', [
+            'pageTitle' => 'Stock '.$this->stock_type.' Invoice',
+            'selectedStock' => $this->selectedStock,
+            'stockTotalAmount' => $this->stockTotalAmount(),
+        ])->setOption('defaultFont', 'Arial');
+
+        // Ensure the directory exists
+        if (!Storage::disk('public')->exists($directory)) {
+            Storage::disk('public')->makeDirectory($directory);
+        }
+        $filename = 'stock_'.$this->stock_type.'_invoice_' . now()->format('Ymd_His') . '.pdf'; // Unique filename
+        $filepath = $directory . '/' . $filename;
+
+        // Save the PDF to storage
+        Storage::disk('public')->put($filepath, $pdf->output());
+
+        $this->dispatch('notify', status: 'success', message: 'PDF generated successfully!');
+         return response()->download(storage_path('app/public/' . $filepath), $filename);
     }
 
     public function render()

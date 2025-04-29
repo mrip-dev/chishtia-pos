@@ -56,6 +56,28 @@
                 @endif
                 {{ $isCreating ? __('Close') : __('Add New') }}
             </button>
+            @if($showDetails && $selectedStock)
+            <div class="btn-group">
+                <button class="btn btn-outline--success dropdown-toggle" data-bs-toggle="dropdown" type="button" aria-expanded="false">
+                    @lang('Action')
+                </button>
+                <ul class="dropdown-menu">
+                    @permit('admin.purchase.pdf')
+                    <li wire:click="stockPDF"  style="cursor: pointer;">
+                        <a class="dropdown-item" ><i
+                                class="la la-download"  ></i>@lang('Download PDF')
+                                <span wire:loading wire:target="stockPDF">
+                    <i class="spinner-border  spinner-border-sm  text--primary"></i>
+
+                </span>
+                            </a>
+                    </li>
+                    @endpermit
+
+
+                </ul>
+            </div>
+            @endif
         </div>
     </div>
 

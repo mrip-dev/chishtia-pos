@@ -56,7 +56,12 @@
                     @permit('admin.purchase.pdf')
                     <li wire:click="stockPDF"  style="cursor: pointer;">
                         <a class="dropdown-item" ><i
-                                class="la la-download"  ></i>@lang('Download PDF')</a>
+                                class="la la-download"  ></i>@lang('Download PDF')
+                                <span wire:loading wire:target="stockPDF">
+                    <i class="spinner-border  spinner-border-sm  text--primary"></i>
+
+                </span>
+                            </a>
                     </li>
                     @endpermit
 

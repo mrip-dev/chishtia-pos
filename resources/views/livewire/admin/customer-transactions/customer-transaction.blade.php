@@ -1,18 +1,24 @@
 <div>
     <div class="row mb-3">
-        <div class="col-md-12 d-flex justify-content-end align-items-start gap-2">
-            <a href="{{ route('admin.customers.pdf', [
+        <div class="col-md-12 d-flex justify-content-end align-items-start gap-2 p-2">
+        <a href="{{ route('admin.customers.pdf', [
                 'search' => $search,
                 'start_date' => $startDate,
                 'end_date' => $endDate,
                 'customer_id' => $customerId,
-            ]) }}" class="btn btn--primary">
+            ]) }}" class="btn btn-sm btn-outline--primary">
                 View PDF
             </a>
-
-            <button wire:click="generateInvoice('{{ $customerId }}', '{{ $startDate }}', '{{ $endDate }}', '{{ $search }}')" class="btn btn--success">
+            <button wire:click="generateInvoice('{{ $customerId }}', '{{ $startDate }}', '{{ $endDate }}', '{{ $search }}')" class="btn btn-sm btn--primary d-flex gap-1">
                 Download
+                <span wire:loading wire:target="generateInvoice">
+                    <i class="spinner-border  spinner-border-sm  text--primary"></i>
+
+                </span>
             </button>
+        </div>
+        <div class="col-md-12 d-flex justify-content-end align-items-start gap-2">
+
             {{-- Date: Start --}}
             <div class="input-group w-auto">
                 <span class="input-group-text bg--primary text-white">
@@ -26,7 +32,7 @@
                 <span class="input-group-text bg--primary text-white">
                     <i class="fas fa-calendar-alt"></i>
                 </span>
-                <input type="date"  class="form-control custom-date-input" wire:model.live="endDate" placeholder="End Date">
+                <input type="date" class="form-control custom-date-input" wire:model.live="endDate" placeholder="End Date">
             </div>
             {{-- Search Input --}}
             <div class="input-group w-50">
@@ -37,8 +43,7 @@
                     type="text"
                     class="form-control"
                     placeholder="Search by Customer or Bank"
-                    wire:model.live="search"
-                >
+                    wire:model.live="search">
             </div>
 
             {{-- Clear All --}}
@@ -46,71 +51,71 @@
             <button class="btn btn-outline--primary" wire:click="clearFilters">
                 <i class="fas fa-times me-1"></i> Clear All
             </button>
-        @endif
+            @endif
         </div>
     </div>
 
 
-<div class="container mt-4">
+    <div class="container mt-4">
 
-    <div class="table-responsive">
-        <table class="table table-bordered table-hover table-striped">
-            <thead class="thead-dark">
-                <tr>
-                    <th>#</th>
-                    <th>Customer</th>
-                    <th>Opening Balance</th>
-                    <th>Credit</th>
-                    <th>Debit</th>
-                    <th>Closing Balance</th>
-                    <th>Source</th>
-                    <th>Bank</th>
-                    <th>Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($transactions as $index => $transaction)
-                <tr>
-                    <td>{{ $index + 1 }}</td>
-                    <td>{{ $transaction->customer->name ?? 'N/A' }}</td>
-                    <td>{{ number_format($transaction->opening_balance, 2) }}</td>
-                    <td class="text-success">{{ number_format($transaction->credit_amount, 2) }}</td>
-                    <td class="text-danger">{{ number_format($transaction->debit_amount, 2) }}</td>
-                    <td>{{ number_format($transaction->closing_balance, 2) }}</td>
-                    <td>{{ $transaction->source ?? '-' }}</td>
-                    <td>{{ $transaction->bank->name ?? 'N/A' }}</td>
-                    <td>{{ $transaction->created_at->format('d-m-Y h:i A') }}</td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="9" class="text-center">No transactions found.</td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Customer</th>
+                        <th>Opening Balance</th>
+                        <th>Credit</th>
+                        <th>Debit</th>
+                        <th>Closing Balance</th>
+                        <th>Source</th>
+                        <th>Bank</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($transactions as $index => $transaction)
+                    <tr>
+                        <td>{{ $index + 1 }}</td>
+                        <td>{{ $transaction->customer->name ?? 'N/A' }}</td>
+                        <td>{{ number_format($transaction->opening_balance, 2) }}</td>
+                        <td class="text-success">{{ number_format($transaction->credit_amount, 2) }}</td>
+                        <td class="text-danger">{{ number_format($transaction->debit_amount, 2) }}</td>
+                        <td>{{ number_format($transaction->closing_balance, 2) }}</td>
+                        <td>{{ $transaction->source ?? '-' }}</td>
+                        <td>{{ $transaction->bank->name ?? 'N/A' }}</td>
+                        <td>{{ $transaction->created_at->format('d-m-Y h:i A') }}</td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="9" class="text-center">No transactions found.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-end mt-3">
+            {{ $transactions->links() }}
+        </div>
+
+
     </div>
+    <style>
+        .pagination {
+            justify-content: end;
+        }
 
-    <div class="d-flex justify-content-end mt-3">
-        {{ $transactions->links() }}
-    </div>
+        .pagination .page-link {
+            color: #0d6efd;
+        }
 
-
-</div>
-<style>
-    .pagination {
-        justify-content: end;
-    }
-
-    .pagination .page-link {
-        color: #0d6efd;
-    }
-
-    .pagination .page-item.active .page-link {
-        background-color: #0d6efd;
-        border-color: #0d6efd;
-        color: white;
-    }
-</style>
+        .pagination .page-item.active .page-link {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+            color: white;
+        }
+    </style>
 </div>
 <script>
     window.addEventListener('notify', event => {
