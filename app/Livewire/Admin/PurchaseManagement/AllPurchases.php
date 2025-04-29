@@ -128,6 +128,7 @@ class AllPurchases extends Component
         $lastPurchase      = Purchase::orderBy('id', 'DESC')->first();
         $lastInvoiceNo = $lastPurchase->invoice_no ?? 0;
 
+
         $this->invoice_no = generateInvoiceNumberP($lastInvoiceNo);
     }
     public function editPurchase($id)
@@ -487,6 +488,12 @@ class AllPurchases extends Component
             if ($productStock) {
                 $productStock->quantity += $product->quantity;
                 $productStock->save();
+            }else {
+                $stock= new ProductStock();
+                $stock->warehouse_id = $this->warehouse_id;
+                $stock->product_id   = $product->id;
+                $stock->quantity     = $product->quantity;
+                $stock->save();
             }
         }
     }
