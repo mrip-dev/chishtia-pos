@@ -49,31 +49,56 @@ class CustomerTransaction extends Component
     }
 
 
-    public function generateInvoice($startDate = null, $endDate = null, $search = null)
+    public function generateInvoice($customerId, $startDate = null, $endDate = null, $search = null)
     {
         $directory = 'customer_pdf';
 
-        // Set 'Arial' as the default font to avoid font-related issues
+        // Build query
+        $query = ModalCustomerTransaction::query()
+            ->where('customer_id', $customerId);
+
+        if (!empty($search)) {
+            $query->where('customer_name', 'like', '%' . $search . '%');
+        }
+
+        if (!empty($startDate)) {
+            $query->whereDate('created_at', '>=', $startDate);
+        }
+
+        if (!empty($endDate)) {
+            $query->whereDate('created_at', '<=', $endDate);
+        }
+
+        $transactions = $query->get();
+
+        // Generate PDF
         $pdf = Pdf::loadView('partials.customer-pdf', [
-            'pageTitle' => 'TEST'
-        ])
-        ->setOption('defaultFont', 'Arial');  // Set default font
+            'pageTitle' => 'Customer Invoice',
+            'transactions' => $transactions,
+        ])->setOption('defaultFont', 'Arial');
 
-
-        // Ensure the directory exists, if not, create it
+        // Ensure the directory exists
         if (!Storage::disk('public')->exists($directory)) {
             Storage::disk('public')->makeDirectory($directory);
         }
 
-        $filename = 'customer_invoice.pdf';
+        $filename = 'customer_invoice_' . now()->format('Ymd_His') . '.pdf'; // Unique filename
         $filepath = $directory . '/' . $filename;
 
         // Save the PDF to storage
         Storage::disk('public')->put($filepath, $pdf->output());
 
-        // Optionally, you can return the file path to update your model or for other operations
-        return $filepath;
+
+        ModalCustomerTransaction::where('customer_id', $customerId)
+            ->update(['pdf_path' => $filepath]);
+
+            $this->dispatch('notify', [
+                'type' => 'success',
+                'message' => 'Customer PDF generated successfully!',
+            ]);
+
     }
+
 
     public function render()
     {

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\PdfController;
 use App\Http\Controllers\CustomerViewController;
 use App\Http\Controllers\SupplierViewController;
 use App\Livewire\Admin\CustomerTransactions\CustomerTransaction;
@@ -9,6 +10,9 @@ use App\Models\CustomerTransaction as ModelsCustomerTransaction;
 use App\Models\Supplier;
 use App\Models\Warehouse;
 use Illuminate\Support\Facades\Route;
+
+use Illuminate\Http\Request;
+
 
 
 Route::namespace('Auth')->group(function () {
@@ -299,14 +303,9 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
             'pageTitle' => $pageTitle,
         ]);
     })->name('customer.view');
-    Route::get('/customers-pdf', function () {
-        $pageTitle = 'Customer Transaction PDF';
 
-        // Fetching customer transactions
-        $customerTransactions = ModelsCustomerTransaction::all(); // Replace this with your actual logic to get the data
 
-        return view('admin.partials.customer-pdf', compact('pageTitle', 'customerTransactions'));
-    })->name('customers.pdf');
+    Route::get('/customers-pdf', [PdfController::class, 'customersPdf'])->name('customers.pdf');
 
 
 
