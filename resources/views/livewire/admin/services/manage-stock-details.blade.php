@@ -3,7 +3,7 @@
         <div class="d-flex align-items-center gap-3">
 
             {{-- Date: Start --}}
-            <div class="input-group w-auto">
+            {{-- <div class="input-group w-auto">
                 <span class="input-group-text bg--primary text-white">
                     <i class="fas fa-calendar-alt"></i>
                 </span>
@@ -12,10 +12,10 @@
                     class="form-control custom-date-input"
                     wire:model.live="startDate"
                     placeholder="Start Date">
-            </div>
+            </div> --}}
 
             {{-- Date: End --}}
-            <div class="input-group w-auto">
+            {{-- <div class="input-group w-auto">
                 <span class="input-group-text bg--primary text-white">
                     <i class="fas fa-calendar-alt"></i>
                 </span>
@@ -24,10 +24,10 @@
                     class="form-control custom-date-input"
                     wire:model.live="endDate"
                     placeholder="End Date">
-            </div>
+            </div> --}}
 
             {{-- Search Input --}}
-            <div class="input-group w-auto">
+            {{-- <div class="input-group w-auto">
                 <span class="input-group-text bg--primary">
                     <i class="fas fa-search text-white"></i>
                 </span>
@@ -36,14 +36,14 @@
                     class="form-control"
                     placeholder="Search by From/To User"
                     wire:model.live="searchTerm">
-            </div>
+            </div> --}}
 
             {{-- Clear All --}}
-            @if($searchTerm || $startDate || $endDate)
+            {{-- @if($searchTerm || $startDate || $endDate)
             <button class="btn btn-outline--primary" wire:click="clearFilters">
                 <i class="fas fa-times me-1"></i> Clear All
             </button>
-            @endif
+            @endif --}}
 
 
             {{-- CSV AND PDF --}}
