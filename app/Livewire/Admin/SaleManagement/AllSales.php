@@ -675,7 +675,7 @@ class AllSales extends Component
             $bankTransaction->credit           = $creditAmount;
             $bankTransaction->amount           = $amount;
             $bankTransaction->module_id        = $sale->id;
-            $bankTransaction->data_mode        = 'Sale';
+            $bankTransaction->data_model        = 'Sale';
             $bankTransaction->source           = 'Bank Payment Sale Received';
             $bankTransaction->save();
 
