@@ -26,6 +26,32 @@
         "route_name": "admin.dashboard",
         "menu_active": "admin.dashboard"
     },
+
+"day_book": {
+    "title": "Day Book",
+    "icon": "la la-book",
+    "menu_active": [
+        "admin.daybook*"
+    ],
+    "submenu": [
+        {
+            "keyword": [
+                "Day Book",
+                "Bookkeeping",
+                "Transactions",
+                "Main Day Book"
+            ],
+            "title": "Day Book",
+            "route_name": "admin.daybook.index",
+            "menu_active": [
+                "admin.daybook.index"
+            ]
+        }
+
+    ]
+},
+
+
     "manage_sale": {
         "title": "Manage Sales",
         "icon": "la la-shopping-cart",

@@ -22,9 +22,12 @@ use App\Models\SaleDetails;
 use App\Models\WareHouseDetailHistory;
 use Carbon\Carbon;
 use Illuminate\Validation\Rule;
+use App\Traits\DailyBookEntryTrait;
 
 class AllSales extends Component
 {
+    use DailyBookEntryTrait;
+
     public $sales = [];
     public $banks = [];
     public $selectedSale = null;
@@ -700,8 +703,8 @@ class AllSales extends Component
                 $cashTransaction->debit = $cashAmount;
                 $cashTransaction->credit = 0.00;
                 $cashTransaction->amount = $cashAmount;
-                $bankTransaction->module_id = $sale->id;
-                $bankTransaction->data_model = 'Sale';
+                $cashTransaction->module_id = $sale->id;
+                $cashTransaction->data_model = 'Sale';
                 $cashTransaction->source = 'Cash Sale (Both Method)';
                 $cashTransaction->save();
 
@@ -735,11 +738,7 @@ class AllSales extends Component
             }
         }
 
-
-
-
-
-
+        $this->handleDailyBookEntries($amount_cash,$amount_bank,'debit',$this->modal_payment_method,'Sale',$sale->id);
 
         session()->flash('success', $notification);
         $this->resetExcept('saleId');

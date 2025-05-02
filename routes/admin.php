@@ -472,4 +472,14 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         Route::post('system-update', 'systemUpdateProcess')->name('update.process');
         Route::get('system-update/log', 'systemUpdateLog')->name('update.log');
     });
+    //Day Book Banks
+    Route::get('/day-book' , function(){
+        $pageTitle = 'Day Book';
+        return view('admin.daybook.index' , compact('pageTitle'));
+    })->name('daybook.index');
+    Route::get('/day-book-details/{date}' , function(){
+        $pageTitle = 'Day Book Details';
+        return view('admin.daybook.detail' , compact('pageTitle'));
+    })->name('daybook.detail');
+
 });
