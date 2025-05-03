@@ -152,6 +152,10 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         $pageTitle = 'Manage Stock In';
         return view('admin.services.stock-in' , compact('pageTitle'));
     })->name('manage_stock_in');
+    Route::get('/production/flows' , function(){
+        $pageTitle = 'Production Flows';
+        return view('admin.production.flow' , compact('pageTitle'));
+    })->name('production_flow');
     Route::get('/services/stock-out' , function(){
         $pageTitle = 'Manage Stock Out';
         return view('admin.services.stock-out' , compact('pageTitle'));
