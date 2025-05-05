@@ -21,8 +21,8 @@
                 <tr>
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $dailyBook->date }}</td>
-                    <td class="text-success"> {{ $this->getOpeningBalance($dailyBook->date) }}</td>
-                    <td class="text-danger">{{ $this->getClosingBalance($dailyBook->date) }}</td>
+                    <td class="text-success"> {{ $this->getOpeningBalance($dailyBook->date) ?? 0 }}</td>
+                    <td class="text-danger">{{ $this->getClosingBalance($dailyBook->date) ?? 0 }}</td>
                     <td>
                         <a href="{{ route('admin.daybook.detail', $dailyBook->date) }}">
                             <i class="fas fa-eye text-info cursor-pointer"></i>

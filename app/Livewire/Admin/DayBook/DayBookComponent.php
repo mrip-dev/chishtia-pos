@@ -37,7 +37,6 @@ class DayBookComponent extends Component
     }
     public function mount()
     {
-        $this->dailyBookDate = now()->format('Y-m-d');
         $this->loadBookDetails();
     }
     public function loadBookDetails()
