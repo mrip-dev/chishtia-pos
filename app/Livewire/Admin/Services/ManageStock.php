@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin\Services;
 
+use App\Models\Bank;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\ServiceStockDetail;
@@ -9,16 +10,20 @@ use App\Models\Stock;
 use App\Models\StockInOut;
 use App\Models\Supplier;
 use App\Models\Warehouse;
+use App\Traits\DailyBookEntryTrait;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
-
+use App\Traits\HandlesBankPayments;
 use Livewire\Component;
 
 class ManageStock extends Component
 {
+    use HandlesBankPayments;
+    use DailyBookEntryTrait;
+
     public $stocks = [];
     public $users = [];
     public $products = [];
@@ -52,6 +57,15 @@ class ManageStock extends Component
     public $selected_stock_id = null;
 
 
+    public $banks = [];
+    public $paymentStock = null;
+    public $modal_rec_amount;
+    public $bankId;
+    public $modal_payment_method = '';
+    public $modal_rec_bank;
+    public $modal_receivable_amount;
+    public $modal_title = '';
+
 
 
     protected function rules()
@@ -62,6 +76,36 @@ class ManageStock extends Component
 
         ];
         return $rules;
+    }
+
+    protected function rulesPayment()
+    {
+        return [
+            'modal_payment_method' => 'required|string',
+
+            'modal_rec_amount' => [
+                Rule::requiredIf(function () {
+                    return in_array($this->modal_payment_method, ['cash', 'both']);
+                }),
+
+
+            ],
+
+            'modal_rec_bank' => [
+                Rule::requiredIf(function () {
+                    return in_array($this->modal_payment_method, ['bank', 'both']);
+                }),
+
+
+            ],
+        ];
+    }
+    protected function messages()
+    {
+        return [
+            'modal_rec_amount.required' => 'Cash amount is required when payment method is cash or both.',
+            'modal_rec_bank.required'   => 'Bank amount is required when payment method is bank or both.',
+        ];
     }
 
     public function mount($type)
@@ -214,7 +258,10 @@ class ManageStock extends Component
             ///////////   Update Service Stock Detail
             $stockdetail = $this->updateServiceStock($item['product_id'], $item['quantity'], $this->stock_type, $this->warehouse_id, $selecteduserId, $selecteduserModel);
         }
-
+        $stock->total_amount = $this->recalculateTotalAmount();
+        $stock->due_amount = $this->recalculateTotalAmount();
+        $stock->save();
+        ///////////   Update Service Stock Detail
         $this->dispatch('notify', status: 'success', message: 'Stock saved successfully');
 
         $this->isCreating = false;
@@ -336,10 +383,10 @@ class ManageStock extends Component
     public function stockPDF()
     {
 
-        $directory = 'stock_'.$this->stock_type.'_pdf';
+        $directory = 'stock_' . $this->stock_type . '_pdf';
         // Generate PDF
         $pdf = Pdf::loadView('pdf.services.stock-in-out', [
-            'pageTitle' => 'Stock '.$this->stock_type.' Invoice',
+            'pageTitle' => 'Stock ' . $this->stock_type . ' Invoice',
             'selectedStock' => $this->selectedStock,
             'stockTotalAmount' => $this->stockTotalAmount(),
         ])->setOption('defaultFont', 'Arial');
@@ -348,16 +395,79 @@ class ManageStock extends Component
         if (!Storage::disk('public')->exists($directory)) {
             Storage::disk('public')->makeDirectory($directory);
         }
-        $filename = 'stock_'.$this->stock_type.'_invoice_' . now()->format('Ymd_His') . '.pdf'; // Unique filename
+        $filename = 'stock_' . $this->stock_type . '_invoice_' . now()->format('Ymd_His') . '.pdf'; // Unique filename
         $filepath = $directory . '/' . $filename;
 
         // Save the PDF to storage
         Storage::disk('public')->put($filepath, $pdf->output());
 
         $this->dispatch('notify', status: 'success', message: 'PDF generated successfully!');
-         return response()->download(storage_path('app/public/' . $filepath), $filename);
+        return response()->download(storage_path('app/public/' . $filepath), $filename);
+    }
+    public function payMentModal($id)
+    {
+        $this->banks = Bank::all();
+        $this->paymentStock = Stock::find($id);
+        if (!$this->paymentStock) {
+            $this->dispatch('notify', status: 'error', message: 'Stock not found');
+            return;
+        }
+        $this->modal_title = $this->paymentStock->title;
+        $this->modal_receivable_amount = $this->paymentStock->due_amount;
+        $this->modal_payment_method = 'cash';
+        $this->modal_rec_bank = 0.00;
+        $this->modal_rec_amount = 0.00;
+        $this->dispatch('openPaymentModal');
     }
 
+
+    public function submitPayment()
+    {
+
+        $this->validate($this->rulesPayment());
+
+        $stock = $this->paymentStock;
+
+        $amount_cash = $this->modal_rec_amount;
+        $amount_bank = $this->modal_rec_bank;
+        $amount = $this->modal_payment_method == 'cash' ? $amount_cash : $amount_bank;
+        $amount = $this->modal_payment_method == 'bank' ? $amount_bank : $amount_cash;
+        $amount = $this->modal_payment_method == 'both' ? $amount_cash + $amount_bank : $amount;
+        $amount = abs($amount);
+
+        $stock->recieved_amount += $amount;
+        $stock->due_amount -= $amount;
+        $stock->cash_amount += $amount_cash;
+        $stock->bank_amount += $amount_bank;
+        $stock->bank_id = $this->bankId;
+        $stock->save();
+
+         $this->handlePaymentTransaction(
+            $this->modal_payment_method,
+            $amount_cash,
+            $amount_bank,
+            $this->bankId,
+            $stock->id,
+            'Stock',
+            'debit'
+        );
+
+        $this->handleDailyBookEntries($amount_cash,$amount_bank,'debit',$this->modal_payment_method,'Stock',$stock->id);
+
+        session()->flash('success', 'Payment updated successfully!');
+        $this->dispatch('notify', status: 'success', message: 'Payment updated successfully!');
+        $this->loadStocks();
+        $this->paymentStock = null;
+        $this->modal_rec_amount = 0.00;
+        $this->modal_rec_bank = 0.00;
+        $this->modal_payment_method = '';
+        $this->modal_rec_bank = 0.00;
+        $this->modal_receivable_amount = 0.00;
+        $this->modal_title = '';
+        $this->bankId = null;
+
+        $this->dispatch('closePaymentModal');
+    }
     public function render()
     {
         return view('livewire.admin.services.manage-stock');

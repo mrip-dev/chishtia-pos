@@ -65,6 +65,9 @@ class DayBookDetailComponent extends Component
             case 'Expense':
                return redirect()->to('/admin/manage/expense/?module_id=' . $id.'#module_id_' . $id);
                 break;
+             case 'Stock':
+                return redirect()->to('/admin/services/stock-in/?module_id=' . $id.'#module_id_' . $id);
+                break;
         }
     }
 }
