@@ -32,7 +32,8 @@
             <tr>
                 <th>Product</th>
                 <th>Quantity</th>
-                <th>Unit Price</th>
+                <th>Service Charges</th>
+                <th>Date</th>
                 <th>Total Amount</th>
 
             </tr>
@@ -43,6 +44,7 @@
                 <td>{{ $entry->product?->name }}</td>
                 <td>{{ $entry->quantity }}</td>
                 <td>{{ $entry->unit_price }}</td>
+                <td>{{ $entry->created_at }}</td>
                 <td>{{ $entry->total_amount }}</td>
             </tr>
             @endforeach

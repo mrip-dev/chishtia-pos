@@ -11,8 +11,10 @@ use App\Models\StockTransfer;
 use App\Models\StockTransferDetail;
 use App\Models\Supplier;
 use App\Models\Warehouse;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 use Livewire\Component;
@@ -55,6 +57,12 @@ class ManageStockTransfer extends Component
     public $toUserModel;
 
 
+    public $searchTermDetails = '';
+    public $startDateDetails = '';
+    public $endDateDetails = '';
+    public $selected_stock_id = null;
+
+
 
 
 
@@ -70,24 +78,24 @@ class ManageStockTransfer extends Component
             'fromUser',
             'toUser',
         ])
-           ->when($this->searchTerm, function ($query) {
-            $query->where(function ($q) {
-                $q->whereHas('fromUser', function ($q) {
-                    $q->where('name', 'like', '%' . $this->searchTerm . '%');
-                })
-                ->orWhereHas('toUser', function ($q) {
-                    $q->where('name', 'like', '%' . $this->searchTerm . '%');
+            ->when($this->searchTerm, function ($query) {
+                $query->where(function ($q) {
+                    $q->whereHas('fromUser', function ($q) {
+                        $q->where('name', 'like', '%' . $this->searchTerm . '%');
+                    })
+                        ->orWhereHas('toUser', function ($q) {
+                            $q->where('name', 'like', '%' . $this->searchTerm . '%');
+                        });
                 });
-            });
-        })
-        ->when($this->start_date, function ($query) {
-            $query->whereDate('created_at', '>=', Carbon::parse($this->start_date));
-        })
-        ->when($this->end_date, function ($query) {
-            $query->whereDate('created_at', '<=', Carbon::parse($this->end_date));
-        })
-        ->orderBy('created_at', 'desc')
-        ->get();
+            })
+            ->when($this->start_date, function ($query) {
+                $query->whereDate('created_at', '>=', Carbon::parse($this->start_date));
+            })
+            ->when($this->end_date, function ($query) {
+                $query->whereDate('created_at', '<=', Carbon::parse($this->end_date));
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
     }
     public function createStock()
     {
@@ -133,11 +141,12 @@ class ManageStockTransfer extends Component
     }
     public function updated($name, $value)
     {
-        if ($name === 'searchTerm') {
-            $this->loadStocks();
-        }
+
         if (in_array($name, ['searchTerm', 'start_date', 'end_date'])) {
             $this->loadStocks();
+        }
+        if ($name === 'searchTermDetails' || $name === 'startDateDetails' || $name === 'endDateDetails') {
+            $this->viewDetails($this->selected_stock_id);
         }
         if ($name === 'from_user_id' || $name === 'to_user_id') {
 
@@ -250,12 +259,42 @@ class ManageStockTransfer extends Component
         $this->loadStocks(); // reload stocks
     }
 
-
     public function viewDetails($stockId)
     {
-        $this->selectedStock = StockTransfer::with('stockTransferDetails')->find($stockId);
+        $this->selected_stock_id = $stockId;
+
+        $searchTermDetails = '%' . $this->searchTermDetails . '%'; // assuming this is coming from Livewire or input
+        $start = $this->startDateDetails ? Carbon::parse($this->startDateDetails)->startOfDay() : null;
+        $end = $this->endDateDetails ? Carbon::parse($this->endDateDetails)->endOfDay() : null;
+
+        $this->selectedStock = StockTransfer::with(['stockTransferDetails' => function ($query) use ($searchTermDetails, $start, $end) {
+            $query->whereHas('product', function ($q) use ($searchTermDetails) {
+                $q->where('name', 'like', $searchTermDetails);
+            })->with('product');
+            if ($start && $end) {
+                $query->whereBetween('created_at', [$start, $end]);
+            } elseif ($start) {
+                $query->where('created_at', '>=', $start);
+            } elseif ($end) {
+                $query->where('created_at', '<=', $end);
+            }
+        }])->find($this->selected_stock_id);
+
         $this->showDetails = true;
         $this->isCreating = false;
+    }
+    public function closeDetails()
+    {
+        $this->showDetails = false;
+        $this->selectedStock = null;
+        $this->start_date = '';
+        $this->startDateDetails = '';
+        $this->end_date = '';
+        $this->endDateDetails = '';
+        $this->searchTerm = '';
+        $this->searchTermDetails = '';
+        $this->selected_stock_id = null;
+        $this->loadStocks();
     }
     public function recalculateTotalAmount()
     {
@@ -321,6 +360,62 @@ class ManageStockTransfer extends Component
         $this->searchTerm = '';  // Reset search term
         $this->start_date = '';   // Reset start date
         $this->end_date = '';     // Reset end date
+        $this->startDateDetails = '';   // Reset start date
+        $this->endDateDetails = '';     // Reset end date
+        $this->searchTermDetails = '';  // Reset search term
+        $this->selected_stock_id = null; // Reset selected stock id
+        $this->loadStocks();
+    }
+    public function clearFiltersDetails()
+    {
+        $this->searchTermDetails = '';
+        $this->startDateDetails = '';
+        $this->endDateDetails = '';
+        $this->viewDetails($this->selected_stock_id);
+    }
+    public function stockPDF()
+    {
+
+        $directory = 'stock_transfer_pdf';
+        // Generate PDF
+        $pdf = Pdf::loadView('pdf.services.stock_transfer', [
+            'pageTitle' => 'Stock Transfer Invoice',
+            'selectedStock' => $this->selectedStock,
+            'stockTotalAmount' => $this->stockTotalAmount(),
+        ])->setOption('defaultFont', 'Arial');
+
+        // Ensure the directory exists
+        if (!Storage::disk('public')->exists($directory)) {
+            Storage::disk('public')->makeDirectory($directory);
+        }
+        $filename = 'stock_transfer_invoice_' . now()->format('Ymd_His') . '.pdf'; // Unique filename
+        $filepath = $directory . '/' . $filename;
+
+        // Save the PDF to storage
+        Storage::disk('public')->put($filepath, $pdf->output());
+
+        $this->dispatch('notify', status: 'success', message: 'PDF generated successfully!');
+        return response()->download(storage_path('app/public/' . $filepath), $filename);
+    }
+    private function filteredStocksQuery()
+    {
+        $startDate = $this->startDate ? Carbon::parse($this->startDate)->startOfDay() : null;
+        $endDate = $this->endDate ? Carbon::parse($this->endDate)->endOfDay() : null;
+
+        return Stock::with(['warehouse', 'user'])
+            ->where('stock_type', $this->stock_type)
+            ->where(function ($query) {
+                $query->where('title', 'like', '%' . $this->searchTerm . '%')
+                    ->orWhereHas('warehouse', function ($q) {
+                        $q->where('name', 'like', '%' . $this->searchTerm . '%');
+                    })
+                    ->orWhereHas('user', function ($q) {
+                        $q->where('name', 'like', '%' . $this->searchTerm . '%');
+                    });
+            })
+            ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            });
     }
 
 

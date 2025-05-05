@@ -1,7 +1,8 @@
 <div>
     <div class="d-flex mb-30 flex-wrap justify-content-end align-items-center">
         <div class="d-flex justify-content-end align-items-center gap-3 w-100">
-
+            @if(!$isCreating)
+            @if (!$showDetails)
             {{-- Date: Start --}}
             <div class="input-group w-auto">
                 <span class="input-group-text bg--primary text-white">
@@ -11,8 +12,7 @@
                     type="date"
                     class="form-control custom-date-input"
                     wire:model.live="start_date"
-                    placeholder="Start Date"
-                >
+                    placeholder="Start Date">
             </div>
 
             {{-- Date: End --}}
@@ -24,8 +24,7 @@
                     type="date"
                     class="form-control custom-date-input"
                     wire:model.live="end_date"
-                    placeholder="End Date"
-                >
+                    placeholder="End Date">
             </div>
 
             {{-- Search Input --}}
@@ -37,21 +36,94 @@
                     type="text"
                     class="form-control"
                     placeholder="Search by From/To User"
-                    wire:model.live="searchTerm"
-                >
+                    wire:model.live="searchTerm">
             </div>
 
             {{-- Clear All Button --}}
             @if($searchTerm || $start_date || $end_date)
-                <button class="btn btn-outline--primary" wire:click="clearFilters">
-                    <i class="fas fa-times me-1"></i> Clear All
+            <button class="btn btn-outline--primary" wire:click="clearFilters">
+                <i class="fas fa-times me-1"></i> Clear All
+            </button>
+            @endif
+            @else
+            @if($showDetails && $selectedStock)
+            <!-- Date: Start -->
+            <div class="input-group w-auto">
+                <span class="input-group-text bg--primary text-white">
+                    <i class="fas fa-calendar-alt"></i>
+                </span>
+                <input
+                    type="date"
+                    class="form-control custom-date-input"
+                    wire:model.live="startDateDetails"
+                    placeholder="Start Date">
+            </div>
+
+            <!-- Date: End -->
+            <div class="input-group w-auto">
+                <span class="input-group-text bg--primary text-white">
+                    <i class="fas fa-calendar-alt"></i>
+                </span>
+                <input
+                    type="date"
+                    class="form-control custom-date-input"
+                    wire:model.live="endDateDetails"
+                    placeholder="End Date">
+            </div>
+
+            <!-- Search Input -->
+            <div class="input-group w-50">
+                <span class="input-group-text bg--primary">
+                    <i class="fas fa-search text-white"></i>
+                </span>
+                <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Search by Product Name"
+                    wire:model.live="searchTermDetails">
+            </div>
+            <!-- Clear All Button -->
+            @if($searchTermDetails || $startDateDetails || $endDateDetails)
+            <button class="btn btn-outline--primary" wire:click="clearFiltersDetails">
+                <i class="fas fa-times me-1"></i> Clear All
+            </button>
+            @endif
+            <div class="btn-group">
+                <button class="btn btn-outline--success dropdown-toggle" data-bs-toggle="dropdown" type="button" aria-expanded="false">
+                    @lang('Action')
                 </button>
+                <ul class="dropdown-menu">
+                    @permit('admin.purchase.pdf')
+                    <li wire:click="stockPDF" style="cursor: pointer;">
+                        <a class="dropdown-item"><i
+                                class="la la-download"></i>@lang('Download PDF')
+                            <span wire:loading wire:target="stockPDF">
+                                <i class="spinner-border  spinner-border-sm  text--primary"></i>
+
+                            </span>
+                        </a>
+                    </li>
+                    @endpermit
+
+
+                </ul>
+            </div>
             @endif
 
-            {{-- Add New Button --}}
+
+            @endif
+            @endif
+            @if (!$showDetails)
+            <!-- Add New/Close Button -->
             <button type="button" wire:click.prevent="createStock" class="btn btn-sm btn-outline--primary m-2">
-                <i class="las la-plus"></i> {{ $isCreating ? __('Close') : __('Add New') }}
+                @if(!$isCreating)
+                <i class="las la-plus"></i>
+                @else
+                <i class="las la-times"></i>
+                @endif
+                {{ $isCreating ? __('Close') : __('Add New') }}
             </button>
+            @endif
 
         </div>
     </div>
@@ -130,7 +202,7 @@
 
         <div class="card-header">
             <div class="d-flex justify-content-end">
-                <button wire:click="$set('showDetails', false)" class="btn btn-sm btn-secondary"><i class="las la-times"></i> Close</button>
+                <button wire:click="closeDetails()" class="btn btn-sm btn-secondary"><i class="las la-times"></i> Close</button>
             </div>
             <div class="justify-content-between align-items-start">
                 <div class="row">
@@ -157,7 +229,7 @@
                     <tr>
                         <th>Product</th>
                         <th>Quantity</th>
-                        <th>Unit Price</th>
+                        <th>Service Charges</th>
                         <th>Total Amount</th>
 
                     </tr>
@@ -261,8 +333,8 @@
                                     </div>
                                     <div class="col-xl-3 col-sm-6">
                                         <div class="form-group">
-                                            <label class="form-label">@lang('Unit Price')</label>
-                                            <input type="number" class="form-control" min="0" wire:model.live="stockItems.{{ $index }}.unit_price" placeholder="@lang('Unit Price')" required>
+                                            <label class="form-label">@lang('Service Charges')</label>
+                                            <input type="number" class="form-control" min="0" wire:model.live="stockItems.{{ $index }}.unit_price" placeholder="@lang('Service Charges')" required>
                                         </div>
                                     </div>
                                     <div class="col-xl-3 col-sm-6">

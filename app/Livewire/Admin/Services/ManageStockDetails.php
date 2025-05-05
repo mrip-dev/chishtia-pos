@@ -19,11 +19,14 @@ class ManageStockDetails extends Component
 
     public $stocks = [];
     public $searchTerm = '';
+    public $searchDetails = '';
     public $startDate = '';
     public $endDate = '';
     public $selectedStock = null;
     public $selectedUser = null;
     public $showDetails = false;
+    public $selected_user_id = null;
+    public $selected_user_model = null;
 
     public function mount()
     {
@@ -42,18 +45,7 @@ class ManageStockDetails extends Component
                     });
                 });
             })
-            ->when($this->startDate && $this->endDate, function ($query) {
-                $query->whereBetween('created_at', [
-                    Carbon::parse($this->startDate)->startOfDay(),
-                    Carbon::parse($this->endDate)->endOfDay()
-                ]);
-            })
-            ->when($this->startDate && !$this->endDate, function ($query) {
-                $query->whereDate('created_at', '>=', Carbon::parse($this->startDate)->startOfDay());
-            })
-            ->when(!$this->startDate && $this->endDate, function ($query) {
-                $query->whereDate('created_at', '<=', Carbon::parse($this->endDate)->endOfDay());
-            })
+
             ->with(['product', 'warehouse'])
             ->groupBy(['user_id','user_model'])
             ->orderBy('created_at', 'desc')
@@ -62,19 +54,28 @@ class ManageStockDetails extends Component
     }
     public function updated($name, $value)
     {
-        if ($name === 'searchTerm' || $name === 'startDate' || $name === 'endDate') {
+        if ($name === 'searchTerm') {
             $this->loadStockDetails();
         }
-        if ($name === 'showDetails') {
-            $this->loadStockDetails();
+        if ($name === 'searchDetails' || $name === 'startDate' || $name === 'endDate') {
+            $this->viewDetails($this->selected_user_id, $this->selected_user_model);
         }
     }
     public function viewDetails($user_id, $user_model)
     {
+        $this->selected_user_id = $user_id;
+        $this->selected_user_model = $user_model;
         // Fetch records
-        $this->selectedStock = ServiceStockDetail::where('user_id', $user_id)
-            ->where('user_model', $user_model)
-            ->get();
+        $query = ServiceStockDetail::query();
+        $query->when($this->searchDetails, function ($query) {
+            $query->where(function ($query) {
+                $query->whereHas('product', function ($q) {
+                    $q->where('name', 'like', '%' . $this->searchDetails . '%');
+                });
+            });
+        });
+        $query->where('user_id', $user_id)->where('user_model', $user_model);
+        $this->selectedStock=$query->get();
 
         // Check if any record was found
         if ($this->selectedStock->isEmpty()) {
@@ -95,6 +96,18 @@ class ManageStockDetails extends Component
         }
 
         $this->showDetails = true;
+    }
+    public function closeDetails()
+    {
+        $this->showDetails = false;
+        $this->selectedStock = null;
+        $this->selectedUser = null;
+        $this->searchDetails = '';
+        $this->startDate = '';
+        $this->endDate = '';
+        $this->selected_user_id =null;
+        $this->selected_user_model = null;
+        $this->loadStockDetails();
     }
     public function clearFilters()
     {

@@ -46,6 +46,10 @@ class ManageStock extends Component
     public $vehicle_number;
     public $labour;
 
+    public $searchTermDetails = '';
+    public $startDateDetails = '';
+    public $endDateDetails = '';
+    public $selected_stock_id = null;
 
 
 
@@ -70,6 +74,7 @@ class ManageStock extends Component
 
         $this->stocks = Stock::with(['warehouse', 'user'])->where('stock_type', $this->stock_type)
             ->where(function ($query) {
+                $query->where('title', 'like', '%' . $this->searchTerm . '%');
                 $query->orWhereHas('warehouse', function ($q) {
                     $q->where('name', 'like', '%' . $this->searchTerm . '%');
                 })->orWhereHas('user', function ($q) {
@@ -117,6 +122,9 @@ class ManageStock extends Component
     {
         if ($name === 'searchTerm' || $name === 'startDate' || $name === 'endDate') {
             $this->loadStocks();
+        }
+        if ($name === 'searchTermDetails' || $name === 'startDateDetails' || $name === 'endDateDetails') {
+            $this->viewDetails($this->selected_stock_id);
         }
         if ($name === 'warehouse_id') {
             $this->getProducts();
@@ -216,10 +224,29 @@ class ManageStock extends Component
 
     public function viewDetails($stockId)
     {
-        $this->selectedStock = Stock::with('stockInOuts')->find($stockId);
+        $this->selected_stock_id = $stockId;
+
+        $searchTermDetails = '%' . $this->searchTermDetails . '%'; // assuming this is coming from Livewire or input
+        $start = $this->startDateDetails ? Carbon::parse($this->startDateDetails)->startOfDay() : null;
+        $end = $this->endDateDetails ? Carbon::parse($this->endDateDetails)->endOfDay() : null;
+
+        $this->selectedStock = Stock::with(['stockInOuts' => function ($query) use ($searchTermDetails, $start, $end) {
+            $query->whereHas('product', function ($q) use ($searchTermDetails) {
+                $q->where('name', 'like', $searchTermDetails);
+            })->with('product');
+            if ($start && $end) {
+                $query->whereBetween('created_at', [$start, $end]);
+            } elseif ($start) {
+                $query->where('created_at', '>=', $start);
+            } elseif ($end) {
+                $query->where('created_at', '<=', $end);
+            }
+        }])->find($this->selected_stock_id);
+
         $this->showDetails = true;
         $this->isCreating = false;
     }
+
     public function recalculateTotalAmount()
     {
 
@@ -284,6 +311,26 @@ class ManageStock extends Component
         $this->searchTerm = '';
         $this->startDate = '';
         $this->endDate = '';
+        $this->loadStocks();
+    }
+    public function clearFiltersDetails()
+    {
+        $this->searchTermDetails = '';
+        $this->startDateDetails = '';
+        $this->endDateDetails = '';
+        $this->viewDetails($this->selected_stock_id);
+    }
+    public function closeDetails()
+    {
+        $this->showDetails = false;
+        $this->selectedStock = null;
+        $this->startDate = '';
+        $this->startDateDetails = '';
+        $this->endDate = '';
+        $this->endDateDetails = '';
+        $this->searchTerm = '';
+        $this->searchTermDetails = '';
+        $this->selected_stock_id = null;
         $this->loadStocks();
     }
     public function stockPDF()

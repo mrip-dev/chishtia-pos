@@ -2,32 +2,46 @@
     <div class="d-flex justify-content-end align-items-center gap-3 mb-30">
         <div class="d-flex align-items-center gap-3">
 
-            {{-- Date: Start --}}
-            {{-- <div class="input-group w-auto">
-                <span class="input-group-text bg--primary text-white">
-                    <i class="fas fa-calendar-alt"></i>
-                </span>
-                <input
-                    type="date"
-                    class="form-control custom-date-input"
-                    wire:model.live="startDate"
-                    placeholder="Start Date">
-            </div> --}}
 
-            {{-- Date: End --}}
-            {{-- <div class="input-group w-auto">
-                <span class="input-group-text bg--primary text-white">
-                    <i class="fas fa-calendar-alt"></i>
-                </span>
-                <input
-                    type="date"
-                    class="form-control custom-date-input"
-                    wire:model.live="endDate"
-                    placeholder="End Date">
-            </div> --}}
 
+
+            {{-- CSV AND PDF --}}
+            @if($showDetails && $selectedStock)
             {{-- Search Input --}}
-            {{-- <div class="input-group w-auto">
+            <div class="input-group w-auto">
+                <span class="input-group-text bg--primary">
+                    <i class="fas fa-search text-white"></i>
+                </span>
+                <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Search by Product"
+                    wire:model.live="searchDetails">
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-outline--success dropdown-toggle" data-bs-toggle="dropdown" type="button" aria-expanded="false">
+                    @lang('Action')
+                </button>
+                <ul class="dropdown-menu">
+                    @permit('admin.purchase.pdf')
+                    <li wire:click="stockPDF" style="cursor: pointer;">
+                        <a class="dropdown-item"><i
+                                class="la la-download"></i>@lang('Download PDF')
+                            <span wire:loading wire:target="stockPDF">
+                                <i class="spinner-border  spinner-border-sm  text--primary"></i>
+
+                            </span>
+                        </a>
+                    </li>
+                    @endpermit
+
+
+                </ul>
+            </div>
+            @else
+            {{-- Search Input --}}
+            <div class="input-group w-auto">
                 <span class="input-group-text bg--primary">
                     <i class="fas fa-search text-white"></i>
                 </span>
@@ -36,38 +50,15 @@
                     class="form-control"
                     placeholder="Search by From/To User"
                     wire:model.live="searchTerm">
-            </div> --}}
+            </div>
 
             {{-- Clear All --}}
-            {{-- @if($searchTerm || $startDate || $endDate)
+             @if($searchTerm || $startDate || $endDate)
             <button class="btn btn-outline--primary" wire:click="clearFilters">
                 <i class="fas fa-times me-1"></i> Clear All
             </button>
-            @endif --}}
+            @endif
 
-
-            {{-- CSV AND PDF --}}
-            @if($showDetails && $selectedStock)
-            <div class="btn-group">
-                <button class="btn btn-outline--success dropdown-toggle" data-bs-toggle="dropdown" type="button" aria-expanded="false">
-                    @lang('Action')
-                </button>
-                <ul class="dropdown-menu">
-                    @permit('admin.purchase.pdf')
-                    <li wire:click="stockPDF"  style="cursor: pointer;">
-                        <a class="dropdown-item" ><i
-                                class="la la-download"  ></i>@lang('Download PDF')
-                                <span wire:loading wire:target="stockPDF">
-                    <i class="spinner-border  spinner-border-sm  text--primary"></i>
-
-                </span>
-                            </a>
-                    </li>
-                    @endpermit
-
-
-                </ul>
-            </div>
             @endif
         </div>
     </div>
@@ -79,7 +70,7 @@
 
         <div class="card-header">
             <div class="d-flex justify-content-end">
-                <button wire:click="$set('showDetails', false)" class="btn btn-sm btn-secondary"><i class="las la-times"></i> Close</button>
+                <button wire:click="closeDetails()" class="btn btn-sm btn-secondary"><i class="las la-times"></i> Close</button>
             </div>
             <div class="justify-content-between align-items-start">
                 <div class="row">
