@@ -82,11 +82,18 @@ class CustomerTransaction extends Component
             Storage::disk('public')->makeDirectory($directory);
         }
 
+
+
         $filename = 'customer_invoice_' . now()->format('Ymd_His') . '.pdf'; // Unique filename
         $filepath = $directory . '/' . $filename;
 
+
         // Save the PDF to storage
-        Storage::disk('public')->put($filepath, $pdf->output());
+        // Storage::disk('public')->put($filepath, $pdf->output());
+
+        file_put_contents(storage_path('app/public/' . $filepath), $pdf->output());
+
+
 
 
         ModalCustomerTransaction::where('customer_id', $customerId)

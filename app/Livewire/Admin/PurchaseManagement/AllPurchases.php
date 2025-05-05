@@ -16,11 +16,14 @@ use App\Models\WareHouseDetailHistory;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use App\Traits\DailyBookEntryTrait;
 
 use Livewire\Component;
 
 class AllPurchases extends Component
-{   public $purchases = [];
+{
+    use DailyBookEntryTrait;
+    public $purchases = [];
     public $banks = [];
     public $selectedPurchase = null;
     public $purchaseDetails = [];
@@ -552,6 +555,7 @@ class AllPurchases extends Component
             ->orderBy('id', 'desc')
             ->first();
 
+
         // If no previous transaction, use supplier's opening balance
         if ($lastTransaction) {
             $openingBalance = $lastTransaction->closing_balance;
@@ -638,6 +642,7 @@ if ($this->modal_payment_method === 'bank') {
 // --- BOTH PAYMENT ---
 if ($this->modal_payment_method === 'both') {
     // --- Cash Part ---
+
     $cashAmount = $this->modal_paid_amount;
     $cashBank = Bank::where('name', 'Cash')->first();
 
@@ -653,8 +658,8 @@ if ($this->modal_payment_method === 'both') {
         $cashTransaction->debit = 0.00;
         $cashTransaction->credit = $cashAmount;
         $cashTransaction->amount = $cashAmount;
-        $bankTransaction->module_id = $purchase->id;
-        $bankTransaction->data_model = 'Purchase';
+        $cashTransaction->module_id = $purchase->id;
+        $cashTransaction->data_model = 'Purchase';
         $cashTransaction->source = 'Cash Payment for Purchase (Both)';
         $cashTransaction->save();
 
@@ -689,9 +694,7 @@ if ($this->modal_payment_method === 'both') {
 }
 
 
-
-
-
+        $this->handleDailyBookEntries($amount_cash,$amount_bank,'credit',$this->modal_payment_method,'Purchase',$purchase->id);
 
         session()->flash('success', $notification);
         $this->resetExcept('purchaseId');

@@ -152,6 +152,10 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         $pageTitle = 'Manage Stock In';
         return view('admin.services.stock-in' , compact('pageTitle'));
     })->name('manage_stock_in');
+    Route::get('/production/flows' , function(){
+        $pageTitle = 'Production Flows';
+        return view('admin.production.flow' , compact('pageTitle'));
+    })->name('production_flow');
     Route::get('/services/stock-out' , function(){
         $pageTitle = 'Manage Stock Out';
         return view('admin.services.stock-out' , compact('pageTitle'));
@@ -472,4 +476,14 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         Route::post('system-update', 'systemUpdateProcess')->name('update.process');
         Route::get('system-update/log', 'systemUpdateLog')->name('update.log');
     });
+    //Day Book Banks
+    Route::get('/day-book' , function(){
+        $pageTitle = 'Day Book';
+        return view('admin.daybook.index' , compact('pageTitle'));
+    })->name('daybook.index');
+    Route::get('/day-book-details/{date}' , function(){
+        $pageTitle = 'Day Book Details';
+        return view('admin.daybook.detail' , compact('pageTitle'));
+    })->name('daybook.detail');
+
 });
