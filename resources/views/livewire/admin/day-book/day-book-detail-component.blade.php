@@ -2,6 +2,8 @@
     <!-- Page Title -->
 
 
+
+
     <!-- Summary Cards Centered -->
     <div class="d-flex justify-content-center flex-wrap gap-4 mb-4">
         <!-- Opening Balance -->
@@ -18,6 +20,22 @@
                 <h6 class="text-muted mb-2">Closing Balance</h6>
                 <h4 class="text-danger fw-bold mb-0">{{ number_format($closing_balance, 2) }}</h4>
             </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-end mb-3">
+        <div class="input-group w-auto">
+            <span class="input-group-text bg--primary text-white">Search Source</span>
+
+            <input type="text"
+                   wire:model.live="search"
+                   class="form-control"
+                   placeholder="Type here...">
+
+            @if($search)
+                <button wire:click="$set('search', '')" class="btn btn-outline-secondary">
+                    Clear
+                </button>
+            @endif
         </div>
     </div>
 

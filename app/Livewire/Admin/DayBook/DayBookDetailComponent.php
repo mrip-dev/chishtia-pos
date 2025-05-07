@@ -12,17 +12,19 @@ class DayBookDetailComponent extends Component
     public $opening_balance;
     public $closing_balance;
     public $source;
+    public $search = '';
     public function mount($date)
     {
         $this->dailyBookDate = $date;
         $this->loadBookDetails();
     }
+
     function loadBookDetails()
     {
 
         $query = DailyBookDetail::query();
-        if (!empty($this->source)) {
-            $query->where('source', $this->source);
+        if (!empty($this->search)) {
+            $query->where('source', 'like', '%' . $this->search . '%');
         }
         $query->whereDate('date', $this->dailyBookDate)->orderBy('id', 'desc');
         $this->bookDetails = $query->get();
@@ -32,6 +34,11 @@ class DayBookDetailComponent extends Component
     {
         $this->loadBookDetails();
     }
+    public function updatedSearch()
+    {
+        $this->loadBookDetails();
+    }
+
      public function calculateBalances()
     {
         $details = DailyBookDetail::whereDate('date', $this->dailyBookDate)
