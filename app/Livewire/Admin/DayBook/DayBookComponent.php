@@ -27,7 +27,7 @@ class DayBookComponent extends Component
 
         return $record ? $record->opening_balance : 0;
     }
-        public function getClosingBalance($date)
+    public function getClosingBalance($date)
     {
         $record = DailyBookDetail::whereDate('date', $date)
             ->orderBy('id', 'desc')
@@ -41,20 +41,18 @@ class DayBookComponent extends Component
     }
     public function loadBookDetails()
     {
-        $query = DailyBookDetail::query();
-        if (!empty($this->dailyBookDate)) {
-            $query->whereDate('date', $this->dailyBookDate);
-        }
-        $query->orderBy('id', 'desc');
-        $query->groupBy('date');
-
-        $this->dailyBooks = $query->get();
-
+        $this->dailyBooks = DailyBookDetail::selectRaw('MAX(id) as id,date, SUM(debit) as debit, SUM(credit) as credit')
+            ->when(!empty($this->dailyBookDate), function ($query) {
+                $query->whereDate('date', $this->dailyBookDate);
+            })
+            ->groupBy('date')
+            ->orderByDesc('id')
+            ->get();
     }
     public function render()
     {
 
 
-        return view('livewire.admin.day-book.day-book-component' );
+        return view('livewire.admin.day-book.day-book-component');
     }
 }

@@ -119,6 +119,7 @@ class ManageStock extends Component
         $this->stocks = Stock::with(['warehouse', 'user'])->where('stock_type', $this->stock_type)
             ->where(function ($query) {
                 $query->where('title', 'like', '%' . $this->searchTerm . '%');
+                $query->orWhere('tracking_id', 'like', '%' . $this->searchTerm . '%');
                 $query->orWhereHas('warehouse', function ($q) {
                     $q->where('name', 'like', '%' . $this->searchTerm . '%');
                 })->orWhereHas('user', function ($q) {
@@ -406,7 +407,7 @@ class ManageStock extends Component
     }
     public function payMentModal($id)
     {
-        $this->banks = Bank::all();
+        $this->banks = Bank::where('name', '!=', 'Cash')->get();
         $this->paymentStock = Stock::find($id);
         if (!$this->paymentStock) {
             $this->dispatch('notify', status: 'error', message: 'Stock not found');

@@ -8,6 +8,7 @@
                             <thead>
                                 <tr>
                                     <th>@lang('Title')</th>
+                                    <th>@lang('Container NO')</th>
                                     <th>@lang('Vendor / Client')</th>
                                     <th>@lang('Warehouse')</th>
                                     <th>@lang('Type')</th>
@@ -24,6 +25,10 @@
 
                                     <td>
                                         <span class="text--primary fw-bold"> {{ $item->title }}</span>
+
+                                    </td>
+                                    <td>
+                                        <span class="text--primary fw-bold"> {{ $item->tracking_id }}</span>
 
                                     </td>
                                     <td>

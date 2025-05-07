@@ -34,7 +34,7 @@
                 <input
                     type="text"
                     class="form-control"
-                    placeholder="Search by Title/Warehouse/Vendor"
+                    placeholder="Search by Title/Warehouse/Vendor/CTN NO."
                     wire:model.live="searchTerm">
             </div>
             <!-- Clear All Button -->
