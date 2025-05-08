@@ -32,6 +32,22 @@
                         @this.createFlow();
                     }
                 });
+            });
+            window.addEventListener('confirmAddToStock', event => {
+                console.log(event);
+                Swal.fire({
+                    title: 'Are You Sure?',
+                    text: 'You won\'t be able to revert this!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, Add it!',
+                    cancelButtonText: 'No, cancel!',
+
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        @this.addToStock(event.detail.index);
+                    }
+                });
             })
 
 

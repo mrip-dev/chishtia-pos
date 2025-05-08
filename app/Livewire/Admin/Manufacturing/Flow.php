@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\ExpenseType;
 use App\Models\ManufacturingFlow;
 use App\Models\Product;
+use App\Models\ProductStock;
 use App\Models\Unit;
 use Carbon\Carbon;
 use Livewire\Component;
@@ -118,10 +119,19 @@ class Flow extends Component
     {
 
         if ($this->flow) {
-            $this->refinedItems = $this->flow->refinedItems()->get()->toArray();
+            $this->refinedItems = $this->flow->refinedItems()
+                ->get(['product_id', 'quantity', 'status']) // explicitly select fields
+                ->map(function ($item) {
+                    return [
+                        'product_id' => $item->product_id,
+                        'quantity' => $item->quantity,
+                        'status' => $item->status, // ensure status is included
+                    ];
+                })
+                ->toArray();
         }
         if (empty($this->refinedItems)) {
-            $this->refinedItems[] = ['product_id' => null, 'quantity' => 1];
+            $this->refinedItems[] = ['product_id' => null, 'quantity' => 1, 'status' => null];
         }
     }
 
@@ -171,7 +181,7 @@ class Flow extends Component
     }
     public function addRefinedItem()
     {
-        $this->refinedItems[] = ['product_id' => null, 'quantity' => 1];
+        $this->refinedItems[] = ['product_id' => null, 'quantity' => 1, 'status' => null];
     }
     public function removeRefinedItem($index)
     {
@@ -217,21 +227,23 @@ class Flow extends Component
     }
     public function saveFlowRefined()
     {
-
-
         $flow = ManufacturingFlow::find($this->flowId);
-
-        // Sync Stocks
+        $existingStatuses = $flow->refinedItems->pluck('status', 'product_id')->toArray();
         $flow->refinedItems()->delete();
+
         foreach ($this->refinedItems as $item) {
+            $status = $existingStatuses[$item['product_id']] ?? 'refined';
             $flow->refinedItems()->create([
                 'product_id' => $item['product_id'],
                 'quantity' => $item['quantity'],
+                'status' => $status,
             ]);
         }
+
         $this->dispatch('notify', status: 'success', message: 'Flow saved successfully!');
         $this->cancel();
     }
+
     public function cancel()
     {
         $this->showDetails = false;
@@ -245,6 +257,49 @@ class Flow extends Component
 
         $this->loadFlows();
     }
+    public function confirmAddToStock($index)
+    {
+
+        $this->dispatch('confirmAddToStock', index : $index);
+    }
+    public function addToStock($index)
+    {
+        // Example: If you're using an array of items like $this->items
+        if (!isset($this->refinedItems[$index])) {
+            $this->dispatch('notify', status: 'error', message: 'Item not found at index: ' . $index);
+            return;
+        }
+        $item = $this->refinedItems[$index];
+        $quantity = $item['quantity'];
+        $product = Product::find($item['product_id']);
+        if (!$product) {
+            $this->dispatch('notify', status: 'error', message: 'Product not found for item at index: ' . $index);
+            return;
+        }
+        $this->updateProductStock($product, $quantity);
+        /// Upade status of this item to Saved
+        $flow = ManufacturingFlow::find($this->flowId);
+        $flow->refinedItems()->where('product_id', $item['product_id'])->update(['status' => 'saved']);
+        $this->refinedItems[$index]['status'] = 'saved';
+        $this->dispatch('notify', status: 'success', message: 'Product added to stock successfully!');
+    }
+    protected function updateProductStock($product, $quantity)
+    {
+
+        $product = (object) $product;
+        $productStock = ProductStock::where('product_id', $product->id)->first();
+        if ($productStock) {
+            $productStock->quantity += $quantity;
+            $productStock->save();
+        } else {
+            $stock = new ProductStock();
+            $stock->warehouse_id = 1;
+            $stock->product_id   = $product->id;
+            $stock->quantity     = $quantity;
+            $stock->save();
+        }
+    }
+
     public function render()
     {
         $this->dispatch('re-init-select-2-component');

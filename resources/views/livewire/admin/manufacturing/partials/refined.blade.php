@@ -21,16 +21,22 @@
                                 <div class="col-md-12 mb-4">
                                     <div class="card border shadow-sm">
                                         <div class="card-body">
+                                            <div class="d-flex justify-content-end">
+                                                @if($refinedItems[$index]['status'] == 'refined' )
+                                                <!-- //// Add tot stock  -->
+                                                <button type="button" wire:click="confirmAddToStock({{ $index }})" class="btn btn--primary">@lang('Add to stock')</button>
+                                                @endif
+                                            </div>
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group mb-2">
                                                         <label>@lang('Product')</label>
-                                                        <x-select3
+                                                        <x-select2
                                                             id="product-select-{{ $index }}-select"
                                                             dataArray="productOptions"
                                                             wire:model="refinedItems.{{ $index }}.product_id"
                                                             placeholder="Select a product"
-                                                            :allowAdd="false" />
+                                                            />
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
