@@ -20,10 +20,10 @@
                                         <td>{{ $item->tracking_id }}</td>
                                         <td>{{ $item->date }}</td>
                                         <td>
-                                            <!-- <a wire:click.prevent="viewRefined({{ $item->id }})"
-                                                class="btn btn-sm btn-outline--primary ms-1">
+                                            <a wire:click.prevent="viewRefined({{ $item->id }})"
+                                                class="btn btn-sm btn--primary ms-1">
                                                 <i class="la la-chart"></i> @lang('Refined Items')
-                                            </a> -->
+                                            </a>
                                             <a wire:click.prevent="viewRaw({{ $item->id }})"
                                                 class="btn btn-sm btn-outline--primary ms-1">
                                                 <i class="la la-chart"></i> @lang('Details')

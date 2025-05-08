@@ -29,6 +29,10 @@ class ManufacturingFlow extends Model
     {
         return $this->hasMany(ManufacturingStock::class);
     }
+    public function refinedItems()
+    {
+        return $this->hasMany(ManufacturingRefinedItems::class);
+    }
     public function expenses()
     {
         return $this->hasMany(ManufacturingExpense::class);

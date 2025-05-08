@@ -112,6 +112,7 @@ class ManageStock extends Component
     {
         $this->stock_type = $type;
         $this->loadStocks();
+
     }
     public function loadStocks()
     {
@@ -138,6 +139,7 @@ class ManageStock extends Component
         $this->isCreating = !$this->isCreating;
         $this->showDetails = false;
         $this->users = [];
+        $this->getProducts();
         $this->stockItems = [
             ['product_id' => null, 'quantity' => 1, 'unit_price' => 0, 'total_amount' => 0]
         ];
@@ -176,7 +178,9 @@ class ManageStock extends Component
         }
         if (str_starts_with($name, 'stockItems.')) {
 
+
             $index = explode('.', $name)[1];
+
             $quant = (float)$this->stockItems[$index]['quantity'];
             $unit_price = (float)$this->stockItems[$index]['unit_price'];
             $this->stockItems[$index]['total_amount'] = $quant * $unit_price;
@@ -186,11 +190,15 @@ class ManageStock extends Component
     public function getProducts()
     {
         $warehouse = $this->warehouse_id;
-        if (!$warehouse) {
-            $this->products = [];
-            $this->dispatch('notify', status: 'error', message: 'Select Whereouse First');
-        }
-        $this->products = Product::all();
+        // if (!$warehouse) {
+        //     $this->products = [];
+        //     $this->dispatch('notify', status: 'error', message: 'Select Whereouse First');
+        // }
+        $this->products = Product::all()->map(fn($p) => [
+            'id' => $p->id,
+            'text' => $p->name,
+        ])->toArray();
+
     }
     public function addItem()
     {
@@ -471,6 +479,8 @@ class ManageStock extends Component
     }
     public function render()
     {
+        $this->dispatch('re-init-select-2-component');
+
         return view('livewire.admin.services.manage-stock');
     }
 }

@@ -188,7 +188,10 @@ class ManageStockTransfer extends Component
     public function getProducts()
     {
 
-        $this->products = Product::all();
+        $this->products = Product::all()->map(fn($p) => [
+            'id' => $p->id,
+            'text' => $p->name,
+        ])->toArray();
     }
     public function addItem()
     {

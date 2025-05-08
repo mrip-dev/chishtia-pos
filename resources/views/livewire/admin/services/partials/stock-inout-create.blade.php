@@ -71,14 +71,12 @@
                                 <div class="col-xl-3 col-sm-6">
                                     <div class="form-group">
                                         <label class="form-label">@lang('Product')</label>
-                                        <select class="form-control select2" wire:model="stockItems.{{ $index }}.product_id" data-minimum-results-for-search="-1" required>
-                                            <option value="">@lang('Select One')</option>
-                                            @foreach ($products as $product)
-                                            <option value="{{ $product->id }}" @selected($product->id == @$item->product_id)>
-                                                {{ __($product->name) }}
-                                            </option>
-                                            @endforeach
-                                        </select>
+                                        <x-select2
+                                            id="product-select-{{ $index }}-select"
+                                            dataArray="products"
+                                            wire:model="stockItems.{{ $index }}.product_id"
+                                            placeholder="Select a product"
+                                            :allowAdd="false" />
                                     </div>
                                 </div>
                                 <div class="col-xl-3 col-sm-6">

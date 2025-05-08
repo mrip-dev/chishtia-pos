@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('manufacturing_stocks', function (Blueprint $table) {
+        Schema::create('manufacturing_refined_items', function (Blueprint $table) {
             $table->id();
             $table->integer('manufacturing_flow_id')->nullable();
             $table->unsignedBigInteger('product_id')->nullable();
             $table->integer('quantity')->nullable();
+            $table->string('status')->nullable();
             $table->date('date')->nullable();
             $table->timestamps();
         });
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('manufacturing_stocks');
+        Schema::dropIfExists('manufacturing_refined_items');
     }
 };
