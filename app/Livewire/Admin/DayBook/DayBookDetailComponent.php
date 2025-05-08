@@ -1,8 +1,11 @@
 <?php
 
 namespace App\Livewire\Admin\DayBook;
-
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\DailyBookDetail;
+use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
+use Barryvdh\DomPDF\PDF as DomPDFPDF;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 
 class DayBookDetailComponent extends Component
@@ -53,6 +56,48 @@ class DayBookDetailComponent extends Component
             $this->closing_balance = $details->last()?->closing_balance ?? 0;
         }
     }
+    public function generatePdf($date)
+    {
+        $directory = 'daybook_pdf';
+
+        // Get book details again to ensure fresh data
+        $query = DailyBookDetail::query()
+            ->whereDate('date', $date);
+
+        // if (!empty($this->search)) {
+        //     $query->where('source', 'like', '%' . $this->search . '%');
+        // }
+
+        $bookDetails = $query->orderBy('id', 'desc')->get();
+
+        // Generate PDF
+        $pdf = Pdf::loadView('admin.partials.daybook-pdf', [
+            'pageTitle' => 'Day Book Report',
+            'bookDetails' => $bookDetails,
+            'dailyBookDate' => $this->dailyBookDate,
+            'opening_balance' => $this->opening_balance,
+            'closing_balance' => $this->closing_balance,
+        ])->setOption('defaultFont', 'Arial');
+
+        // Ensure directory exists
+        if (!Storage::disk('public')->exists($directory)) {
+            Storage::disk('public')->makeDirectory($directory);
+        }
+
+        $filename = 'day_book_' . now()->format('Ymd_His') . '.pdf';
+        $filepath = $directory . '/' . $filename;
+
+        // Save PDF
+        file_put_contents(storage_path('app/public/' . $filepath), $pdf->output());
+
+        // Optional: store path in DB if needed
+
+        // Notify & return download
+        $this->dispatch('notify', status: 'success', message: 'Day Book PDF generated!');
+        return response()->download(storage_path('app/public/' . $filepath), $filename);
+    }
+
+
     public function render()
     {
         return view('livewire.admin.day-book.day-book-detail-component');

@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\PdfController;
 use App\Http\Controllers\CustomerViewController;
 use App\Http\Controllers\SupplierViewController;
 use App\Livewire\Admin\CustomerTransactions\CustomerTransaction;
+use App\Livewire\Admin\DayBook\DayBookDetailComponent;
 use App\Models\Bank;
 use App\Models\Customer;
 use App\Models\CustomerTransaction as ModelsCustomerTransaction;
@@ -485,5 +486,6 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         $pageTitle = 'Day Book Details';
         return view('admin.daybook.detail' , compact('pageTitle'));
     })->name('daybook.detail');
+    Route::get('/admin/daybook/pdf/{date}', [DayBookDetailComponent::class, 'generatePdf'])->name('daybook.pdf');
 
 });

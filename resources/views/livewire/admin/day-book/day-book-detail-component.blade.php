@@ -1,9 +1,10 @@
 <div class="container py-4">
     <!-- Page Title -->
-
-
-
-
+    <div class="mb-4">
+        <a href="{{ route('admin.daybook.pdf', ['date' => $dailyBookDate]) }}" class="btn btn-primary" target="_blank">
+            View DayBook PDF
+        </a>
+    </div>
     <!-- Summary Cards Centered -->
     <div class="d-flex justify-content-center flex-wrap gap-4 mb-4">
         <!-- Opening Balance -->
