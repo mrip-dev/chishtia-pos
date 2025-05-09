@@ -1,30 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 12px;
-            margin: 40px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #000;
-            padding: 8px;
-            text-align: center;
-        }
-        th {
-            background-color: #97ca9c;
-            color: white;
-        }
-    </style>
-</head>
-<body>
+@extends('pdf.layouts.master2')
+
+@section('content')
 
     <h1>Day Book Report for {{ $dailyBookDate }}</h1>
 
@@ -55,6 +31,4 @@
             @endforeach
         </tbody>
     </table>
-
-</body>
-</html>
+@endsection
