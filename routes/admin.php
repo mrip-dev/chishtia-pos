@@ -169,6 +169,10 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         $pageTitle = 'Manage Stock Details';
         return view('admin.services.stock-details' , compact('pageTitle'));
     })->name('manage_stock_details');
+     Route::get('/services/stock-client-details' , function(){
+        $pageTitle = 'Stock Client Report';
+        return view('admin.services.stock-client-details' , compact('pageTitle'));
+    })->name('stock_client_details');
 
     Route::controller('PdfController')->name('pdf.')->prefix('pdf')->group(function () {
 

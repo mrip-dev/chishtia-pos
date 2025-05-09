@@ -408,6 +408,18 @@
                 "title": "Transfer",
                 "route_name": "admin.manage_stock_transfer",
                 "menu_active": "admin.manage_stock_transfer"
+            },
+            {
+                "keyword": [
+                    "All Services",
+                    "Manage Service",
+                    "Service Configuration",
+                    "Add service",
+                    "Edit service"
+                ],
+                "title": "Clients Reports",
+                "route_name": "admin.stock_client_details",
+                "menu_active": "admin.stock_client_details"
             }
         ]
     },
