@@ -1,6 +1,6 @@
-@extends('pdf.layouts.master')
+@extends('pdf.layouts.master2')
 
-@section('main-content')
+@section('content')
     <div class="list--row mb-15px">
         <div class="float-left">
             <h6 class="title">@lang('Bill To')</h6>

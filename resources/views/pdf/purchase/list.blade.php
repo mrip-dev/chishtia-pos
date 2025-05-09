@@ -1,6 +1,6 @@
-@extends('pdf.layouts.master')
+@extends('pdf.layouts.master2')
 
-@section('main-content')
+@section('content')
     <table class="table table-striped">
         <thead>
             <tr>

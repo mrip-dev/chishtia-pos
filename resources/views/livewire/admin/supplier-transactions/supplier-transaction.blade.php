@@ -1,21 +1,18 @@
 
     <div>
-        <a href="{{ route('admin.supplier.invoice', ['supplierId' => $supplier->id]) }}" class="btn btn-sm btn-primary" target="_blank">
-            Download Supplier Invoice
-        </a>
         <div class="row mb-3">
             <div class="col-md-12 d-flex justify-content-end align-items-start gap-2 flex-wrap">
 
                 {{-- Date Filters --}}
-                <input type="date" class="form-control w-auto" wire:model.live="startDate" placeholder="Start Date">
-                <input type="date" class="form-control w-auto" wire:model.live="endDate" placeholder="End Date">
+                <input type="date" class="form-control w-auto" wire:model="startDate" placeholder="Start Date">
+                <input type="date" class="form-control w-auto" wire:model="endDate" placeholder="End Date">
 
                 {{-- Search Bar --}}
                 <div class="input-group w-50">
                     <span class="input-group-text bg--primary">
                         <i class="fas fa-search text-white"></i>
                     </span>
-                    <input type="text" class="form-control" placeholder="Search by Bank or Supplier" wire:model.live="search">
+                    <input type="text" class="form-control" placeholder="Search by Bank or Supplier" wire:model.debounce.500ms="search">
                 </div>
 
                 {{-- Clear All Button --}}
@@ -26,12 +23,19 @@
                 @endif
             </div>
         </div>
+        <div class="row mb-3">
+            <div class="col-md-12 d-flex justify-content-end">
+                <a href="{{ route('admin.supplier.invoice', ['supplierId' => $supplier->id]) }}" class="btn  btn-outline--primary" target="_blank">
+                    Download PDF
+                </a>
+            </div>
+        </div>
 
         <div class="container mt-4">
 
             <div class="table-responsive">
-                <table class="table table-bordered table-hover table-striped">
-                    <thead class="thead-dark">
+                <table class="table table-hover table-striped align-middle mb-0">
+                    <thead  class="bg--primary text-white">
                         <tr>
                             <th>#</th>
                             <th>Supplier</th>

@@ -1,10 +1,5 @@
 <div class="container py-4">
-    <!-- Page Title -->
-    <div class="mb-4">
-        <a href="{{ route('admin.daybook.pdf', ['date' => $dailyBookDate]) }}" class="btn btn-primary" >
-            View DayBook PDF
-        </a>
-    </div>
+
     <!-- Summary Cards Centered -->
     <div class="d-flex justify-content-center flex-wrap gap-4 mb-4">
         <!-- Opening Balance -->
@@ -26,7 +21,6 @@
     <div class="d-flex justify-content-end mb-3">
         <div class="input-group w-auto">
             <span class="input-group-text bg--primary text-white">Search Source</span>
-
             <input type="text"
                    wire:model.live="search"
                    class="form-control"
@@ -38,7 +32,15 @@
                 </button>
             @endif
         </div>
+
+        <div class="ms-2">
+            <a href="{{ route('admin.daybook.pdf', ['date' => $dailyBookDate]) }}" class="btn btn-lg btn-outline--primary">
+                Download PDF
+            </a>
+        </div>
     </div>
+
+
 
     <!-- Table Section -->
     <div class="card shadow-sm border-0">

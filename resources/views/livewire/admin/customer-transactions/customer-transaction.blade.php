@@ -1,22 +1,5 @@
 <div>
-    <div class="row mb-3">
-        <div class="col-md-12 d-flex justify-content-end align-items-start gap-2 p-2">
-        <a href="{{ route('admin.customers.pdf', [
-                'search' => $search,
-                'start_date' => $startDate,
-                'end_date' => $endDate,
-                'customer_id' => $customerId,
-            ]) }}" class="btn btn-sm btn-outline--primary">
-                View PDF
-            </a>
-            <button wire:click="generateInvoice('{{ $customerId }}', '{{ $startDate }}', '{{ $endDate }}', '{{ $search }}')" class="btn btn-sm btn--primary d-flex gap-1">
-                Download
-                <span wire:loading wire:target="generateInvoice">
-                    <i class="spinner-border  spinner-border-sm  text--primary"></i>
-
-                </span>
-            </button>
-        </div>
+    <div class="row">
         <div class="col-md-12 d-flex justify-content-end align-items-start gap-2">
 
             {{-- Date: Start --}}
@@ -53,14 +36,31 @@
             </button>
             @endif
         </div>
+        <div class="col-md-12 d-flex justify-content-end align-items-start gap-2 p-2 mt-3">
+            <a href="{{ route('admin.customers.pdf', [
+                    'search' => $search,
+                    'start_date' => $startDate,
+                    'end_date' => $endDate,
+                    'customer_id' => $customerId,
+                ]) }}" class="btn btn-outline--primary">
+                    View PDF
+                </a>
+                <button wire:click="generateInvoice('{{ $customerId }}', '{{ $startDate }}', '{{ $endDate }}', '{{ $search }}')" class="btn btn--primary d-flex gap-1">
+                    Download PDF
+                    <span wire:loading wire:target="generateInvoice">
+                        <i class="spinner-border  spinner-border-sm  text--primary"></i>
+
+                    </span>
+                </button>
+            </div>
     </div>
 
 
-    <div class="container mt-4">
+    <div class="container mt-2">
 
         <div class="table-responsive">
-            <table class="table table-bordered table-hover table-striped">
-                <thead class="thead-dark">
+            <table class="table table-hover table-striped ">
+                <thead class="bg--primary text-white">
                     <tr>
                         <th>#</th>
                         <th>Customer</th>
