@@ -1,7 +1,7 @@
 <div class="container py-4">
     <!-- Page Title -->
     <div class="mb-4">
-        <a href="{{ route('admin.daybook.pdf', ['date' => $dailyBookDate]) }}" class="btn btn-primary" target="_blank">
+        <a href="{{ route('admin.daybook.pdf', ['date' => $dailyBookDate]) }}" class="btn btn-primary" >
             View DayBook PDF
         </a>
     </div>

@@ -1,5 +1,8 @@
 
     <div>
+        <a href="{{ route('admin.supplier.invoice', ['supplierId' => $supplier->id]) }}" class="btn btn-sm btn-primary" target="_blank">
+            Download Supplier Invoice
+        </a>
         <div class="row mb-3">
             <div class="col-md-12 d-flex justify-content-end align-items-start gap-2 flex-wrap">
 
