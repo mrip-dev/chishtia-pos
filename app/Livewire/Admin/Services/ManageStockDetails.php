@@ -4,6 +4,7 @@ namespace App\Livewire\Admin\Services;
 
 use App\Models\Customer;
 use App\Models\ServiceStockDetail;
+use App\Models\Stock;
 use App\Models\StockTransfer;
 use App\Models\Supplier;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -18,6 +19,8 @@ class ManageStockDetails extends Component
 {
 
     public $stocks = [];
+    public $clientStocks = [];
+    public $clientStocktransfers = [];
     public $searchTerm = '';
     public $searchDetails = '';
     public $startDate = '';
@@ -27,10 +30,48 @@ class ManageStockDetails extends Component
     public $showDetails = false;
     public $selected_user_id = null;
     public $selected_user_model = null;
+    public $modelType = null;
+    public $users = [];
 
-    public function mount()
+    public function mount($modelType)
     {
-        $this->loadStockDetails();
+        $this->modelType = $modelType;
+        if ($this->modelType == 'client') {
+            $this->loadClientReport();
+        } else {
+            $this->loadStockDetails();
+        }
+    }
+    public function loadClientReport()
+    {
+
+        $this->users = [];
+        ///Apply Filters To Customers and Suppliers
+        $suppliers = Supplier::query()
+            ->when($this->searchTerm, function ($query) {
+                $query->where('name', 'like', '%' . $this->searchTerm . '%');
+            })
+            ->get();
+        $clients = Customer::query()
+            ->when($this->searchTerm, function ($query) {
+                $query->where('name', 'like', '%' . $this->searchTerm . '%');
+            })
+            ->get();
+
+        foreach ($suppliers as $supplier) {
+            $this->users[] = [
+                'id' => $supplier->id,
+                'name' => $supplier->name,
+                'model' => 'Supplier',
+            ];
+        }
+        foreach ($clients as $client) {
+            $this->users[] = [
+                'id' => $client->id,
+                'name' => $client->name,
+                'model' => 'Customer',
+            ];
+        }
     }
     public function loadStockDetails()
     {
@@ -40,14 +81,14 @@ class ManageStockDetails extends Component
                     $query->whereHas('user', function ($q) {
                         $q->where('name', 'like', '%' . $this->searchTerm . '%');
                     })
-                    ->orWhereHas('warehouse', function ($q) {
-                        $q->where('name', 'like', '%' . $this->searchTerm . '%');
-                    });
+                        ->orWhereHas('warehouse', function ($q) {
+                            $q->where('name', 'like', '%' . $this->searchTerm . '%');
+                        });
                 });
             })
 
             ->with(['product', 'warehouse'])
-            ->groupBy(['user_id','user_model'])
+            ->groupBy(['user_id', 'user_model'])
             ->orderBy('created_at', 'desc')
             ->selectRaw('sum(quantity) as quantity,count(id) as product_count, user_id, user_model')
             ->get();
@@ -55,7 +96,11 @@ class ManageStockDetails extends Component
     public function updated($name, $value)
     {
         if ($name === 'searchTerm') {
-            $this->loadStockDetails();
+            if ($this->modelType == 'client') {
+                $this->loadClientReport();
+            } else {
+                $this->loadStockDetails();
+            }
         }
         if ($name === 'searchDetails' || $name === 'startDate' || $name === 'endDate') {
             $this->viewDetails($this->selected_user_id, $this->selected_user_model);
@@ -75,7 +120,7 @@ class ManageStockDetails extends Component
             });
         });
         $query->where('user_id', $user_id)->where('user_model', $user_model);
-        $this->selectedStock=$query->get();
+        $this->selectedStock = $query->get();
 
         // Check if any record was found
         if ($this->selectedStock->isEmpty()) {
@@ -105,18 +150,108 @@ class ManageStockDetails extends Component
         $this->searchDetails = '';
         $this->startDate = '';
         $this->endDate = '';
-        $this->selected_user_id =null;
+        $this->selected_user_id = null;
         $this->selected_user_model = null;
-        $this->loadStockDetails();
+        if ($this->modelType == 'client') {
+            $this->loadClientReport();
+        } else {
+            $this->loadStockDetails();
+        }
     }
     public function clearFilters()
     {
         $this->searchTerm = '';
         $this->startDate = '';
         $this->endDate = '';
-        $this->loadStockDetails();
+        if ($this->modelType == 'client') {
+            $this->loadClientReport();
+        } else {
+            $this->loadStockDetails();
+        }
     }
+    public function viewClientReport($user_id, $user_model)
+    {
+        $this->selected_user_id = $user_id;
+        $this->selected_user_model = $user_model;
+        $query = ServiceStockDetail::query();
+        $query->when($this->searchDetails, function ($query) {
+            $query->where(function ($query) {
+                $query->whereHas('product', function ($q) {
+                    $q->where('name', 'like', '%' . $this->searchDetails . '%');
+                });
+            });
+        });
+        $query->where('user_id', $user_id)->where('user_model', $user_model);
+        $this->selectedStock = $query->get();
 
+        if ($this->selectedStock->isEmpty()) {
+            // Handle the case where no data is found
+            session()->flash('error', 'No stock details found for the given user.');
+            $this->showDetails = false;
+            return;
+        }
+
+        // Proceed safely now that we know at least one record exists
+        $this->selectedUser = $this->selectedStock[0]->user ?? null;
+
+        // Validate if user exists
+        if (!$this->selectedUser) {
+            session()->flash('error', 'User associated with the stock could not be found.');
+            $this->showDetails = false;
+            return;
+        }
+        $this->clientStock();
+        $this->clientStocktransfers();
+
+        $this->showDetails = true;
+    }
+    public function clientStock()
+    {
+
+        $this->clientStocks = Stock::with(['warehouse', 'user'])
+            ->where(function ($query) {
+                $query->where('title', 'like', '%' . $this->searchTerm . '%');
+                $query->orWhere('tracking_id', 'like', '%' . $this->searchTerm . '%');
+                $query->orWhereHas('warehouse', function ($q) {
+                    $q->where('name', 'like', '%' . $this->searchTerm . '%');
+                })->orWhereHas('user', function ($q) {
+                    $q->where('name', 'like', '%' . $this->searchTerm . '%');
+                });
+            })
+            ->when($this->startDate && $this->endDate, function ($query) {
+                $startDate = Carbon::parse($this->startDate)->startOfDay();
+                $endDate = Carbon::parse($this->endDate)->endOfDay();
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            })
+            ->get();
+    }
+    public function clientStocktransfers()
+    {
+        $this->clientStocktransfers = StockTransfer::with([
+            'fromWarehouse',
+            'toWarehouse',
+            'fromUser',
+            'toUser',
+        ])
+            ->when($this->searchTerm, function ($query) {
+                $query->where(function ($q) {
+                    $q->whereHas('fromUser', function ($q) {
+                        $q->where('name', 'like', '%' . $this->searchTerm . '%');
+                    })
+                        ->orWhereHas('toUser', function ($q) {
+                            $q->where('name', 'like', '%' . $this->searchTerm . '%');
+                        });
+                });
+            })
+            ->when($this->startDate, function ($query) {
+                $query->whereDate('created_at', '>=', Carbon::parse($this->startDate));
+            })
+            ->when($this->endDate, function ($query) {
+                $query->whereDate('created_at', '<=', Carbon::parse($this->endDate));
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+    }
     public function stockPDF()
     {
 
@@ -142,7 +277,34 @@ class ManageStockDetails extends Component
         // ->update(['pdf_path' => $filepath]);
 
         $this->dispatch('notify', status: 'success', message: 'PDF generated successfully!');
-         return response()->download(storage_path('app/public/' . $filepath), $filename);
+        return response()->download(storage_path('app/public/' . $filepath), $filename);
+    }
+    public function clientReportPDF()
+    {
+
+        $directory = 'client_stock_report_pdf';
+        // Generate PDF
+        $pdf = Pdf::loadView('pdf.services.stock-client-report', [
+            'pageTitle' => 'Client Stock Report',
+            'clientStocktransfers' => $this->clientStocktransfers,
+            'selectedUser' => $this->selectedUser,
+            'clientStocks' => $this->clientStocks,
+            'selectedStock' => $this->selectedStock,
+        ])->setOption('defaultFont', 'Arial');
+
+        // Ensure the directory exists
+        if (!Storage::disk('public')->exists($directory)) {
+            Storage::disk('public')->makeDirectory($directory);
+        }
+
+        $filename = 'client_stock_report_' . now()->format('Ymd_His') . '.pdf'; // Unique filename
+        $filepath = $directory . '/' . $filename;
+
+        // Save the PDF to storage
+        Storage::disk('public')->put($filepath, $pdf->output());
+
+        $this->dispatch('notify', status: 'success', message: 'PDF generated successfully!');
+        return response()->download(storage_path('app/public/' . $filepath), $filename);
     }
 
     public function render()
