@@ -87,8 +87,8 @@ class SupplierTransaction extends Component
     file_put_contents(storage_path('app/public/' . $filepath), $pdf->output());
 
     // Update path in DB
-    ModalSupplierTransaction::where('supplier_id', $supplierId)
-        ->update(['pdf_path' => $filepath]);
+    // ModalSupplierTransaction::where('supplier_id', $supplierId)
+    //     ->update(['pdf_path' => $filepath]);
 
     $this->dispatch('notify', status: 'success', message: 'Supplier PDF generated successfully!');
 
