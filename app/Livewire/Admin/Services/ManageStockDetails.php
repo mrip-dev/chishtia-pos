@@ -20,7 +20,8 @@ class ManageStockDetails extends Component
 
     public $stocks = [];
     public $clientStocks = [];
-    public $clientStocktransfers = [];
+    public $clientStocktransfersSent = [];
+    public $clientStocktransfersReceived =[];
     public $searchTerm = '';
     public $searchDetails = '';
     public $startDate = '';
@@ -201,14 +202,15 @@ class ManageStockDetails extends Component
             return;
         }
         $this->clientStock();
-        $this->clientStocktransfers();
+        $this->clientStocktransfersSent();
+        $this->clientStocktransfersReceived();
 
         $this->showDetails = true;
     }
     public function clientStock()
     {
 
-        $this->clientStocks = Stock::with(['warehouse', 'user'])
+        $this->clientStocks = Stock::with(['warehouse', 'user', 'stockInOuts'])
             ->where(function ($query) {
                 $query->where('title', 'like', '%' . $this->searchTerm . '%');
                 $query->orWhere('tracking_id', 'like', '%' . $this->searchTerm . '%');
@@ -222,16 +224,16 @@ class ManageStockDetails extends Component
                 $startDate = Carbon::parse($this->startDate)->startOfDay();
                 $endDate = Carbon::parse($this->endDate)->endOfDay();
                 $query->whereBetween('created_at', [$startDate, $endDate]);
-            })
-            ->get();
+            })->where('user_id', $this->selected_user_id)->where('user_model', $this->selected_user_model)->get();
     }
-    public function clientStocktransfers()
+    public function clientStocktransfersSent()
     {
-        $this->clientStocktransfers = StockTransfer::with([
+        $this->clientStocktransfersSent = StockTransfer::with([
             'fromWarehouse',
             'toWarehouse',
             'fromUser',
             'toUser',
+            'stockTransferDetails'
         ])
             ->when($this->searchTerm, function ($query) {
                 $query->where(function ($q) {
@@ -250,6 +252,40 @@ class ManageStockDetails extends Component
                 $query->whereDate('created_at', '<=', Carbon::parse($this->endDate));
             })
             ->orderBy('created_at', 'desc')
+            ->where(function ($query) {
+                $query->where('from_user_id', $this->selected_user_id)->where('from_user_model', $this->selected_user_model);
+            })
+            ->get();
+    }
+     public function clientStocktransfersReceived()
+    {
+        $this->clientStocktransfersReceived = StockTransfer::with([
+            'fromWarehouse',
+            'toWarehouse',
+            'fromUser',
+            'toUser',
+            'stockTransferDetails'
+        ])
+            ->when($this->searchTerm, function ($query) {
+                $query->where(function ($q) {
+                    $q->whereHas('fromUser', function ($q) {
+                        $q->where('name', 'like', '%' . $this->searchTerm . '%');
+                    })
+                        ->orWhereHas('toUser', function ($q) {
+                            $q->where('name', 'like', '%' . $this->searchTerm . '%');
+                        });
+                });
+            })
+            ->when($this->startDate, function ($query) {
+                $query->whereDate('created_at', '>=', Carbon::parse($this->startDate));
+            })
+            ->when($this->endDate, function ($query) {
+                $query->whereDate('created_at', '<=', Carbon::parse($this->endDate));
+            })
+            ->orderBy('created_at', 'desc')
+            ->where(function ($query) {
+                $query->where('to_user_id', $this->selected_user_id)->where('to_user_model', $this->selected_user_model);
+            })
             ->get();
     }
     public function stockPDF()
@@ -286,7 +322,8 @@ class ManageStockDetails extends Component
         // Generate PDF
         $pdf = Pdf::loadView('pdf.services.stock-client-report', [
             'pageTitle' => 'Client Stock Report',
-            'clientStocktransfers' => $this->clientStocktransfers,
+            'clientStocktransfersSent' => $this->clientStocktransfersSent,
+            'clientStocktransfersReceived' => $this->clientStocktransfersReceived,
             'selectedUser' => $this->selectedUser,
             'clientStocks' => $this->clientStocks,
             'selectedStock' => $this->selectedStock,
