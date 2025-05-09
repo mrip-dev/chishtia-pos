@@ -4,23 +4,29 @@
 @section('content')
 <!-- Customer Info -->
 <div class="top-section">
-    <div class="customer-info">
-        Customer: {{ $selectedUser?->name ?? 'N/A' }}
-    </div>
-    <div class="customer-date">
-        Date: {{ now()->format('d-m-Y') }}
-    </div>
+    <table style="width: 100%; margin-top: 50px; font-size: 13px;">
+        <tr>
+            <td style="text-align: left;border:none;">
+                <div class="customer-info">
+                    Customer: {{ $selectedUser?->name ?? 'N/A' }}
+                </div>
+            </td>
+            <td style="text-align: right;border:none;">
+                <div class="customer-date">
+                    Date: {{ now()->format('d-m-Y') }}
+                </div>
+            </td>
+        </tr>
+    </table>
 </div>
-
 <div class="row">
     <div class="col-md-12">
         <h4 class="p-3">Stock In/Out</h4>
         <table class="table table--light table-bordered style--two bg--white">
             <thead>
                 <tr>
-                    <th>@lang('Title') | @lang('CTN NO')</th>
-                    <th>@lang('Warehouse') | @lang('Type')</th>
-                    <th>@lang('Date')</th>
+                    <th>@lang('Title') | @lang('CTN NO') | @lang('Warehouse')</th>
+                    <th>@lang('Type') | @lang('Date')</th>
                     <th>@lang('Service Charges')</th>
                     <th>@lang('Products')</th>
                 </tr>
@@ -33,27 +39,32 @@
                         <span class="text--primary fw-bold"> {{ $item->title }}</span>
                         <br>
                         <small>{{ $item->tracking_id }}</small>
+                        <br>
+                        <span class="text--primary"> {{ $item->warehouse->name }}</span>
+
                     </td>
                     <td>
-                        <span class="text--primary fw-bold"> {{ $item->warehouse->name }}</span>
-                        <br>
+
                         <small>{{ $item->stock_type ? $item->stock_type== 'in' ? 'Stock In' : 'Stock Out' : '' }}</small>
-                    </td>
-
-                    <td>
-                        {{ $item->created_at->format('d M, Y') }}
-                    </td>
-
-                    <td>
-                        <span class="text--primary fw-bold">@lang('Received'):  {{ number_format($item->total_amount) }} {{ gs('cur_sym') }}</span>
                         <br>
-                        <small>{{number_format( $item->recieved_amount) }} {{ gs('cur_sym') }}</small>
-                        <br>
-                        <span class="text--primary fw-bold"> {{ number_format($item->due_amount) }} {{ gs('cur_sym') }}</span>
-
+                        <small>{{ $item->created_at->format('d M, Y') }}</small>
                     </td>
-                    <td>
-                        <span class="text--primary fw-bold"> {{ number_format($item->due_amount) }} {{ gs('cur_sym') }}</span>
+
+
+
+                    <td class="text-start">
+                        <span class="text--primary"> @lang('Total') : </span> <span>{{ number_format($item->total_amount) }} {{ gs('cur_sym') }}</span>
+                        <br>
+                        <span class="text--primary"> @lang('Received') : </span> <span> {{number_format( $item->recieved_amount) }} {{ gs('cur_sym') }}</span>
+                        <br>
+                        <span class="text--primary"> @lang('Remaining') : </span> <span> {{ number_format($item->due_amount) }} {{ gs('cur_sym') }}</span>
+                    </td>
+                    <td class="text-start">
+                        @foreach ($item->stockInOuts as $product)
+                        <span class="text--primary"> {{ $product->product?->name }} : {{ $product->quantity }}</span>
+                        <br>
+                        @endforeach
+
                     </td>
 
                 </tr>
@@ -67,29 +78,74 @@
     </div>
 
     <div class="col-md-12">
-        <h4 class="p-3">Stock Transfer</h4>
+        <h4 class="p-3">Stock Transfered</h4>
         <div class="table-responsive--md table-responsive">
             <table class="table table--light table-bordered style--two bg--white">
                 <thead>
                     <tr>
-                        <th>@lang('To') | @lang('User')</th>
-                        <th>@lang('To') | @lang('Warehouse')</th>
+                        <th>@lang('User') | @lang('Warehouse')</th>
                         <th>@lang('Date')</th>
+                        <th>@lang('Products')</th>
+
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($clientStocktransfers as $item)
+                    @forelse($clientStocktransfersSent as $item)
                     <tr>
                         <td>
-                            <span class="fw-bold">{{ $item->toUser?->name }}</span>
-                        </td>
-                        <td> {{ $item->toWarehouse?->name }}
+                            <span class="text--primary">{{ $item->toUser?->name }}</span>
+                            <br>
+                            <span>{{ $item->toWarehouse?->name }}</span>
                         </td>
                         <td>
                             {{ $item->created_at->format('d M, Y') }}
-
                         </td>
+                        <td>
 
+                            @foreach ($item->stockTransferDetails as $product)
+                            <span class="text--primary"> {{ $product->product?->name }} : {{ $product->quantity }}</span>
+                            <br>
+                            @endforeach
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td class="text-muted text-center" colspan="100%">{{ __($emptyMessage) }}</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table><!-- table end -->
+        </div>
+    </div>
+    <div class="col-md-12">
+        <h4 class="p-3">Stock Received</h4>
+        <div class="table-responsive--md table-responsive">
+            <table class="table table--light table-bordered style--two bg--white">
+                <thead>
+                    <tr>
+                        <th>@lang('User') | @lang('Warehouse')</th>
+                        <th>@lang('Date')</th>
+                        <th>@lang('Products')</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($clientStocktransfersReceived as $item)
+                    <tr>
+                        <td>
+                            <span class="text--primary">{{ $item->fromUser?->name }}</span>
+                            <br>
+                            <span>{{ $item->fromWarehouse?->name }}</span>
+                        </td>
+                        <td>
+                            {{ $item->created_at->format('d M, Y') }}
+                        </td>
+                        <td>
+
+                            @foreach ($item->stockTransferDetails as $product)
+                            <span class="text--primary"> {{ $product->product?->name }} : {{ $product->quantity }}</span>
+                            <br>
+                            @endforeach
+                        </td>
                     </tr>
                     @empty
                     <tr>

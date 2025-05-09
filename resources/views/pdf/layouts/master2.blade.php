@@ -149,11 +149,17 @@
             display: flex;
             justify-content: space-between;
             font-size: 13px;
+            flex-wrap: nowrap;
+            /* Prevent wrapping to new line */
+            gap: 100px;
+            /* Optional: adds space between them */
         }
 
         .signature {
+            flex: 1;
             text-align: center;
         }
+
 
         .signature-line {
             margin-top: 40px;
@@ -181,17 +187,19 @@
     @yield('content')
 
 
-    <!-- Optional Signature -->
-    <div class="signature-block">
-        <div class="signature">
-            <div class="signature-line"></div>
-            Authorized By
-        </div>
-        <div class="signature">
-            <div class="signature-line"></div>
-            Customer Signature
-        </div>
-    </div>
+    <table style="width: 100%; margin-top: 50px; font-size: 13px;">
+        <tr>
+            <td style="text-align: center;border:none;">
+                <div style="border-top: 1px solid #000; width: 200px; margin: 0 auto 5px;"></div>
+                Authorized By
+            </td>
+            <td style="text-align: center;border:none;">
+                <div style="border-top: 1px solid #000; width: 200px; margin: 0 auto 5px;"></div>
+                Customer Signature
+            </td>
+        </tr>
+    </table>
+
 
     <!-- Footer -->
     <div class="footer">
