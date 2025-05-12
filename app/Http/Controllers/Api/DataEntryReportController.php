@@ -4,9 +4,19 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\{
-    Action, Adjustment, Customer, CustomerPayment,
-    Expense, Product, Purchase, PurchaseReturn,
-    Sale, SaleReturn, Supplier, SupplierPayment, Transfer
+    Action,
+    Adjustment,
+    Customer,
+    CustomerPayment,
+    Expense,
+    Product,
+    Purchase,
+    PurchaseReturn,
+    Sale,
+    SaleReturn,
+    Supplier,
+    SupplierPayment,
+    Transfer
 };
 use Illuminate\Http\Request;
 
@@ -95,7 +105,13 @@ class DataEntryReportController extends Controller
     private function entries($type)
     {
 
-        $entries    = Action::where('actionable_type', $this->model)->with('actionable', 'admin');
+        $entries    = Action::where('actionable_type', $this->model)
+            ->when(request('date'), fn($q) => $q->whereDate('created_at', request('date')))
+            ->when(
+                request('start_date') && request('end_date'),
+                fn($q) =>
+                $q->whereBetween('created_at', [request('start_date'), request('end_date')])
+            )->with('actionable', 'admin');
         if (count($this->relations)) {
             $entries->with($this->relations);
         }
@@ -104,6 +120,5 @@ class DataEntryReportController extends Controller
             'data' => $entries,
 
         ]);
-
     }
 }

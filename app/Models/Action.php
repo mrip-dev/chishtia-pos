@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 class Action extends Model
 {
     const UPDATED_AT = null;
-  protected static function booted()
+    protected static function booted()
     {
         parent::booted();
 
@@ -18,6 +18,15 @@ class Action extends Model
             \App\Models\Customer::class => \App\Models\Customer::class,
         ]);
     }
+    // In App\Models\ModelName.php
+    public function scopeFilter($query, $filters)
+    {
+        return $query->when(
+                ($filters['start_date'] ?? null) && ($filters['end_date'] ?? null),
+                fn($q) => $q->whereBetween('created_at', [$filters['start_date'], $filters['end_date']])
+            );
+    }
+
     public function actionable()
     {
         return $this->morphTo();

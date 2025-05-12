@@ -6,7 +6,8 @@ use App\Http\Controllers\Api\Auth\LoginController;
 
 Route::post('/login', [LoginController::class, 'login'])->name('api.login');
 
-Route::middleware('auth:sanctum')->controller('DataEntryReportController')->prefix('reports/data-entry')->name('report.data.entry.')->group(function () {
+// Route::middleware('auth:sanctum')->controller('DataEntryReportController')->prefix('reports/data-entry')->name('report.data.entry.')->group(function () {
+Route::controller('DataEntryReportController')->prefix('reports/data-entry')->name('report.data.entry.')->group(function () {
     Route::get('product', 'product')->name('product');
     Route::get('customer', 'customer')->name('customer');
     Route::get('supplier', 'supplier')->name('supplier');
