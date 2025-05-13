@@ -106,13 +106,15 @@ class DataEntryReportController extends Controller
 
     private function entries($type)
     {
-
+        $perPage = 20;
+        $page = request('page', 1);
+        $skip = ($page - 1) * $perPage;
         $entries    = Action::where('actionable_type', $this->model)
             ->when(request('date'), fn($q) => $q->whereDate('created_at', request('date')))
             ->when(
                 request('start_date') && request('end_date'),
                 fn($q) => $q->whereBetween('created_at', [request('start_date'), request('end_date')])
-            )->with('actionable', 'admin');
+            )->with('actionable', 'admin')->skip($skip)->take($perPage);
         if (count($this->relations)) {
             $entries->with($this->relations);
         }

@@ -39,6 +39,35 @@ class AdminController extends Controller
         $widget['total_sale_return_count'] = SaleReturn::count();
         $widget['total_sale_return']       = SaleReturn::sum('payable_amount');
 
+        if ($request->start_date && $request->end_date) {
+            $startDate = Carbon::parse($request->start_date)->toDateString();
+            $endDate = Carbon::parse($request->end_date)->toDateString();
+        } elseif ($request->month) {
+            $month = (int) $request->month;
+            $year = $request->year ?? now()->year;
+
+            // Get first and last day of that month
+            $startDate = Carbon::create($year, $month, 1)->startOfMonth()->toDateString();
+            $endDate = Carbon::create($year, $month, 1)->endOfMonth()->toDateString();
+        } else {
+            $endDate = now()->toDateString();
+            $startDate = now()->subDays(14)->toDateString();
+        }
+
+        return response()->json([
+            'widgets' => $widget,
+            'alertProductsQty' => $this->alertProductsQty(),
+            'topSellingProducts' => $this->topSellingProducts(),
+            'saleReturns' => $this->saleReturns(),
+            'purchaseAndSaleReport' => $this->purchaseAndSaleReport($startDate, $endDate),
+            'saleAndSaleReturnReport' => $this->saleAndSaleReturnReport($startDate, $endDate),
+            'purchaseAndPurchaseReturnReport' => $this->purchaseAndPurchaseReturnReport($startDate, $endDate),
+
+        ]);
+    }
+    public function alertProductsQty()
+    {
+
         $alertProductsQty = Product::select('products.id', 'products.name', 'units.name as unit_name', 'products.alert_quantity', 'product_stocks.quantity as quantity', 'warehouses.name as warehouse_name')
             ->join('product_stocks', 'products.id', '=', 'product_stocks.product_id')
             ->join('units', 'units.id', '=', 'products.unit_id')
@@ -46,28 +75,24 @@ class AdminController extends Controller
             ->whereRaw('products.alert_quantity >= product_stocks.quantity')
             ->orderBy('products.alert_quantity')->take(8)->get();
 
-        //top 5 best sales products
-        $topSellingProducts =  Product::where('total_sale', '!=', 0)->with('unit:id,name')->orderBy('total_sale', 'desc')->limit(8)->get();
-        $saleReturns        = SaleReturn::with('sale.warehouse', 'customer')->orderBy('id', 'desc')->take(8)->get();
-        return response()->json([
-            'widgets' => $widget,
-            'purchaseAndSaleReport' => $this->purchaseAndSaleReport($request),
-            'saleAndSaleReturnReport' => $this->saleAndSaleReturnReport($request),
-            'purchaseAndPurchaseReturnReport' => $this->purchaseAndPurchaseReturnReport($request),
-            'alertProductsQty' => $alertProductsQty,
-            'topSellingProducts' => $topSellingProducts,
-            'saleReturns' => $saleReturns,
-        ]);
+        return $alertProductsQty;
     }
-    public function purchaseAndSaleReport($request)
+    public function topSellingProducts()
     {
-        if ($request->start_date && $request->end_date) {
-            $startDate = Carbon::parse($request->start_date)->toDateString();
-            $endDate = Carbon::parse($request->end_date)->toDateString();
-        } else {
-            $endDate = now()->toDateString();
-            $startDate = now()->subDays(14)->toDateString();
-        }
+
+        $data =  Product::where('total_sale', '!=', 0)->with('unit:id,name')->orderBy('total_sale', 'desc')->limit(8)->get();
+        return $data;
+    }
+    public function saleReturns()
+    {
+
+        $data = SaleReturn::with('sale.warehouse', 'customer')->orderBy('id', 'desc')->take(8)->get();
+
+        return $data;
+    }
+    public function purchaseAndSaleReport($startDate, $endDate)
+    {
+
 
         $diffInDays = Carbon::parse($startDate)->diffInDays(Carbon::parse($endDate));
         $groupBy = $diffInDays > 30 ? 'months' : 'days';
@@ -113,16 +138,8 @@ class AdminController extends Controller
 
 
 
-    public function saleAndSaleReturnReport($request)
+    public function saleAndSaleReturnReport($startDate, $endDate)
     {
-         if ($request->start_date && $request->end_date) {
-            $startDate = Carbon::parse($request->start_date)->toDateString();
-            $endDate = Carbon::parse($request->end_date)->toDateString();
-        } else {
-
-            $endDate = now()->toDateString();
-            $startDate = now()->subDays(14)->toDateString();
-        }
 
         $diffInDays = Carbon::parse($startDate)->diffInDays(Carbon::parse($endDate));
 
@@ -181,16 +198,9 @@ class AdminController extends Controller
     }
 
 
-    public function purchaseAndPurchaseReturnReport($request)
+    public function purchaseAndPurchaseReturnReport($startDate, $endDate)
     {
-         if ($request->start_date && $request->end_date) {
-            $startDate = Carbon::parse($request->start_date)->toDateString();
-            $endDate = Carbon::parse($request->end_date)->toDateString();
-        } else {
 
-            $endDate = now()->toDateString();
-            $startDate = now()->subDays(14)->toDateString();
-        }
 
         $diffInDays = Carbon::parse($startDate)->diffInDays(Carbon::parse($endDate));
 
