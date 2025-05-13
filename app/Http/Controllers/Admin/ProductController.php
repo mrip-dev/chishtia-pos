@@ -7,7 +7,9 @@ use App\Models\Action;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductStock;
 use App\Models\Unit;
+use App\Models\Warehouse;
 use App\Rules\FileTypeValidate;
 use Illuminate\Http\Request;
 
@@ -75,7 +77,8 @@ class ProductController extends Controller
         $categories = Category::orderBy('name')->get();
         $brands     = Brand::orderBy('name')->get();
         $units      = Unit::orderBy('name')->get();
-        return view('admin.product.form', compact('pageTitle', 'categories', 'brands', 'units'));
+        $warehouses = Warehouse::active()->orderBy('name')->get();
+        return view('admin.product.form', compact('pageTitle', 'categories', 'brands', 'units','warehouses'));
     }
 
     public function store(Request $request, $id = 0)
@@ -105,10 +108,29 @@ class ProductController extends Controller
         $product->alert_quantity = $request->alert_quantity;
         $product->note           = $request->note;
         $product->save();
+        if($request->warehouse_id && $request->stock_quantity){
+           $this->storeStock($request->warehouse_id,$product->id, $request->stock_quantity);
+        }
         Action::newEntry($product, $id ? 'UPDATED' : 'CREATED');
 
         $notify[] = ['success',  $notification];
         return back()->withNotify($notify);
+    }
+    protected function storeStock($warehouse_id,$productid, $quantity)
+    {
+
+            $previousStock = ProductStock::where('warehouse_id', $warehouse_id)->where('product_id', $productid)->first();
+            if ($previousStock) {
+                $previousStock->quantity += $quantity;
+                $previousStock->save();
+            } else {
+                $stock               = new ProductStock();
+                $stock->warehouse_id = $warehouse_id;
+                $stock->product_id   = $productid;
+                $stock->quantity     = $quantity;
+                $stock->save();
+            }
+
     }
 
     public function edit($id)

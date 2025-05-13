@@ -42,10 +42,8 @@ return [
         ],
         'api' => [
             'driver' => 'session',
-            'provider' => 'users',
-            'hash' => true,
+            'provider' => 'admins',
         ],
-
         'admin' => [
             'driver' => 'session',
             'provider' => 'admins',

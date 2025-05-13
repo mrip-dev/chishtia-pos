@@ -187,7 +187,8 @@ class ManageStockDetails extends Component
 
         if ($this->selectedStock->isEmpty()) {
             // Handle the case where no data is found
-            session()->flash('error', 'No stock details found for the given user.');
+
+             $this->dispatch('notify', status: 'error', message: 'No stock details found for the given user.');
             $this->showDetails = false;
             return;
         }
@@ -197,7 +198,8 @@ class ManageStockDetails extends Component
 
         // Validate if user exists
         if (!$this->selectedUser) {
-            session()->flash('error', 'User associated with the stock could not be found.');
+              $this->dispatch('notify', status: 'error', message: 'User associated with the stock could not be found.');
+
             $this->showDetails = false;
             return;
         }

@@ -4,9 +4,19 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\{
-    Action, Adjustment, Customer, CustomerPayment,
-    Expense, Product, Purchase, PurchaseReturn,
-    Sale, SaleReturn, Supplier, SupplierPayment, Transfer
+    Action,
+    Adjustment,
+    Customer,
+    CustomerPayment,
+    Expense,
+    Product,
+    Purchase,
+    PurchaseReturn,
+    Sale,
+    SaleReturn,
+    Supplier,
+    SupplierPayment,
+    Transfer
 };
 use Illuminate\Http\Request;
 
@@ -62,19 +72,21 @@ class DataEntryReportController extends Controller
     public function adjustment(Request $request)
     {
         $this->model = Adjustment::class;
+        $this->relations = ['actionable.warehouse'];
         return $this->entries($request);
     }
 
     public function transfer(Request $request)
     {
         $this->model = Transfer::class;
+        $this->relations = ['actionable.warehouse', 'actionable.toWarehouse'];
         return $this->entries($request);
     }
 
     public function expense(Request $request)
     {
         $this->model = Expense::class;
-        $this->relations = ['actionable.expenseType'];
+        $this->relations = ['actionable.expenseType', 'actionable.bank'];
         return $this->entries($request);
     }
 
@@ -94,8 +106,15 @@ class DataEntryReportController extends Controller
 
     private function entries($type)
     {
-
-        $entries    = Action::where('actionable_type', $this->model)->with('actionable', 'admin');
+        $perPage = 20;
+        $page = request('page', 1);
+        $skip = ($page - 1) * $perPage;
+        $entries    = Action::where('actionable_type', $this->model)
+            ->when(request('date'), fn($q) => $q->whereDate('created_at', request('date')))
+            ->when(
+                request('start_date') && request('end_date'),
+                fn($q) => $q->whereBetween('created_at', [request('start_date'), request('end_date')])
+            )->with('actionable', 'admin')->skip($skip)->take($perPage);
         if (count($this->relations)) {
             $entries->with($this->relations);
         }
@@ -104,6 +123,5 @@ class DataEntryReportController extends Controller
             'data' => $entries,
 
         ]);
-
     }
 }

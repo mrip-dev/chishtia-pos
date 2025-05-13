@@ -4,11 +4,13 @@ namespace App\Models;
 
 use App\Constants\Status;
 use App\Traits\GlobalStatus;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
 
 class Admin extends Authenticatable
 {
-
+    use HasFactory, HasApiTokens;
     use GlobalStatus;
     /**
      * The attributes that should be hidden for arrays.
@@ -16,7 +18,8 @@ class Admin extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password',
+        'remember_token',
     ];
 
     public function role()

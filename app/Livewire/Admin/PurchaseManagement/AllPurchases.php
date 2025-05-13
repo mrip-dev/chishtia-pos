@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin\PurchaseManagement;
 
+use App\Models\Action;
 use App\Models\Bank;
 use App\Models\BankTransaction;
 use App\Models\SupplierTransaction as ModelsSupplierTransaction;
@@ -358,7 +359,7 @@ class AllPurchases extends Component
             $purchase->driver_contact = $this->driver_contact;
             $purchase->fare = $this->fare;
             $purchase->save();
-
+            Action::newEntry($purchase, $this->purchaseId ? 'UPDATED' : 'CREATED');
             // Prepare sale details data
             $purchaseDetailData = collect($this->products)->map(function ($product) use ($purchase) {
                 return [
@@ -491,8 +492,8 @@ class AllPurchases extends Component
             if ($productStock) {
                 $productStock->quantity += $product->quantity;
                 $productStock->save();
-            }else {
-                $stock= new ProductStock();
+            } else {
+                $stock = new ProductStock();
                 $stock->warehouse_id = $this->warehouse_id;
                 $stock->product_id   = $product->id;
                 $stock->quantity     = $product->quantity;
@@ -549,7 +550,7 @@ class AllPurchases extends Component
 
         $payment->save();
 
-
+        Action::newEntry($payment, 'CREATED');
         // Get last transaction
         $lastTransaction = ModelsSupplierTransaction::where('supplier_id', $purchase->supplier_id)
             ->orderBy('id', 'desc')
@@ -584,117 +585,117 @@ class AllPurchases extends Component
         $supplierTransaction->save();
 
 
-    //Bank History ....
-    // --- CASH ONLY ---
-if ($this->modal_payment_method === 'cash') {
-    $amount = $this->modal_paid_amount;
-    $bank = Bank::where('name', 'Cash')->first();
+        //Bank History ....
+        // --- CASH ONLY ---
+        if ($this->modal_payment_method === 'cash') {
+            $amount = $this->modal_paid_amount;
+            $bank = Bank::where('name', 'Cash')->first();
 
-    if ($bank && $amount > 0) {
-        $lastTransaction = BankTransaction::where('bank_id', $bank->id)->latest()->first();
-        $openingBalance = $lastTransaction ? $lastTransaction->closing_balance : ($bank->opening_balance ?? 0.00);
-        $closingBalance = $openingBalance - $amount;
+            if ($bank && $amount > 0) {
+                $lastTransaction = BankTransaction::where('bank_id', $bank->id)->latest()->first();
+                $openingBalance = $lastTransaction ? $lastTransaction->closing_balance : ($bank->opening_balance ?? 0.00);
+                $closingBalance = $openingBalance - $amount;
 
-        $bankTransaction = new BankTransaction();
-        $bankTransaction->bank_id = $bank->id;
-        $bankTransaction->opening_balance = $openingBalance;
-        $bankTransaction->closing_balance = $closingBalance;
-        $bankTransaction->debit = 0.00;
-        $bankTransaction->credit = $amount;
-        $bankTransaction->amount = $amount;
-        $bankTransaction->module_id = $purchase->id;
-        $bankTransaction->data_model = 'Purchase';
-        $bankTransaction->source = 'Cash Payment  Purchase';
-        $bankTransaction->save();
+                $bankTransaction = new BankTransaction();
+                $bankTransaction->bank_id = $bank->id;
+                $bankTransaction->opening_balance = $openingBalance;
+                $bankTransaction->closing_balance = $closingBalance;
+                $bankTransaction->debit = 0.00;
+                $bankTransaction->credit = $amount;
+                $bankTransaction->amount = $amount;
+                $bankTransaction->module_id = $purchase->id;
+                $bankTransaction->data_model = 'Purchase';
+                $bankTransaction->source = 'Cash Payment  Purchase';
+                $bankTransaction->save();
 
-        $bank->current_balance = $closingBalance;
-        $bank->save();
-    }
-}
+                $bank->current_balance = $closingBalance;
+                $bank->save();
+            }
+        }
 
-// --- BANK ONLY ---
-if ($this->modal_payment_method === 'bank') {
-    $amount = $this->modal_rec_bank;
-    $bank = Bank::find($this->bankId);
+        // --- BANK ONLY ---
+        if ($this->modal_payment_method === 'bank') {
+            $amount = $this->modal_rec_bank;
+            $bank = Bank::find($this->bankId);
 
-    if ($bank && $amount > 0) {
-        $lastTransaction = BankTransaction::where('bank_id', $bank->id)->latest()->first();
-        $openingBalance = $lastTransaction ? $lastTransaction->closing_balance : ($bank->opening_balance ?? 0.00);
-        $closingBalance = $openingBalance - $amount;
+            if ($bank && $amount > 0) {
+                $lastTransaction = BankTransaction::where('bank_id', $bank->id)->latest()->first();
+                $openingBalance = $lastTransaction ? $lastTransaction->closing_balance : ($bank->opening_balance ?? 0.00);
+                $closingBalance = $openingBalance - $amount;
 
-        $bankTransaction = new BankTransaction();
-        $bankTransaction->bank_id = $bank->id;
-        $bankTransaction->opening_balance = $openingBalance;
-        $bankTransaction->closing_balance = $closingBalance;
-        $bankTransaction->debit = 0.00;
-        $bankTransaction->credit = $amount;
-        $bankTransaction->amount = $amount;
-        $bankTransaction->module_id = $purchase->id;
-        $bankTransaction->data_model = 'Purchase';
-        $bankTransaction->source = 'Bank Payment  Purchase';
-        $bankTransaction->save();
+                $bankTransaction = new BankTransaction();
+                $bankTransaction->bank_id = $bank->id;
+                $bankTransaction->opening_balance = $openingBalance;
+                $bankTransaction->closing_balance = $closingBalance;
+                $bankTransaction->debit = 0.00;
+                $bankTransaction->credit = $amount;
+                $bankTransaction->amount = $amount;
+                $bankTransaction->module_id = $purchase->id;
+                $bankTransaction->data_model = 'Purchase';
+                $bankTransaction->source = 'Bank Payment  Purchase';
+                $bankTransaction->save();
 
-        $bank->current_balance = $closingBalance;
-        $bank->save();
-    }
-}
+                $bank->current_balance = $closingBalance;
+                $bank->save();
+            }
+        }
 
-// --- BOTH PAYMENT ---
-if ($this->modal_payment_method === 'both') {
-    // --- Cash Part ---
+        // --- BOTH PAYMENT ---
+        if ($this->modal_payment_method === 'both') {
+            // --- Cash Part ---
 
-    $cashAmount = $this->modal_paid_amount;
-    $cashBank = Bank::where('name', 'Cash')->first();
+            $cashAmount = $this->modal_paid_amount;
+            $cashBank = Bank::where('name', 'Cash')->first();
 
-    if ($cashBank && $cashAmount > 0) {
-        $lastCashTransaction = BankTransaction::where('bank_id', $cashBank->id)->latest()->first();
-        $cashOpening = $lastCashTransaction ? $lastCashTransaction->closing_balance : ($cashBank->opening_balance ?? 0.00);
-        $cashClosing = $cashOpening - $cashAmount;
+            if ($cashBank && $cashAmount > 0) {
+                $lastCashTransaction = BankTransaction::where('bank_id', $cashBank->id)->latest()->first();
+                $cashOpening = $lastCashTransaction ? $lastCashTransaction->closing_balance : ($cashBank->opening_balance ?? 0.00);
+                $cashClosing = $cashOpening - $cashAmount;
 
-        $cashTransaction = new BankTransaction();
-        $cashTransaction->bank_id = $cashBank->id;
-        $cashTransaction->opening_balance = $cashOpening;
-        $cashTransaction->closing_balance = $cashClosing;
-        $cashTransaction->debit = 0.00;
-        $cashTransaction->credit = $cashAmount;
-        $cashTransaction->amount = $cashAmount;
-        $cashTransaction->module_id = $purchase->id;
-        $cashTransaction->data_model = 'Purchase';
-        $cashTransaction->source = 'Cash Payment for Purchase (Both)';
-        $cashTransaction->save();
+                $cashTransaction = new BankTransaction();
+                $cashTransaction->bank_id = $cashBank->id;
+                $cashTransaction->opening_balance = $cashOpening;
+                $cashTransaction->closing_balance = $cashClosing;
+                $cashTransaction->debit = 0.00;
+                $cashTransaction->credit = $cashAmount;
+                $cashTransaction->amount = $cashAmount;
+                $cashTransaction->module_id = $purchase->id;
+                $cashTransaction->data_model = 'Purchase';
+                $cashTransaction->source = 'Cash Payment for Purchase (Both)';
+                $cashTransaction->save();
 
-        $cashBank->current_balance = $cashClosing;
-        $cashBank->save();
-    }
+                $cashBank->current_balance = $cashClosing;
+                $cashBank->save();
+            }
 
-    // --- Bank Part ---
-    $bankAmount = $this->modal_rec_bank;
-    $selectedBank = Bank::find($this->bankId);
+            // --- Bank Part ---
+            $bankAmount = $this->modal_rec_bank;
+            $selectedBank = Bank::find($this->bankId);
 
-    if ($selectedBank && $bankAmount > 0) {
-        $lastBankTransaction = BankTransaction::where('bank_id', $selectedBank->id)->latest()->first();
-        $bankOpening = $lastBankTransaction ? $lastBankTransaction->closing_balance : ($selectedBank->opening_balance ?? 0.00);
-        $bankClosing = $bankOpening - $bankAmount;
+            if ($selectedBank && $bankAmount > 0) {
+                $lastBankTransaction = BankTransaction::where('bank_id', $selectedBank->id)->latest()->first();
+                $bankOpening = $lastBankTransaction ? $lastBankTransaction->closing_balance : ($selectedBank->opening_balance ?? 0.00);
+                $bankClosing = $bankOpening - $bankAmount;
 
-        $bankTransaction = new BankTransaction();
-        $bankTransaction->bank_id = $selectedBank->id;
-        $bankTransaction->opening_balance = $bankOpening;
-        $bankTransaction->closing_balance = $bankClosing;
-        $bankTransaction->debit = 0.00;
-        $bankTransaction->credit = $bankAmount;
-        $bankTransaction->amount = $bankAmount;
-        $bankTransaction->module_id = $purchase->id;
-        $bankTransaction->data_model = 'Purchase';
-        $bankTransaction->source = 'Bank Payment for Purchase (Both)';
-        $bankTransaction->save();
+                $bankTransaction = new BankTransaction();
+                $bankTransaction->bank_id = $selectedBank->id;
+                $bankTransaction->opening_balance = $bankOpening;
+                $bankTransaction->closing_balance = $bankClosing;
+                $bankTransaction->debit = 0.00;
+                $bankTransaction->credit = $bankAmount;
+                $bankTransaction->amount = $bankAmount;
+                $bankTransaction->module_id = $purchase->id;
+                $bankTransaction->data_model = 'Purchase';
+                $bankTransaction->source = 'Bank Payment for Purchase (Both)';
+                $bankTransaction->save();
 
-        $selectedBank->current_balance = $bankClosing;
-        $selectedBank->save();
-    }
-}
+                $selectedBank->current_balance = $bankClosing;
+                $selectedBank->save();
+            }
+        }
 
 
-        $this->handleDailyBookEntries($amount_cash,$amount_bank,'credit',$this->modal_payment_method,'Purchase',$purchase->id);
+        $this->handleDailyBookEntries($amount_cash, $amount_bank, 'credit', $this->modal_payment_method, 'Purchase', $purchase->id);
 
         session()->flash('success', $notification);
         $this->resetExcept('purchaseId');

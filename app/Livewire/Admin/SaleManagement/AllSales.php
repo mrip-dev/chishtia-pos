@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Customer;
 use App\Models\ProductStock;
 use App\Models\SaleDetail;
-use App\Lib\Action;
+use App\Models\Action;
 use App\Livewire\Admin\CustomerTransactions\CustomerTransaction;
 use App\Livewire\Admin\WareHouse\WareHouseDetail;
 use App\Models\Action as ModelsAction;
@@ -23,6 +23,7 @@ use App\Models\WareHouseDetailHistory;
 use Carbon\Carbon;
 use Illuminate\Validation\Rule;
 use App\Traits\DailyBookEntryTrait;
+use Illuminate\Notifications\Action as NotificationsAction;
 
 class AllSales extends Component
 {
@@ -386,7 +387,7 @@ class AllSales extends Component
             $sale->driver_contact = $this->driver_contact;
             $sale->fare = $this->fare;
             $sale->save();
-
+            Action::newEntry($sale, $this->saleId ? 'UPDATED' : 'CREATED');
             // Prepare sale details data
             $saleDetailsData = collect($this->products)->map(function ($product) use ($sale) {
                 return [
@@ -571,6 +572,7 @@ class AllSales extends Component
         $payment->remark = $remark;
 
         $payment->save();
+        Action::newEntry($payment, 'CREATED');
 
         $lastTransaction = ModelsCustomerTransaction::where('customer_id', $sale->customer_id)
             ->orderBy('id', 'desc')
@@ -631,7 +633,7 @@ class AllSales extends Component
                 $bankTransaction->debit = $debitAmount;
                 $bankTransaction->credit = $creditAmount;
                 $bankTransaction->amount = $amount;
-                 $bankTransaction->module_id = $sale->id;
+                $bankTransaction->module_id = $sale->id;
                 $bankTransaction->data_model = 'Sale';
                 $bankTransaction->source = 'Cash Payment Sale Received';
                 $bankTransaction->save();
@@ -738,7 +740,7 @@ class AllSales extends Component
             }
         }
 
-        $this->handleDailyBookEntries($amount_cash,$amount_bank,'debit',$this->modal_payment_method,'Sale',$sale->id);
+        $this->handleDailyBookEntries($amount_cash, $amount_bank, 'debit', $this->modal_payment_method, 'Sale', $sale->id);
 
         session()->flash('success', $notification);
         $this->resetExcept('saleId');

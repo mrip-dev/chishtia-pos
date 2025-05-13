@@ -38,7 +38,7 @@
                                         <td>
                                             {{ __($product->category->name) }}
                                             <br>
-                                            <span class="text--primary">{{ $product->brand->name }}</span>
+                                            <span class="text--primary">{{ $product->brand?->name }}</span>
                                         </td>
 
                                         <td>
