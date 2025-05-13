@@ -1,6 +1,8 @@
 <div>
     <!-- Add New Expense Button -->
-    <button class="btn btn-success mb-2" wire:click="openModal">Add New Expense</button>
+   <div class="d-flex justify-content-end mb-2">
+    <button class="btn btn-outline--primary mb-2" wire:click="openModal">Add New Expense</button>
+   </div>
      <div class="row">
         <div class="col-lg-12">
             <div class="card">
@@ -56,18 +58,19 @@
     </div>
 
     <!-- Modal -->
-    <div wire:ignore.self class="modal fade" id="cuModal" tabindex="-1" role="dialog" aria-labelledby="cuModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
+    <div  wire:ignore.self class="modal fade" id="cuModal" tabindex="-1" role="dialog" aria-labelledby="cuModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
         <form wire:submit.prevent="store">
           <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="cuModalLabel">Add New Expense</h5>
+            <div class="modal-header bg--primary te">
+              <h5 class="modal-title text-center w-100 text-white" id="cuModalLabel">Add New Expense</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
             <div class="modal-body">
                 {{-- Expense Type --}}
-                <div class="form-group">
+               <div class="row">
+                <div class="form-group col-md-6">
                     <label>@lang('Type')</label>
                     <select class="form-control" wire:model="expense_type_id" required>
                         <option value="">@lang('Select One')</option>
@@ -79,14 +82,16 @@
                 </div>
 
                 {{-- Date --}}
-                <div class="form-group">
+                <div class="form-group col-md-6">
                     <label>@lang('Date of Expense')</label>
                     <input type="date" class="form-control" wire:model="date_of_expense">
                     @error('date_of_expense') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
+               </div>
 
                 {{-- Bank --}}
-                <div class="form-group">
+             <div class="row">
+                <div class="form-group col-md-6">
                     <label>@lang('Bank Name')</label>
                     <select class="form-control" wire:model="bank_id">
                         <option value="">@lang('Select Bank')</option>
@@ -98,7 +103,7 @@
                 </div>
 
                 {{-- Amount --}}
-                <div class="form-group">
+                <div class="form-group col-md-6">
                     <label>@lang('Amount')</label>
                     <div class="input-group">
                         <button class="input-group-text">{{ gs('cur_sym') }}</button>
@@ -106,9 +111,10 @@
                     </div>
                     @error('amount') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
+             </div>
 
                 {{-- Note --}}
-                <div class="form-group">
+                <div class="form-group col-md-12">
                     <label>@lang('Note')</label>
                     <textarea class="form-control" wire:model="note" rows="5"></textarea>
                     @error('note') <small class="text-danger">{{ $message }}</small> @enderror

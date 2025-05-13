@@ -59,8 +59,8 @@
     <div id="cuModal" class="modal fade" tabindex="-1" role="dialog" wire:ignore.self>
         <div class="modal-dialog" role="document" >
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><span class="type"></span> <span>Manage Bank</span></h5>
+                <div class="modal-header bg--primary text-white">
+                    <h5 class="modal-title text-center w-100 text-white"><span class="type"></span> <span class="text-white">Manage Bank</span></h5>
                     <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <i class="las la-times"></i>
                     </button>
