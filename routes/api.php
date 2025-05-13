@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\Auth\LoginController;
+use App\Http\Controllers\Api\AdminController;
+
 
 Route::post('/login', [LoginController::class, 'login'])->name('api.login');
 
@@ -20,4 +22,8 @@ Route::controller('DataEntryReportController')->prefix('reports/data-entry')->na
     Route::get('expense', 'expense')->name('expense');
     Route::get('supplier-payment', 'supplierPayment')->name('supplier.payment');
     Route::get('customer-payment', 'customerPayment')->name('customer.payment');
+});
+
+Route::controller(AdminController::class)->group(function () {
+    Route::get('dashboard', 'dashboard')->name('dashboard');
 });

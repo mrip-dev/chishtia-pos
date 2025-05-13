@@ -13,4 +13,8 @@ class Expense extends Model
     {
         return $this->belongsTo(ExpenseType::class);
     }
+    public function bank()
+    {
+        return $this->belongsTo(Bank::class);
+    }
 }

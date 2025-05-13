@@ -72,19 +72,21 @@ class DataEntryReportController extends Controller
     public function adjustment(Request $request)
     {
         $this->model = Adjustment::class;
+        $this->relations = ['actionable.warehouse'];
         return $this->entries($request);
     }
 
     public function transfer(Request $request)
     {
         $this->model = Transfer::class;
+        $this->relations = ['actionable.warehouse', 'actionable.toWarehouse'];
         return $this->entries($request);
     }
 
     public function expense(Request $request)
     {
         $this->model = Expense::class;
-        $this->relations = ['actionable.expenseType'];
+        $this->relations = ['actionable.expenseType', 'actionable.bank'];
         return $this->entries($request);
     }
 
@@ -109,8 +111,7 @@ class DataEntryReportController extends Controller
             ->when(request('date'), fn($q) => $q->whereDate('created_at', request('date')))
             ->when(
                 request('start_date') && request('end_date'),
-                fn($q) =>
-                $q->whereBetween('created_at', [request('start_date'), request('end_date')])
+                fn($q) => $q->whereBetween('created_at', [request('start_date'), request('end_date')])
             )->with('actionable', 'admin');
         if (count($this->relations)) {
             $entries->with($this->relations);

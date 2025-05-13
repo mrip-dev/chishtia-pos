@@ -22,7 +22,7 @@ class AllExpenses extends Component
     public $expense_type_id, $date_of_expense, $amount, $note, $bank_id, $expense_id;
     public $categories = [], $banks = [];
     public $deleteId = null;
-    public $selected_id ;
+    public $selected_id;
     public $confirmingDelete = false;
 
     protected $rules = [
@@ -67,6 +67,7 @@ class AllExpenses extends Component
         $expense->note            = $this->note;
         $expense->bank_id         = $this->bank_id;
         $expense->save();
+        Action::newEntry($expense, $this->expense_id ? 'UPDATED' : 'CREATED');
 
         $bank = Bank::findOrFail($this->bank_id);
 
@@ -98,6 +99,8 @@ class AllExpenses extends Component
         $bankTransaction->credit = $creditAmount;
         $bankTransaction->amount = $this->amount;
         $bankTransaction->module_id = $expense->id;
+        $bankTransaction->transactable_id  = $expense->id;
+        $bankTransaction->transactable_type  = 'Expense';
         $bankTransaction->data_model = 'Expense';
         $bankTransaction->source = 'Expense';
         $bankTransaction->save();
@@ -114,7 +117,6 @@ class AllExpenses extends Component
         );
 
 
-        Action::newEntry($expense, $this->expense_id ? 'UPDATED' : 'CREATED');
 
         $this->dispatch('close-modal');
         $this->dispatch('notify', status: 'success', message: $notification);
@@ -122,51 +124,51 @@ class AllExpenses extends Component
         $this->reset(['expense_type_id', 'date_of_expense', 'amount', 'note', 'bank_id', 'expense_id']);
     }
     public function handleExpenseDailyBookEntry($amount, $bank_id, $dataModel_name, $dataModel_id)
-{
-    $dailyBook_opening = 0;
-    $dailyBook_closing = 0;
-    $dailyBook_balance = 0;
+    {
+        $dailyBook_opening = 0;
+        $dailyBook_closing = 0;
+        $dailyBook_balance = 0;
 
-    $today = now()->format('Y-m-d');
+        $today = now()->format('Y-m-d');
 
-    $dailydetails = DailyBookDetail::whereDate('date', '=', $today)
-        ->orderBy('date', 'desc')
-        ->get();
+        $dailydetails = DailyBookDetail::whereDate('date', '=', $today)
+            ->orderBy('date', 'desc')
+            ->get();
 
-    if ($dailydetails->isEmpty()) {
-        $dailyBook_opening = $this->lastDayClosingBalance();
-        $dailyBook_closing = $dailyBook_opening;
-    } else {
-        $dailyBook_opening = $dailydetails->first()?->opening_balance ?? 0;
-        $dailyBook_closing = $dailydetails->last()?->closing_balance ?? 0;
+        if ($dailydetails->isEmpty()) {
+            $dailyBook_opening = $this->lastDayClosingBalance();
+            $dailyBook_closing = $dailyBook_opening;
+        } else {
+            $dailyBook_opening = $dailydetails->first()?->opening_balance ?? 0;
+            $dailyBook_closing = $dailydetails->last()?->closing_balance ?? 0;
+        }
+
+        // Deduct expense from daily balance
+        $dailyBook_balance = $dailyBook_closing - $amount;
+
+        $bank_name = Bank::find($bank_id)?->name ?? 'Unknown Bank';
+
+        $dailyEntry = new DailyBookDetail();
+        $dailyEntry->date = $today;
+        $dailyEntry->source = $dataModel_name . ' (' . $bank_name . ')';
+        $dailyEntry->debit = null;
+        $dailyEntry->credit = $amount; // Expense = money going out
+        $dailyEntry->balance = $dailyBook_balance;
+        $dailyEntry->opening_balance = $dailyBook_opening;
+        $dailyEntry->closing_balance = $dailyBook_balance;
+        $dailyEntry->module_id = $dataModel_id;
+        $dailyEntry->data_model = $dataModel_name;
+        $dailyEntry->save();
     }
+    private function lastDayClosingBalance()
+    {
+        $last = DailyBookDetail::whereDate('date', '<', now()->format('Y-m-d'))
+            ->orderBy('id', 'desc')
+            ->orderBy('date', 'desc')
+            ->first();
 
-    // Deduct expense from daily balance
-    $dailyBook_balance = $dailyBook_closing - $amount;
-
-    $bank_name = Bank::find($bank_id)?->name ?? 'Unknown Bank';
-
-    $dailyEntry = new DailyBookDetail();
-    $dailyEntry->date = $today;
-    $dailyEntry->source = $dataModel_name . ' (' . $bank_name . ')';
-    $dailyEntry->debit = null;
-    $dailyEntry->credit = $amount; // Expense = money going out
-    $dailyEntry->balance = $dailyBook_balance;
-    $dailyEntry->opening_balance = $dailyBook_opening;
-    $dailyEntry->closing_balance = $dailyBook_balance;
-    $dailyEntry->module_id = $dataModel_id;
-    $dailyEntry->data_model = $dataModel_name;
-    $dailyEntry->save();
-}
-private function lastDayClosingBalance()
-{
-    $last = DailyBookDetail::whereDate('date', '<', now()->format('Y-m-d'))
-        ->orderBy('id', 'desc')
-        ->orderBy('date', 'desc')
-        ->first();
-
-    return $last?->closing_balance ?? 0;
-}
+        return $last?->closing_balance ?? 0;
+    }
     public function edit($id)
     {
         $expense = Expense::findOrFail($id);
