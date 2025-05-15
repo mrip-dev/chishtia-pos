@@ -26,33 +26,23 @@ class AdminController extends Controller
     public function dashboard(Request $request)
     {
 
-        $widget['total_customer'] = Customer::count();
-        $widget['total_product']  = Product::count();
-        $widget['total_category'] = Category::count();
-        $widget['total_supplier'] = Supplier::count();
-        $widget['total_purchase_count']        = Purchase::count();
-        $widget['total_purchase']              = Purchase::sum('payable_amount');
-        $widget['total_purchase_return']       = PurchaseReturn::sum('receivable_amount');
-        $widget['total_purchase_return_count'] = PurchaseReturn::count();
-        $widget['total_sale_count']        = Sale::count();
-        $widget['total_sale']              = Sale::sum('receivable_amount');
-        $widget['total_sale_return_count'] = SaleReturn::count();
-        $widget['total_sale_return']       = SaleReturn::sum('payable_amount');
-
         if ($request->start_date && $request->end_date) {
             $startDate = Carbon::parse($request->start_date)->toDateString();
             $endDate = Carbon::parse($request->end_date)->toDateString();
         } elseif ($request->month) {
             $month = (int) $request->month;
             $year = $request->year ?? now()->year;
-
-            // Get first and last day of that month
             $startDate = Carbon::create($year, $month, 1)->startOfMonth()->toDateString();
             $endDate = Carbon::create($year, $month, 1)->endOfMonth()->toDateString();
         } else {
-            $endDate = now()->toDateString();
-            $startDate = now()->subDays(14)->toDateString();
+            $startDate = null;
+            $endDate = null;
         }
+
+        $widget = $this->getDashboardWidgets($startDate, $endDate);
+
+        $startDate = $startDate ?? now()->subDays(14)->toDateString();
+        $endDate =  $endDate ?? now()->toDateString();
 
         return response()->json([
             'widgets' => $widget,
@@ -65,6 +55,30 @@ class AdminController extends Controller
 
         ]);
     }
+    private function getDashboardWidgets($startDate = null, $endDate = null)
+    {
+        $filter = $startDate && $endDate;
+
+        return [
+            'total_customer' => Customer::count(),
+            'total_product' => Product::count(),
+            'total_category' => Category::count(),
+            'total_supplier' => Supplier::count(),
+
+            'total_purchase_count' => Purchase::when($filter, fn($q) => $q->whereBetween('created_at', [$startDate, $endDate]))->count(),
+            'total_purchase' => Purchase::when($filter, fn($q) => $q->whereBetween('created_at', [$startDate, $endDate]))->sum('payable_amount'),
+
+            'total_purchase_return_count' => PurchaseReturn::when($filter, fn($q) => $q->whereBetween('created_at', [$startDate, $endDate]))->count(),
+            'total_purchase_return' => PurchaseReturn::when($filter, fn($q) => $q->whereBetween('created_at', [$startDate, $endDate]))->sum('receivable_amount'),
+
+            'total_sale_count' => Sale::when($filter, fn($q) => $q->whereBetween('created_at', [$startDate, $endDate]))->count(),
+            'total_sale' => Sale::when($filter, fn($q) => $q->whereBetween('created_at', [$startDate, $endDate]))->sum('receivable_amount'),
+
+            'total_sale_return_count' => SaleReturn::when($filter, fn($q) => $q->whereBetween('created_at', [$startDate, $endDate]))->count(),
+            'total_sale_return' => SaleReturn::when($filter, fn($q) => $q->whereBetween('created_at', [$startDate, $endDate]))->sum('payable_amount'),
+        ];
+    }
+
     public function alertProductsQty()
     {
 

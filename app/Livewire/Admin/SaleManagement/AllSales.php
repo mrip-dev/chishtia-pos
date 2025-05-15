@@ -520,6 +520,9 @@ class AllSales extends Component
                 $productStock->quantity -= $product->quantity;
                 $productStock->save();
             }
+            $productTotal = Product::find($product->id);
+            $productTotal->total_sale += $product->quantity;
+            $productTotal->save();
         }
     }
     public function payMentModal($id)
