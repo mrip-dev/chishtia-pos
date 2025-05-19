@@ -100,8 +100,8 @@
                             </div>
                             <div class="col-lg-6">
                                 <div class="form-group">
-                                    <label class="form-label">@lang('Email')</label>
-                                    <input type="email" class="form-control " name="email" value="{{ old('email') }}" required>
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control " name="email" value="{{ old('email') }}" >
                                 </div>
                             </div>
 
@@ -111,7 +111,7 @@
                                         <i class="fa fa-info-circle text--primary" title="@lang('Type the mobile number including the country code. Otherwise, SMS won\'t send to that number.')">
                                         </i>
                                     </label>
-                                    <input type="number" name="mobile" value="{{ old('mobile') }}" class="form-control " required>
+                                    <input type="number" name="mobile" value="{{ old('mobile') }}" class="form-control " >
                                 </div>
                             </div>
                             <div class="form-group col-lg-12">

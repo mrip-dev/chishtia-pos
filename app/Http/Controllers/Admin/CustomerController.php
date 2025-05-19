@@ -71,11 +71,11 @@ class CustomerController extends Controller
             $notification = 'Customer updated successfully';
             $customer     = Customer::findOrFail($id);
         } else {
-            $exist = Customer::where('mobile', $request->mobile)->first();
-            if ($exist) {
-                $notify[] = ['error', 'The mobile number already exists'];
-                return back()->withNotify($notify);
-            }
+            // $exist = Customer::where('mobile', $request->mobile)->first();
+            // if ($exist) {
+            //     $notify[] = ['error', 'The mobile number already exists'];
+            //     return back()->withNotify($notify);
+            // }
             $notification = 'Customer added successfully';
             $customer     = new Customer();
         }
@@ -97,8 +97,8 @@ class CustomerController extends Controller
     {
         $request->validate([
             'name'    => 'required|string|max:40',
-            'email'   => 'string|email|unique:suppliers,email,' . $id,
-            'mobile'  => 'required|regex:/^([0-9]*)$/|unique:suppliers,mobile,' . $id,
+            'email'   => 'nullable',
+            'mobile'  => 'nullable',
             'address' => 'string|max:500',
            'opening_balance' => 'nullable|numeric|min:0',
         ]);
