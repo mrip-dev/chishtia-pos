@@ -91,6 +91,23 @@ class CustomerController extends Controller
         $notify[] = ['success', $notification];
         return back()->withNotify($notify);
     }
+    public function destroy($id)
+    {
+        $customer = Customer::findOrFail($id);
+
+        // Optional: check if customer has related sales or constraints to prevent deletion
+        // if ($customer->sale()->exists() || $customer->saleReturns()->exists()) {
+        //     $notify[] = ['error', 'Cannot delete customer with associated sales or returns'];
+        //     return back()->withNotify($notify);
+        // }
+
+        $customer->delete();
+
+        Action::newEntry($customer, 'DELETED');
+
+        $notify[] = ['success', 'Customer deleted successfully'];
+        return back()->withNotify($notify);
+    }
 
     protected function validation($request, $id = 0)
     {

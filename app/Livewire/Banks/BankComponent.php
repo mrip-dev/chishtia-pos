@@ -86,7 +86,28 @@ class BankComponent extends Component
         $this->dispatch('close-modal');
 
     }
-  
+    public function confirmDelete($bankId)
+{
+
+    $this->dispatcht('swal:confirm', [
+        'bankId' => $bankId,
+        'title' => 'Are you sure?',
+        'text' => "You won't be able to revert this!",
+    ]);
+}
+
+    public function deleteEntry($id)
+    {
+        $bank = Bank::find($id);
+        if ($bank) {
+            $bank->delete();
+            $this->dispatch('notify', status: 'success', message: 'Bank deleted successfully');
+        } else {
+            $this->dispatch('notify', status: 'error', message: 'Bank not found');
+        }
+    }
+
+
     public function render()
     {
         $banks =  Bank::searchable(['name', 'account_number' , 'account_holder' , 'raast_id'])->orderBy('id', 'desc')->paginate(getPaginate());

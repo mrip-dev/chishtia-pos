@@ -33,6 +33,11 @@
                                             <button class="btn btn-sm btn-outline--primary editBtn cuModalBtn" wire:click.prevent="editEntry({{$bank->id}})"  data-modal_title="@lang('Edit Bank')" type="button">
                                                 <i class="la la-pencil"></i>@lang('Edit')
                                             </button>
+                                            <button wire:click="deleteEntry({{ $bank->id }})"
+                                                onclick="confirm('Are you sure to delete this bank?') || event.stopImmediatePropagation()"
+                                                class="btn btn-danger btn-sm">
+                                            Delete
+                                        </button>
                                              @endpermit
                                              <a href="{{ route('admin.bank.detail', $bank->id) }}" class="btn btn-sm btn-outline-success">
                                                 <i class="fas fa-eye"></i> View Detail
