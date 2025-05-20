@@ -83,7 +83,16 @@ class SupplierController extends Controller
         $notify[] = ['success', $notification];
         return back()->withNotify($notify);
     }
+    public function destroy($id)
+    {
+        $supplier = Supplier::findOrFail($id);
 
+        $supplier->delete();
+        Action::newEntry($supplier, 'DELETED');
+
+        $notify[] = ['success', 'Supplier deleted successfully'];
+        return back()->withNotify($notify);
+    }
     protected function saveSupplier($request, $supplier, $id)
     {
         $supplier->name         = $request->name;

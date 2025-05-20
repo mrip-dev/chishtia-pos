@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\PdfController;
+use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\CustomerViewController;
 use App\Http\Controllers\SupplierViewController;
 use App\Livewire\Admin\CustomerTransactions\CustomerTransaction;
@@ -281,6 +283,8 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
             'pageTitle' => $pageTitle,
         ]);
     })->name('supplier.view');
+    Route::delete('admin/suppliers/{id}', [SupplierController::class, 'destroy'])->name('suppliers.destroy');
+
 
     // Customer
     Route::controller('CustomerController')->name('customer.')->prefix('customer')->group(function () {
@@ -314,7 +318,7 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         ]);
     })->name('customer.view');
 
-
+    Route::delete('admin/customers/{id}', [CustomerController::class, 'destroy'])->name('customer.destroy');
     Route::get('/customers-pdf', [PdfController::class, 'customersPdf'])->name('customers.pdf');
 
 

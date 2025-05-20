@@ -36,6 +36,12 @@
                                                     data-modal_title="@lang('Edit Customer')" data-resource="{{ $customer }}">
                                                     <i class="la la-pencil"></i>@lang('Edit')
                                                 </button>
+                                                <form id="delete-form-{{ $customer->id }}" action="{{ route('admin.customer.destroy', $customer->id) }}" method="POST" style="display: none;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                </form>
+
+                                                <button class="btn btn-danger btn-sm" onclick="confirmDelete({{ $customer->id }})">Delete</button>
                                                 @permit('admin.customer.notification.log')
                                                     <a class="btn btn-sm btn-outline--warning"
                                                         href="{{ route('admin.customer.notification.log', $customer->id) }}"><i class="la la-bell"></i>
@@ -241,4 +247,27 @@
             });
         })(jQuery);
     </script>
+@endpush
+@push('script')
+<script>
+    function confirmDelete(id) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This action cannot be undone!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Submit the hidden form to delete
+                document.getElementById('delete-form-' + id).submit();
+            }
+        });
+    }
+    </script>
+
+
 @endpush

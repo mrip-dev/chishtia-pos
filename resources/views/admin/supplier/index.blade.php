@@ -34,6 +34,14 @@
                                                     data-modal_title="@lang('Edit Supplier')" type="button">
                                                     <i class="la la-pencil"></i>@lang('Edit')
                                                 </button>
+                                                <form id="delete-form-{{ $supplier->id }}" action="{{ route('admin.suppliers.destroy', $supplier->id) }}" method="POST" style="display: none;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                </form>
+
+                                                <button onclick="confirmDelete({{ $supplier->id }})" class="btn btn-danger btn-sm">
+                                                    Delete
+                                                </button>
                                                 @php
                                                     $totalPayable = $supplier->totalPayableAmount() - abs($supplier->totalReceivableAmount());
                                                 @endphp
@@ -232,4 +240,25 @@
             });
         })(jQuery);
     </script>
+@endpush
+@push('script')
+<script>
+    function confirmDelete(id) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This action cannot be undone!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Submit the hidden delete form
+                document.getElementById('delete-form-' + id).submit();
+            }
+        });
+    }
+    </script>
+
 @endpush

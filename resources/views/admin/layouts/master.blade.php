@@ -13,6 +13,8 @@
     <link rel="stylesheet" href="{{asset('assets/admin/css/vendor/bootstrap-toggle.min.css')}}">
     <link rel="stylesheet" href="{{asset('assets/global/css/all.min.css')}}">
     <link rel="stylesheet" href="{{asset('assets/global/css/line-awesome.min.css')}}">
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
     @stack('style-lib')
 
