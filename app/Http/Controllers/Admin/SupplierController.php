@@ -70,11 +70,11 @@ class SupplierController extends Controller
             $notification = 'Supplier updated successfully';
             $supplier     = Supplier::findOrFail($id);
         } else {
-            $exist = Supplier::where('mobile', $request->mobile)->first();
-            if ($exist) {
-                $notify[] = ['error', 'The mobile number already exists'];
-                return back()->withNotify($notify);
-            }
+            // $exist = Supplier::where('mobile', $request->mobile)->first();
+            // if ($exist) {
+            //     $notify[] = ['error', 'The mobile number already exists'];
+            //     return back()->withNotify($notify);
+            // }
             $notification = 'Supplier added successfully';
             $supplier     = new Supplier();
         }
@@ -109,8 +109,8 @@ class SupplierController extends Controller
     {
         $request->validate([
             'name'         => 'required|string|max:40',
-            'email'        => 'required|string|email|unique:suppliers,email,' . $id,
-            'mobile'       => 'required|regex:/^([0-9]*)$/|unique:suppliers,mobile,' . $id,
+            'email'        => 'nullable',
+            'mobile'       => 'nullable',
             'company_name' => 'nullable|string|max:40',
             'address'      => 'nullable|string|max:500',
             'opening_balance' => 'nullable|numeric|min:0',
