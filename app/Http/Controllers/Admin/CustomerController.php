@@ -46,14 +46,13 @@ class CustomerController extends Controller
     {
         $filename = "assets/files/csv/example.csv";
         $myFile   = fopen($filename, 'w');
-        $column   = "Name,Mobile,E-mail,Receivable,Payable, Address,\n";
+        $column   = "name,email,mobile,address\n";
         $curSym   = gs('cur_sym');
         foreach ($data as $customer) {
-            $receivable = $curSym . getAmount($customer->totalReceivableAmount());
-            $payable    = $curSym . getAmount($customer->totalPayableAmount());
-            $address    = $customer->address;
-
-            $column .= "$customer->name,$customer->mobile,$customer->email,$receivable,$payable,$address\n";
+            // $receivable = $curSym . getAmount($customer->totalReceivableAmount());
+            // $payable    = $curSym . getAmount($customer->totalPayableAmount());
+            $cleanAddress = str_replace(',', '', $customer->address);
+            $column .= "$customer->name,$customer->email,$customer->mobile,$cleanAddress\n";
         }
         fwrite($myFile, $column);
         $headers = [

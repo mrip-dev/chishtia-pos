@@ -46,14 +46,19 @@ class SupplierController extends Controller
     {
         $filename = "assets/files/csv/example.csv";
         $myFile   = fopen($filename, 'w');
-        $column   = "Name,Mobile,E-mail,Payable,Receivable,Address\n";
+        $column   = "name,email,mobile,company_name,address\n";
         $curSym   = gs('cur_sym');
         foreach ($data as $supplier) {
-            $payable    = $curSym . getAmount($supplier->totalPayableAmount());
-            $receivable = $curSym . getAmount($supplier->totalReceivableAmount());
+            // $payable    = $curSym . getAmount($supplier->totalPayableAmount());
+            // $receivable = $curSym . getAmount($supplier->totalReceivableAmount());
 
-            $column .= "$supplier->name,$supplier->mobile,$supplier->email,$payable,$receivable,$supplier->address\n";
+            // Remove commas from company_name
+            $cleanCompanyName = str_replace(',', '', $supplier->company_name);
+            $cleanAddress = str_replace(',', '', $supplier->address);
+
+            $column .= "$supplier->name,$supplier->email,$supplier->mobile,$cleanCompanyName,$cleanAddress\n";
         }
+
         fwrite($myFile, $column);
         $headers = [
             'Content-Type' => 'application/csv',
