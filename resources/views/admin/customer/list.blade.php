@@ -41,7 +41,7 @@
                                                     @method('DELETE')
                                                 </form>
 
-                                                <button class="btn btn-danger btn-sm" onclick="confirmDelete({{ $customer->id }})">Delete</button>
+                                                <button class="btn btn-outline-danger btn-sm" onclick="confirmDelete({{ $customer->id }})">Delete</button>
                                                 @permit('admin.customer.notification.log')
                                                     <a class="btn btn-sm btn-outline--warning"
                                                         href="{{ route('admin.customer.notification.log', $customer->id) }}"><i class="la la-bell"></i>

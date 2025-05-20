@@ -39,7 +39,7 @@
                                                     @method('DELETE')
                                                 </form>
 
-                                                <button onclick="confirmDelete({{ $supplier->id }})" class="btn btn-danger btn-sm">
+                                                <button onclick="confirmDelete({{ $supplier->id }})" class="btn btn-outline-danger btn-sm">
                                                     Delete
                                                 </button>
                                                 @php
