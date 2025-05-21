@@ -32,8 +32,8 @@ function verificationCode($length)
 {
     if ($length == 0) return 0;
     $min = pow(10, $length - 1);
-    $max = (int) ($min - 1).'9';
-    return random_int($min,$max);
+    $max = (int) ($min - 1) . '9';
+    return random_int($min, $max);
 }
 
 function getNumber($length = 8)
@@ -48,23 +48,27 @@ function getNumber($length = 8)
 }
 
 
-function activeTemplate($asset = false) {
+function activeTemplate($asset = false)
+{
     $template = session('template') ?? gs('active_template');
     if ($asset) return 'assets/templates/' . $template . '/';
     return 'templates.' . $template . '.';
 }
 
-function activeTemplateName() {
+function activeTemplateName()
+{
     $template = session('template') ?? gs('active_template');
     return $template;
 }
 
-function siteLogo($type = null) {
+function siteLogo($type = null)
+{
     $name = $type ? "/logo_$type.png" : '/logo.png';
     return getImage(getFilePath('logoIcon') . $name);
 }
-function siteFavicon() {
-    return getImage(getFilePath('logoIcon'). '/favicon.png');
+function siteFavicon()
+{
+    return getImage(getFilePath('logoIcon') . '/favicon.png');
 }
 
 
@@ -86,7 +90,7 @@ function verifyCaptcha()
 function loadExtension($key)
 {
     $extension = Extension::where('act', $key)->where('status', Status::ENABLE)->first();
-    return $extension ? $extension->generateScript(): '';
+    return $extension ? $extension->generateScript() : '';
 }
 
 
@@ -124,11 +128,11 @@ function showAmount($amount, $decimal = 2, $separate = true, $exceptZeros = fals
     }
     if ($currencyFormat) {
         if (gs('currency_format') == Status::CUR_BOTH) {
-            return gs('cur_sym').$printAmount.' '.__(gs('cur_text'));
-        }elseif(gs('currency_format') == Status::CUR_TEXT){
-            return $printAmount.' '.__(gs('cur_text'));
-        }else{
-            return gs('cur_sym').$printAmount;
+            return gs('cur_sym') . $printAmount . ' ' . __(gs('cur_text'));
+        } elseif (gs('currency_format') == Status::CUR_TEXT) {
+            return $printAmount . ' ' . __(gs('cur_text'));
+        } else {
+            return gs('cur_sym') . $printAmount;
         }
     }
     return $printAmount;
@@ -205,7 +209,7 @@ function getImage($image, $size = null)
 }
 
 
-function notify($user, $templateName, $shortCodes = null, $sendVia = null, $createLog = true ,$pushImage = null)
+function notify($user, $templateName, $shortCodes = null, $sendVia = null, $createLog = true, $pushImage = null)
 {
     $globalShortCodes = [
         'site_name'       => gs('site_name'),
@@ -245,7 +249,7 @@ function paginateLinks($data)
 
 function menuActive($routeName, $type = null, $param = null)
 {
-    if     ($type == 3) $class = 'side-menu--open';
+    if ($type == 3) $class = 'side-menu--open';
     elseif ($type == 2) $class = 'sidebar-submenu__open';
     else   $class              = 'active';
 
@@ -264,7 +268,7 @@ function menuActive($routeName, $type = null, $param = null)
 }
 
 
-function fileUploader($file, $location, $size = null, $old = null, $thumb = null,$filename = null)
+function fileUploader($file, $location, $size = null, $old = null, $thumb = null, $filename = null)
 {
     $fileManager           = new FileManager($file);
     $fileManager->path     = $location;
@@ -345,7 +349,7 @@ function showEmailAddress($email)
 function getRealIP()
 {
     $ip = $_SERVER["REMOTE_ADDR"];
-      //Deep detect ip
+    //Deep detect ip
     if (filter_var(@$_SERVER['HTTP_FORWARDED'], FILTER_VALIDATE_IP)) {
         $ip = $_SERVER['HTTP_FORWARDED'];
     }
@@ -398,7 +402,8 @@ function gs($key = null)
     if ($key) return @$general->$key;
     return $general;
 }
-function isImage($string){
+function isImage($string)
+{
     $allowedExtensions = array('jpg', 'jpeg', 'png', 'gif');
     $fileExtension     = pathinfo($string, PATHINFO_EXTENSION);
     if (in_array($fileExtension, $allowedExtensions)) {
@@ -418,27 +423,29 @@ function isHtml($string)
 }
 
 
-function convertToReadableSize($size) {
+function convertToReadableSize($size)
+{
     preg_match('/^(\d+)([KMG])$/', $size, $matches);
     $size = (int)$matches[1];
     $unit = $matches[2];
 
     if ($unit == 'G') {
-        return $size.'GB';
+        return $size . 'GB';
     }
 
     if ($unit == 'M') {
-        return $size.'MB';
+        return $size . 'MB';
     }
 
     if ($unit == 'K') {
-        return $size.'KB';
+        return $size . 'KB';
     }
 
-    return $size.$unit;
+    return $size . $unit;
 }
 
-function permit($code){
+function permit($code)
+{
     return Role::hasPermission($code);
 }
 
@@ -503,7 +510,10 @@ function importCSV($request, $model, $reqHeader, $unique)
             foreach ($header as $index => $headerName) {
                 $data[$headerName] = $row[$index];
             }
-            if (in_array(null, $data) || $data === null) {
+            // if (in_array(null, $data) || $data === null) {
+            //     continue;
+            // }
+            if (!array_key_exists($unique, $data)) {
                 continue;
             }
             $existing = $model::where($unique, $data[$unique])->first();
@@ -533,5 +543,3 @@ function importCSV($request, $model, $reqHeader, $unique)
     ];
     return $importResult;
 }
-
-

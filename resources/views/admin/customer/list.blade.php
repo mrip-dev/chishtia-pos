@@ -25,7 +25,7 @@
                                             {{ strLimit($customer->address, 40) }}
                                         </td>
                                         <td>
-                                            <span class="fw-bold">+{{ $customer->mobile }}</span> <br> {{ $customer->email }}
+                                            <span class="fw-bold">{{ $customer->mobile }}</span> <br> {{ $customer->email }}
                                         </td>
                                         <td>{{ number_format($customer->opening_balance, 2) }}</td>
                                         <td>{{ showAmount($customer->totalReceivableAmount()) }}</td>

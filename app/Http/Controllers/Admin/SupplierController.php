@@ -125,7 +125,7 @@ class SupplierController extends Controller
     public function import(Request $request)
     {
         $reqHeader    = ['name', 'email', 'mobile', 'company_name', 'address'];
-        $importResult = importCSV($request, Supplier::class, $reqHeader, $unique = "mobile");
+        $importResult = importCSV($request, Supplier::class, $reqHeader, 'name');
 
         if ($importResult['data']) {
             $notify[] = ['success', $importResult['notify']];

@@ -205,6 +205,7 @@
     <div class="footer">
         <div>Dewan Chemicals © {{ date('Y') }}</div>
         <div>Page {PAGE_NUM} of {PAGE_COUNT}</div>
+        <div>Created By : {{ auth()->guard('admin')->user()->username }} </div>
     </div>
 
 </body>

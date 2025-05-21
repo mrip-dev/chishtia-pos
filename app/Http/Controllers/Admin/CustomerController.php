@@ -311,7 +311,7 @@ class CustomerController extends Controller
     public function import(Request $request)
     {
         $reqHeader    = ['name', 'email', 'mobile', 'address'];
-        $importResult = importCSV($request, Customer::class, $reqHeader, $unique = "mobile");
+        $importResult = importCSV($request, Customer::class, $reqHeader,'name');
 
         if ($importResult['data']) {
             $notify[] = ['success', $importResult['notify']];
