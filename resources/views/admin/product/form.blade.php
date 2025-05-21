@@ -59,7 +59,7 @@
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         <label>@lang('Unit(UoM)')</label>
-                                        <select class="form-control select2" name="unit_id">
+                                        <select class="form-control select2" onchange="selectUnit(this)" name="unit_id">
                                             <option value="" selected disabled>@lang('Select One')</option>
                                             @foreach ($units as $unit)
                                             <option value="{{ $unit->id }}" @selected($unit->id == @$product->unit_id)>
@@ -74,6 +74,13 @@
                                         <label>@lang('Alert Quantity')</label>
                                         <input class="form-control" name="alert_quantity" type="number"
                                             value="{{ old('alert_quantity', @$product->alert_quantity) }}">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6" id="net_weight" style="display: none;">
+                                    <div class="form-group">
+                                        <label>@lang('Net Weight')</label>
+                                        <input class="form-control" name="net_weight" type="number"
+                                            value="{{ old('net_weight', @$product->net_weight) }}">
                                     </div>
                                 </div>
                                 <div class="col-sm-12">
@@ -105,9 +112,10 @@
                                         <div class="col-md-7">
                                             <div class="form-group">
                                                 <label>@lang('Product Quantity')</label>
-                                                <input class="form-control" name="stock_quantity" type="number" min="1" >
+                                                <input class="form-control" name="stock_quantity" type="number" min="1">
                                             </div>
                                         </div>
+
                                     </div>
                                 </fieldset>
                                 @endif
@@ -124,6 +132,28 @@
         </div>
     </div>
 </div>
+<script>
+    function selectUnit(selectElement) {
+        const selectedText = selectElement.options[selectElement.selectedIndex].text.trim();
+
+        if (selectedText === 'KG' || selectedText === 'kg' || selectedText === 'Kg') {
+            // Do something when "KG" is selected
+            document.getElementById('net_weight').style.display = 'block';
+        } else {
+            // Hide if not KG
+            document.getElementById('net_weight').style.display = 'none';
+        }
+    }
+
+    // Optional: Trigger on page load if editing product
+    document.addEventListener("DOMContentLoaded", function() {
+        const unitSelect = document.querySelector('select[name="unit_id"]');
+        if (unitSelect) {
+            selectUnit(unitSelect);
+        }
+    });
+</script>
+
 @endsection
 
 @push('breadcrumb-plugins')

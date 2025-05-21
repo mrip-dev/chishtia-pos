@@ -80,6 +80,7 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         Route::get('add', 'add')->name('add');
         Route::get('edit/{id}', 'edit')->name('edit');
         Route::post('save/{id?}', 'save')->name('save');
+         Route::delete('delete/{id}', 'destroy')->name('destroy');
     });
 
     // permission
@@ -116,8 +117,10 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
     Route::controller('ProductController')->name('product.')->prefix('product')->group(function () {
         Route::get('all/{scope?}', 'index')->name('index');
         Route::get('create', 'create')->name('create');
+        Route::get('open-stock', 'openStock')->name('open-stock');
         Route::get('edit/{id}', 'edit')->name('edit');
         Route::post('store/{id?}', 'store')->name('store');
+        Route::post('store-stock', 'openStockStore')->name('store-stock');
         Route::get('alert', 'alert')->name('alert');
         Route::get('pdf', 'productPDF')->name('pdf');
         Route::get('csv', 'productCSV')->name('csv');
