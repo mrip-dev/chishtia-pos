@@ -21,7 +21,7 @@
                             </thead>
                             <tbody>
                                 @forelse($stocks as $item)
-                                <tr @include('partials.bank-history-color', ['id' => $item->id])>
+                                <tr @include('partials.bank-history-color', ['id'=> $item->id])>
 
                                     <td>
                                         <span class="text--primary fw-bold"> {{ $item->title }}</span>
@@ -32,7 +32,7 @@
 
                                     </td>
                                     <td>
-                                        <span class="text--primary fw-bold"> {{ $item->user->name }}</span>
+                                        <span class="text--primary fw-bold"> {{ $item->user?->name }}</span>
 
                                     </td>
 
@@ -67,7 +67,7 @@
                                                 class="btn btn-sm btn-outline--primary ms-1">
                                                 <i class="la la-chart"></i> @lang('Details')
                                             </a>
-
+                                            @permit(['admin.stock_client_payment'])
                                             @if($stock_type=='in')
                                             <button type="button"
                                                 class="btn btn-sm btn-outline--info ms-1 dropdown-toggle"
@@ -82,6 +82,7 @@
                                                 </a>
                                             </div>
                                             @endif
+                                            @endpermit
                                         </div>
                                     </td>
 

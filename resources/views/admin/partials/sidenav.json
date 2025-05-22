@@ -337,7 +337,7 @@
                 ],
                 "title": "Expense Types",
                 "route_name": "admin.manage_expense_type",
-                "menu_active": "admin.expense.type.index"
+                "menu_active": "admin.manage_expense_type"
             },
             {
                 "keyword": [
@@ -349,7 +349,7 @@
                 ],
                 "title": "Expenses",
                 "route_name": "admin.manage_expense",
-                "menu_active": "admin.expense.index"
+                "menu_active": "manage_expense"
             }
         ]
     },

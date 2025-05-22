@@ -92,13 +92,13 @@
 
                                 @if(!@$product->id)
 
-                                <fieldset class="card p-3 mb-3 border">
+                                <fieldset class="card p-3 mb-3 border d-none">
                                     <legend class="form-label mb-2">@lang('Product Stock')</legend>
                                     <div class="row">
                                         <div class="col-md-5">
                                             <div class="form-group">
                                                 <label class="form-label">@lang('Warehouse')</label>
-                                                <select class="form-control select2" name="warehouse_id" data-minimum-results-for-search="-1" required>
+                                                <select class="form-control select2" name="warehouse_id" data-minimum-results-for-search="-1" >
                                                     <option value="" selected disabled>@lang('Select One')</option>
                                                     @foreach ($warehouses as $warehouse)
                                                     <option value="{{ $warehouse->id }}" @selected($warehouse->id == @$purchase->warehouse_id)>

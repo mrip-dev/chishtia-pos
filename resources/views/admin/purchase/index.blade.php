@@ -31,9 +31,9 @@
                                         </td>
 
                                         <td>
-                                            <span class="text--primary fw-bold"> {{ $purchase->supplier->name }}</span>
+                                            <span class="text--primary fw-bold"> {{ $purchase->supplier?->name }}</span>
                                             <br>
-                                            +{{ $purchase->supplier->mobile }}
+                                            +{{ $purchase->supplier?->mobile }}
                                         </td>
 
                                         <td>
@@ -77,7 +77,7 @@
 
                                                 <div class="dropdown-menu">
                                                     @permit('admin.supplier.payment.store')
-                                                        <a class="dropdown-item paymentModalBtn" data-supplier="{{ $purchase->supplier->name }}"
+                                                        <a class="dropdown-item paymentModalBtn" data-supplier="{{ $purchase->supplier?->name }}"
                                                             data-invoice="{{ $purchase->invoice_no }}" data-id="{{ $purchase->id }}"
                                                             data-due_amount="{{ $purchase->due_amount }}" href="javascript:void(0)">
                                                             @if ($purchase->due_amount < 0)

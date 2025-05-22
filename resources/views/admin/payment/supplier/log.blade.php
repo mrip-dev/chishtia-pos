@@ -30,7 +30,7 @@
                                             @endif
                                         </td>
                                         <td>{{ showDateTime($log->created_at, 'd M, Y') }}</td>
-                                        <td class="fw-bold">{{ $log->supplier->name }} </td>
+                                        <td class="fw-bold">{{ $log->supplier?->name }} </td>
                                         <td>{{ $log->trx }}</td>
                                         <td>{{ ucwords(strtolower(keyToTitle($log->remark))) }}</td>
                                         <td>{{ showAmount($log->amount) }}</td>

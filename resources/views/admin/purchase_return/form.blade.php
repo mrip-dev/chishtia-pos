@@ -18,7 +18,7 @@
                             <div class="col-xl-3 col-sm-6">
                                 <div class="form-group">
                                     <label class="form-label">@lang('Supplier')</label>
-                                    <input class="form-control" type="text" value="{{ $purchase->supplier->name }}" required disabled>
+                                    <input class="form-control" type="text" value="{{ $purchase->supplier?->name }}" required disabled>
                                 </div>
                             </div>
                             <div class="col-xl-3 col-sm-6">

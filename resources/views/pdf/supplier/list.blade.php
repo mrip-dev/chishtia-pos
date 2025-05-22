@@ -16,9 +16,9 @@
             @foreach ($suppliers as $supplier)
                 <tr>
                     <td> {{ $loop->iteration }} </td>
-                    <td> {{ $supplier->name }} </td>
-                    <td> +{{ $supplier->mobile }} </td>
-                    <td> {{ $supplier->email }} </td>
+                    <td> {{ $supplier?->name }} </td>
+                    <td> +{{ $supplier?->mobile }} </td>
+                    <td> {{ $supplier?->email }} </td>
                     <td> {{ showAmount($supplier->totalPurchaseDueAmount()) }}</td>
                     <td> {{ showAmount($supplier->totalPurchaseReturnDueAmount()) }}</td>
                 </tr>

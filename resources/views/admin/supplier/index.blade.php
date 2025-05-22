@@ -22,7 +22,7 @@
                                     <tr>
                                         <td>{{ $suppliers->firstItem() + $loop->index }}</td>
                                         <td>{{ $supplier->name }}</td>
-                                        <td><span class="fw-bold"> {{ $supplier->mobile }} </span><br> {{ $supplier->email }}
+                                        <td><span class="fw-bold"> {{ $supplier?->mobile }} </span><br> {{ $supplier->email }}
                                         </td>
                                         <td>{{ number_format($supplier->opening_balance, 2) }}</td>
                                         <td>{{ showAmount($supplier->totalPayableAmount()) }}</td>

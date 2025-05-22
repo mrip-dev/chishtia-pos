@@ -28,9 +28,9 @@
 
                                         <td>
                                             <span class="fw-bold">
-                                                {{ $return->purchase->supplier->name }}</span>
+                                                {{ $return->purchase->supplier?->name }}</span>
                                             <br>
-                                            +{{ $return->purchase->supplier->mobile }}
+                                            +{{ $return->purchase->supplier?->mobile }}
                                         </td>
 
                                         <td>
@@ -77,7 +77,7 @@
                                                 <div class="dropdown-menu">
                                                     @permit('admin.supplier.payment.receive.store')
                                                         @if ($return->due_amount != 0)
-                                                            <a class="dropdown-item paymentModalBtn" data-supplier="{{ $return->supplier->name }}"
+                                                            <a class="dropdown-item paymentModalBtn" data-supplier="{{ $return->supplier?->name }}"
                                                                 data-invoice="{{ $return->purchase->invoice_no }}" data-id="{{ $return->id }}"
                                                                 data-due_amount="{{ $return->due_amount }}" href="javascript:void(0)">
                                                                 @if ($return->due_amount < 0)

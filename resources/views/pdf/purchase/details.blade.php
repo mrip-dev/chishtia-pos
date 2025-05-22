@@ -4,13 +4,13 @@
     <div class="list--row mb-15px">
         <div class="float-left">
             <h6 class="title">@lang('Supplier Info')</h6>
-            <p class="mb-5px">@lang('Name'): {{ $supplier->name }}</p>
-            <p class="mb-5px">@lang('Mobile'): {{ $supplier->mobile }}</p>
-            <p class="mb-5px">@lang('Email'): {{ $supplier->email }}</p>
+            <p class="mb-5px">@lang('Name'): {{ $supplier?->name }}</p>
+            <p class="mb-5px">@lang('Mobile'): {{ $supplier?->mobile }}</p>
+            <p class="mb-5px">@lang('Email'): {{ $supplier?->email }}</p>
         </div>
 
         <div class="float-right">
-            <h6>@lang('Company'): {{ $supplier->company_name }}</h6>
+            <h6>@lang('Company'): {{ $supplier?->company_name }}</h6>
             <p class="mb-5px">@lang('Invoice No.'): #<b>{{ $purchase->invoice_no }}</b></p>
             <p class="mb-5px">@lang('Date'): {{ showDateTime($purchase->purchase_date, 'd F Y') }}</p>
             <p class="mb-5px">@lang('Warehouse'): {{ $purchase->warehouse->name }}</p>

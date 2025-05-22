@@ -22,7 +22,7 @@
                                         </td>
 
                                         <td>
-                                            <a href="{{ route('admin.supplier.index') }}?search={{ $entry->actionable->supplier->mobile }}">{{ $entry->actionable->supplier->name }}</a>
+                                            <a href="{{ route('admin.supplier.index') }}?search={{ $entry->actionable->supplier?->mobile }}">{{ $entry->actionable->supplier?->name }}</a>
                                         </td>
 
                                         <td>

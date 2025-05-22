@@ -23,7 +23,7 @@
                         @endif
                     </td>
                     <td> {{ showDateTime($log->created_at, 'm/d/Y') }} </td>
-                    <td> {{ $log->supplier->name }} </td>
+                    <td> {{ $log->supplier?->name }} </td>
                     <td> {{ $log->trx }}</td>
                     <td> {{ ucfirst(strtolower(keyToTitle($log->remark))) }} </td>
                     <td> {{ showAmount($log->amount) }} </td>

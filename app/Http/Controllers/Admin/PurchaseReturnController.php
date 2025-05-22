@@ -58,7 +58,7 @@ class PurchaseReturnController extends Controller
         foreach ($data as $return) {
             $invoice        = $return->purchase->invoice_no;
             $date           = showDateTime(@$return->return_date, 'd-m-Y');
-            $supplier       = $return->purchase->supplier->name;
+            $supplier       = $return->purchase->supplier->name ?? 'N/A';
             $supplierMobile = $return->purchase->supplier->mobile;
             $warehouse      = $return->purchase->warehouse->name;
             $totalAmount    = $curSym . getAmount($return->total_price);

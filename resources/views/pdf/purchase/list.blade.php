@@ -21,7 +21,7 @@
                     <td> {{ $loop->iteration }} </td>
                     <td> {{ $purchase->invoice_no }} </td>
                     <td> {{ showDateTime($purchase->purchase_date, 'm/d/Y') }} </td>
-                    <td> {{ $purchase->supplier->name }} </td>
+                    <td> {{ $purchase->supplier?->name }} </td>
                     <td> {{ $purchase->warehouse->name }} </td>
                     <td>
                         <span class="text--success fw-bold"> {{ $purchase->driver_name }}</span>

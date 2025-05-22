@@ -22,7 +22,7 @@
                                         <td>{{ $stock->product->name }}</td>
                                         <td>{{ $stock->product->sku }}</td>
                                         <td>{{ $stock->product->category->name }} </td>
-                                        <td>{{ $stock->product->brand->name }} </td>
+                                        <td>{{ $stock->product?->brand?->name }} </td>
                                         <td>{{ $stock->quantity . ' ' . $stock->product->unit->name }} </td>
                                     </tr>
                                 @empty

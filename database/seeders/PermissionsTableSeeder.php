@@ -106,7 +106,8 @@ class PermissionsTableSeeder extends Seeder
             ['id' => 95, 'name' => 'Download Transfer Pdf', 'group' => 'TransferController', 'code' => 'admin.transfer.pdf'],
             ['id' => 96, 'name' => 'Update Transfer', 'group' => 'TransferController', 'code' => 'admin.transfer.update'],
             ['id' => 97, 'name' => 'Transfer Product Search', 'group' => 'TransferController', 'code' => 'admin.transfer.search.product'],
-            ['id' => 98, 'name' => 'All Expense Types', 'group' => 'ExpenseTypeController', 'code' => 'admin.expense.type.index'],
+            // ['id' => 98, 'name' => 'All Expense Types', 'group' => 'ExpenseTypeController', 'code' => 'admin.expense.type.index'],
+            ['id' => 98, 'name' => 'All Expense Types', 'group' => 'ExpenseTypeController', 'code' => 'admin.manage_expense_type'],
             ['id' => 99, 'name' => 'Delete Expense Type', 'group' => 'ExpenseTypeController', 'code' => 'admin.expense.type.delete'],
             ['id' => 100, 'name' => 'Store Expense Type', 'group' => 'ExpenseTypeController', 'code' => 'admin.expense.type.store'],
             ['id' => 148, 'name' => 'Download Purchase Return CSV', 'group' => 'PurchaseReturnController', 'code' => 'admin.purchase.return.csv'],
@@ -166,6 +167,16 @@ class PermissionsTableSeeder extends Seeder
             ['id' => 219, 'name' => 'Chart Purchase Sale', 'group' => 'AdminController', 'code' => 'admin.chart.purchase.sale'],
             ['id' => 220, 'name' => 'Chart Sales Return', 'group' => 'AdminController', 'code' => 'admin.chart.sales.return'],
             ['id' => 221, 'name' => 'Chart Purchases Return', 'group' => 'AdminController', 'code' => 'admin.chart.purchases.return'],
+            ['id' => 222, 'name' => 'Service Stock Detail', 'group' => 'ServiceStockController', 'code' => 'admin.manage_stock_details'],
+            ['id' => 223, 'name' => 'Service Stock In', 'group' => 'ServiceStockController', 'code' => 'admin.manage_stock_in'],
+            ['id' => 224, 'name' => 'Service Stock Out', 'group' => 'ServiceStockController', 'code' => 'admin.manage_stock_out'],
+            ['id' => 225, 'name' => 'Service Stock Transfer', 'group' => 'ServiceStockController', 'code' => 'admin.manage_stock_transfer'],
+            ['id' => 226, 'name' => 'Service Stock Report', 'group' => 'ServiceStockController', 'code' => 'admin.stock_client_details'],
+            ['id' => 227, 'name' => 'Service Stock Payment', 'group' => 'ServiceStockController', 'code' => 'admin.stock_client_payment'],
+            ['id' => 228, 'name' => 'Day Book', 'group' => 'DayBookController', 'code' => 'admin.daybook.index'],
+            ['id' => 229, 'name' => 'Manufacturing Unit', 'group' => 'ManufacturingUnitController', 'code' => 'admin.production_flow'],
+            ['id' => 230, 'name' => 'Manage Expenses', 'group' => 'ExpenseTypeController', 'code' => 'admin.manage_expense'],
+            ['id' => 231, 'name' => 'Banks Management', 'group' => 'BanksManagementController', 'code' => 'admin.bank.index'],
 
         ];
 

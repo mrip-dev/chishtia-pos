@@ -123,7 +123,7 @@
                                     @forelse($stocks as $item)
                                     <tr>
                                         <td>
-                                            <span class="fw-bold">{{ $item->user->name }}</span>
+                                            <span class="fw-bold">{{ $item->user?->name }}</span>
                                         </td>
                                         <td>
                                             <span class="fw-bold">{{ $item->product_count }}</span>

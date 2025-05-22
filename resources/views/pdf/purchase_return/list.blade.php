@@ -20,7 +20,7 @@
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $return->purchase->invoice_no }}</td>
                     <td>{{ showDateTime($return->return_date, 'm/d/Y') }}</td>
-                    <td>{{ $return->purchase->supplier->name }}</td>
+                    <td>{{ $return->purchase->supplier?->name }}</td>
                     <td>{{ $return->purchase->warehouse->name }}</td>
                     <td>{{ showAmount($return->receivable_amount) }}</td>
                     <td>

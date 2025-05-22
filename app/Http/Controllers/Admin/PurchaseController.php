@@ -59,7 +59,7 @@ class PurchaseController extends Controller
         $curSym   = gs('cur_sym');
         foreach ($data as $purchase) {
             $date           = showDateTime(@$purchase->purchase_date, 'd-m-Y');
-            $supplier       = $purchase->supplier->name;
+            $supplier       = $purchase->supplier->name ?? 'N/A';
             $supplierMobile = $purchase->supplier->mobile;
             $totalAmount    = $curSym . getAmount($purchase->total_price);
             $warehouse      = $purchase->warehouse->name;
