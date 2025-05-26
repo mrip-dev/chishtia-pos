@@ -150,6 +150,7 @@ class AllPurchases extends Component
         $this->selectedPurchase = Purchase::find($id);
         $this->suppliers = Supplier::select('id', 'name', 'mobile')->get();
         $this->warehouses =  Warehouse::active()->orderBy('name')->get();
+         $this->getProductsSearchable();
     }
     public function loadPurchase($id)
     {

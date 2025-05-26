@@ -167,6 +167,7 @@ class AllSales extends Component
         $this->selectedSale = Sale::find($id);
         $this->customers = Customer::select('id', 'name', 'mobile')->get();
         $this->warehouses =  Warehouse::active()->orderBy('name')->get();
+        $this->getProductsSearchable();
     }
     public function loadSale($id)
     {
