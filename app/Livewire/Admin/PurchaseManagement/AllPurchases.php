@@ -65,6 +65,9 @@ class AllPurchases extends Component
     public $driver_name = '';
     public $driver_contact = '';
     public $fare = 0;
+    public $searchAbleProducts = [];
+    public $selected_product_id = null;
+
 
     protected function rules()
     {
@@ -134,6 +137,7 @@ class AllPurchases extends Component
 
 
         $this->invoice_no = generateInvoiceNumberP($lastInvoiceNo);
+        $this->dispatch('re-init-select-2-component');
     }
     public function editPurchase($id)
     {
@@ -172,6 +176,8 @@ class AllPurchases extends Component
                 'id'       => $item->product->id,
                 'name'     => $item->product->name,
                 'quantity' => $item->quantity,
+                'net_weight' => $item->net_weight,
+                'unit'       => $item->product->unit->name ?? '',
                 'price'    => $item->price,
                 'total'    => $item->price * $item->quantity,
             ];
@@ -187,14 +193,31 @@ class AllPurchases extends Component
         if (!$warehouse) {
             $this->searchResults = [];
             $this->dispatch('notify', status: 'error', message: 'Select Whereouse First');
+        } else {
+            $products  = Product::query();
+
+            $products = $products->with('productStock')->where(function ($query) {
+                $query->searchable(['name', 'sku']);
+            });
+
+            $this->searchResults = $products->with('unit')->get();
         }
-        $products  = Product::query();
+    }
+    public function getProductsSearchable()
 
-        $products = $products->with('productStock')->where(function ($query) {
-            $query->searchable(['name', 'sku']);
-        });
-
-        $this->searchResults = $products->with('unit')->get();
+    {
+        $warehouse = $this->warehouse_id;
+        if (!$warehouse) {
+            $this->searchAbleProducts = [];
+            $this->dispatch('notify', status: 'error', message: 'Select Whereouse First');
+        } else {
+            $this->searchAbleProducts = Product::all()->map(function ($product) {
+                return [
+                    'id' => $product->id,
+                    'text' => $product->name . ' (' . $product->sku . ')',
+                ];
+            });
+        }
     }
     public function updated($name, $value)
     {
@@ -208,9 +231,17 @@ class AllPurchases extends Component
 
             $this->getProducts();
         }
+        if ($name === 'warehouse_id') {
+
+            $this->getProductsSearchable();
+        }
         if ($name === 'paid_amount') {
             $this->recalculateTotals();
             $this->getTotalPrice();
+        }
+        if ($name === 'selected_product_id') {
+            $this->addProduct($value);
+
         }
         if ($name === 'discount') {
             $this->recalculateTotals();
@@ -218,6 +249,10 @@ class AllPurchases extends Component
         }
         if (str_contains($name, 'quantity')) {
 
+            $this->recalculateTotals();
+            $this->getTotalPrice();
+        }
+        if (str($name)->contains(['net_weight'])) {
             $this->recalculateTotals();
             $this->getTotalPrice();
         }
@@ -232,7 +267,14 @@ class AllPurchases extends Component
         foreach ($this->products as $index => $product) {
             $price = $product['price'] ?? 0;
             $quantity = $product['quantity'] ?? 0;
-            $this->products[$index]['total'] = (float)$price * (float)$quantity;
+            $net_weight = $product['net_weight'] ?? 1;
+            if ($product['unit'] == 'kg' || $product['unit'] == 'Kg' || $product['unit'] == 'KG') {
+
+                $this->products[$index]['total'] = (float)$price * (float)$net_weight;
+            } else {
+
+                $this->products[$index]['total'] = (float)$price * (float)$quantity;
+            }
         }
     }
     public function resetForm()
@@ -245,6 +287,7 @@ class AllPurchases extends Component
             'discount',
             'searchQuery',
             'searchResults',
+            'searchAbleProducts'
         ]);
     }
     public function addProduct($productId)
@@ -259,12 +302,15 @@ class AllPurchases extends Component
             'name' => $product->name,
             'price' => $product->price ?? 0,
             'quantity' => 1,
+            'net_weight' => 0,
+            'unit' =>  $product->unit->name ?? '',
             'total' => $product->price ?? 0,
         ];
 
 
         $this->searchQuery = '';
         $this->searchResults = [];
+         $this->searchAbleProducts = [];
     }
     public function removeProduct($index)
     {
@@ -287,6 +333,7 @@ class AllPurchases extends Component
             'products'      => 'required|array',
             'products.*.id' => 'required',
             'products.*.quantity' => 'required|numeric|min:1',
+            'products.*.net_weight' => 'nullable',
             'products.*.price'    => 'required|numeric|min:0',
         ]);
 
@@ -318,7 +365,7 @@ class AllPurchases extends Component
             // If editing, get the old quantity to calculate the difference
             $oldQty = 0;
             if (!empty($this->purchaseId)) {
-                $oldDetail = PurchaseDetails::where('purchase_id', $this->saleId)
+                $oldDetail = PurchaseDetails::where('purchase_id', $this->purchaseId)
                     ->where('product_id', $productId)
                     ->first();
                 $oldQty = $oldDetail ? $oldDetail->quantity : 0;
@@ -366,8 +413,9 @@ class AllPurchases extends Component
                     'purchase_id' => $purchase->id,
                     'product_id' => $product['id'],
                     'quantity' => $product['quantity'],
+                    'net_weight' => $product['net_weight'] ?? 0,
                     'price' => $product['price'],
-                    'total' => $product['quantity'] * $product['price'],
+                    'total' => $product['total'],
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
@@ -392,7 +440,7 @@ class AllPurchases extends Component
             $wareHouseDetail->date = now();
             $wareHouseDetail->stock_in = $product['quantity'];
             $wareHouseDetail->stock_out = 0;
-            $wareHouseDetail->amount = $product['quantity'] * $product['price'];
+            $wareHouseDetail->amount = $product['total'];
             $wareHouseDetail->save();
 
 
@@ -707,6 +755,7 @@ class AllPurchases extends Component
 
     public function render()
     {
+        $this->dispatch('re-init-select-2-component');
         return view('livewire.admin.purchase-management.all-purchases');
     }
 }

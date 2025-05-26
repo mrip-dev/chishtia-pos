@@ -24,6 +24,7 @@
                 <th>@lang('Name')</th>
                 <th>@lang('SKU')</th>
                 <th>@lang('Quantity')</th>
+                <th>@lang('Weight')</th>
                 <th>@lang('Unit Price')</th>
                 <th>@lang('Total')</th>
             </tr>
@@ -34,7 +35,8 @@
                     <td>{{ $loop->iteration }} </td>
                     <td>{{ $value->product->name }}</td>
                     <td>{{ $value->product->sku }} </td>
-                    <td>{{ $value->quantity . ' ' . $value->product->unit->name }} </td>
+                    <td>{{ $value->quantity }} </td>
+                    <td>{{ $value->net_weight . ' ' . $value->product->unit->name }} </td>
                     <td>{{ showAmount($value->price) }}</td>
                     <td>{{ showAmount($value->total) }}</td>
                 </tr>

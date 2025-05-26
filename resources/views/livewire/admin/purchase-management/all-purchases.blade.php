@@ -37,7 +37,7 @@
     </div>
 
     @if (!$isCreating)
-       <div>
+    <div>
         <div class="row">
             <div class="col-lg-12">
                 <div class="card bg--transparent">
@@ -58,123 +58,123 @@
                                 </thead>
                                 <tbody>
                                     @forelse($purchases as $purchase)
-                                        <tr @include('partials.bank-history-color', ['id' => $purchase->id])>
-                                            <td>
-                                                @if ($purchase->return_status == 1)
-                                                    <small><i class="fa fa-circle text--danger" title="@lang('Returned')" aria-hidden="true"></i></small>
-                                                @endif
-                                                <span class="fw-bold">
-                                                    {{ $purchase->invoice_no }}
+                                    <tr @include('partials.bank-history-color', ['id'=> $purchase->id])>
+                                        <td>
+                                            @if ($purchase->return_status == 1)
+                                            <small><i class="fa fa-circle text--danger" title="@lang('Returned')" aria-hidden="true"></i></small>
+                                            @endif
+                                            <span class="fw-bold">
+                                                {{ $purchase->invoice_no }}
+                                            </span>
+                                            <br>
+                                            <small>{{ showDateTime($purchase->purchase_date, 'd M, Y') }}</small>
+                                        </td>
+
+                                        <td>
+                                            <span class="text--primary fw-bold"> {{ $purchase->supplier?->name }}</span>
+                                            <br>
+                                            {{ $purchase->supplier?->mobile }}
+                                        </td>
+                                        <td>
+                                            <span class="text--success fw-bold"> {{ $purchase->driver_name }}</span>
+                                            <br>
+                                            {{ $purchase->driver_contact }}
+                                        </td>
+                                        <td>
+                                            {{ $purchase->vehicle_number }}
+                                            <br>
+                                            {{ $purchase->fare }}
+                                        </td>
+
+                                        <td>
+                                            <span class="fw-bold">{{ showAmount($purchase->total_price) }}</span>
+                                            <br>
+                                            {{ $purchase->warehouse->name }}
+                                        </td>
+                                        <td>
+                                            {{ showAmount($purchase->discount_amount) }}
+                                            <br>
+                                            <span class="fw-bold">{{ showAmount($purchase->payable_amount) }}</span>
+                                        </td>
+                                        <td>
+                                            {{ showAmount($purchase->paid_amount) }}
+
+                                            <br>
+
+                                            @if ($purchase->due_amount < 0)
+                                                <span class="text--danger fw-bold" title="@lang('Receivable from Supplier')">
+                                                - {{ showAmount(abs($purchase->due_amount)) }}
                                                 </span>
-                                                <br>
-                                                <small>{{ showDateTime($purchase->purchase_date, 'd M, Y') }}</small>
-                                            </td>
-
-                                            <td>
-                                                <span class="text--primary fw-bold"> {{ $purchase->supplier?->name }}</span>
-                                                <br>
-                                                +{{ $purchase->supplier?->mobile }}
-                                            </td>
-                                            <td>
-                                                <span class="text--success fw-bold"> {{ $purchase->driver_name }}</span>
-                                                <br>
-                                                +{{ $purchase->driver_contact }}
-                                            </td>
-                                            <td>
-                                                {{ $purchase->vehicle_number }}
-                                                <br>
-                                                {{ $purchase->fare }}
-                                            </td>
-
-                                            <td>
-                                                <span class="fw-bold">{{ showAmount($purchase->total_price) }}</span>
-                                                <br>
-                                                {{ $purchase->warehouse->name }}
-                                            </td>
-                                            <td>
-                                                {{ showAmount($purchase->discount_amount) }}
-                                                <br>
-                                                <span class="fw-bold">{{ showAmount($purchase->payable_amount) }}</span>
-                                            </td>
-                                            <td>
-                                                {{ showAmount($purchase->paid_amount) }}
-
-                                                <br>
-
-                                                @if ($purchase->due_amount < 0)
-                                                    <span class="text--danger fw-bold" title="@lang('Receivable from Supplier')">
-                                                        - {{ showAmount(abs($purchase->due_amount)) }}
-                                                    </span>
                                                 @else
-                                                    <span class="fw-bold" title="@lang('Payable to Supplier')">
-                                                        {{ showAmount($purchase->due_amount) }}
-                                                    </span>
+                                                <span class="fw-bold" title="@lang('Payable to Supplier')">
+                                                    {{ showAmount($purchase->due_amount) }}
+                                                </span>
                                                 @endif
-                                            </td>
+                                        </td>
 
-                                            <td>
-                                                <div class="button--group">
-                                                    @permit('admin.purchase.edit')
-                                                        <a class="btn btn-sm btn-outline--primary ms-1 editBtn"
-                                                            href="{{ route('admin.purchase.edit', $purchase->id) }}">
-                                                            <i class="la la-pen"></i> @lang('Edit')
-                                                        </a>
+                                        <td>
+                                            <div class="button--group">
+                                                @permit('admin.purchase.edit')
+                                                <a wire:click.prevent="editPurchase({{ $purchase->id }})"
+                                                    class="btn btn-sm btn-outline--primary ms-1">
+                                                    <i class="la la-pen"></i> @lang('Edit')
+                                                </a>
+                                                @endpermit
+                                                <button class="btn btn-sm btn-outline--info ms-1 dropdown-toggle" data-bs-toggle="dropdown" type="button"
+                                                    aria-expanded="false">
+                                                    <i class="la la-ellipsis-v"></i>@lang('More')
+                                                </button>
+
+                                                <div class="dropdown-menu">
+                                                    @permit('admin.supplier.payment.store')
+                                                    <a class="dropdown-item paymentModalBtn" wire:click="payMentModal({{$purchase->id}})" data-supplier="{{ $purchase->supplier?->name }}"
+                                                        data-invoice="{{ $purchase->invoice_no }}" data-id="{{ $purchase->id }}"
+                                                        data-due_amount="{{ $purchase->due_amount }}" href="javascript:void(0)">
+                                                        @if ($purchase->due_amount < 0)
+                                                            <i class="la la-hand-holding-usd"></i>
+                                                            @lang('Receive Payment')
+                                                            @elseif($purchase->due_amount > 0)
+                                                            <i class="la la-money-bill-wave"></i>
+                                                            @lang('Give Payment')
+                                                            @endif
+                                                    </a>
                                                     @endpermit
-                                                    <button class="btn btn-sm btn-outline--info ms-1 dropdown-toggle" data-bs-toggle="dropdown" type="button"
-                                                        aria-expanded="false">
-                                                        <i class="la la-ellipsis-v"></i>@lang('More')
-                                                    </button>
 
-                                                    <div class="dropdown-menu">
-                                                        @permit('admin.supplier.payment.store')
-                                                            <a class="dropdown-item paymentModalBtn"  wire:click="payMentModal({{$purchase->id}})" data-supplier="{{ $purchase->supplier?->name }}"
-                                                                data-invoice="{{ $purchase->invoice_no }}" data-id="{{ $purchase->id }}"
-                                                                data-due_amount="{{ $purchase->due_amount }}" href="javascript:void(0)">
-                                                                @if ($purchase->due_amount < 0)
-                                                                    <i class="la la-hand-holding-usd"></i>
-                                                                    @lang('Receive Payment')
-                                                                @elseif($purchase->due_amount > 0)
-                                                                    <i class="la la-money-bill-wave"></i>
-                                                                    @lang('Give Payment')
-                                                                @endif
-                                                            </a>
-                                                        @endpermit
-
-                                                        @permit('admin.purchase.return.items')
-                                                            @if ($purchase->return_status == 0 && $purchase->due_amount > 0)
-                                                                <li>
-                                                                    <a class="dropdown-item editBtn"
-                                                                        href="{{ route('admin.purchase.return.items', $purchase->id) }}">
-                                                                        <i class="la la-undo"></i> @lang('Return Purchase')
-                                                                    </a>
-                                                                </li>
-                                                            @endif
-                                                        @endpermit
-                                                        @permit('admin.purchase.return.edit')
-                                                            @if ($purchase->return_status)
-                                                                <li>
-                                                                    <a class="dropdown-item editBtn"
-                                                                        href="{{ route('admin.purchase.return.edit', $purchase->purchaseReturn->id) }}">
-                                                                        <i class="la la-undo"></i> @lang('View Return Details')
-                                                                    </a>
-                                                                </li>
-                                                            @endif
-                                                        @endpermit
-                                                        @permit('admin.purchase.invoice.pdf')
-                                                            <li>
-                                                                <a class="dropdown-item" href="{{ route('admin.purchase.invoice.pdf', $purchase->id) }}">
-                                                                    <i class="la la-download"></i> @lang('Download Details')
-                                                                </a>
-                                                            </li>
-                                                        @endpermit
-                                                    </div>
+                                                    @permit('admin.purchase.return.items')
+                                                    @if ($purchase->return_status == 0 && $purchase->due_amount > 0)
+                                                    <li>
+                                                        <a class="dropdown-item editBtn"
+                                                            href="{{ route('admin.purchase.return.items', $purchase->id) }}">
+                                                            <i class="la la-undo"></i> @lang('Return Purchase')
+                                                        </a>
+                                                    </li>
+                                                    @endif
+                                                    @endpermit
+                                                    @permit('admin.purchase.return.edit')
+                                                    @if ($purchase->return_status)
+                                                    <li>
+                                                        <a class="dropdown-item editBtn"
+                                                            href="{{ route('admin.purchase.return.edit', $purchase->purchaseReturn->id) }}">
+                                                            <i class="la la-undo"></i> @lang('View Return Details')
+                                                        </a>
+                                                    </li>
+                                                    @endif
+                                                    @endpermit
+                                                    @permit('admin.purchase.invoice.pdf')
+                                                    <li>
+                                                        <a class="dropdown-item" href="{{ route('admin.purchase.invoice.pdf', $purchase->id) }}">
+                                                            <i class="la la-download"></i> @lang('Download Details')
+                                                        </a>
+                                                    </li>
+                                                    @endpermit
                                                 </div>
-                                            </td>
-                                        </tr>
+                                            </div>
+                                        </td>
+                                    </tr>
                                     @empty
-                                        <tr>
-                                            <td class="text-muted text-center" colspan="100%">{{ __($emptyMessage) }}</td>
-                                        </tr>
+                                    <tr>
+                                        <td class="text-muted text-center" colspan="100%">{{ __($emptyMessage) }}</td>
+                                    </tr>
                                     @endforelse
                                 </tbody>
                             </table><!-- table end -->
@@ -189,14 +189,14 @@
                 <!-- card end -->
             </div>
         </div>
-       </div>
+    </div>
     @else
     <div class="row gy-3">
         <div class="col-lg-12 col-md-12 mb-30">
             <div class="card">
                 <div class="card-body">
-                    <form  wire:submit.prevent="savePurchase">
-                     <div class="row mb-3">
+                    <form wire:submit.prevent="savePurchase">
+                        <div class="row mb-3">
                             <div class="col-xl-3 col-sm-6">
                                 <div class="form-group">
                                     <label>@lang('Invoice No:')</label>
@@ -208,10 +208,11 @@
                                 <div class="form-group" id="supplier-wrapper">
                                     <label class="form-label">@lang('Supplier')</label>
                                     <select class="select2 form-control" wire:model="supplier_id" required>
-                                        <option value="" selected >@lang('Select One')</option>
+                                        <option value="" selected>@lang('Select One')</option>
                                         @foreach ($suppliers as $supplier)
-                                            <option value="{{ $supplier->id }}">
-                                                {{ $supplier->name }}</option>
+                                        <option value="{{ $supplier->id }}">
+                                            {{ $supplier->name }}
+                                        </option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -226,11 +227,12 @@
                             <div class="col-xl-3 col-sm-6">
                                 <div class="form-group">
                                     <label class="form-label">@lang('Warehouse')</label>
-                                    <select class="form-control select2" wire:model="warehouse_id" data-minimum-results-for-search="-1" required>
-                                        <option value="" >@lang('Select One')</option>
+                                    <select class="form-control select2" wire:model.live="warehouse_id" data-minimum-results-for-search="-1" required>
+                                        <option value="">@lang('Select One')</option>
                                         @foreach ($warehouses as $warehouse)
-                                            <option value="{{ $warehouse->id }}" @selected($warehouse->id == @$purchase->warehouse_id)>
-                                                {{ __($warehouse->name) }}</option>
+                                        <option value="{{ $warehouse->id }}" @selected($warehouse->id == @$purchase->warehouse_id)>
+                                            {{ __($warehouse->name) }}
+                                        </option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -239,129 +241,144 @@
                                 <div>
                                     <div class="form-group position-relative">
                                         <label>Search Product</label>
+                                        <x-select2
+                                            id="product-select-select-purchase"
+                                            dataArray="searchAbleProducts"
+                                            wire:model="selected_product_id"
+                                            placeholder="Select a product"
+                                            :allowAdd="false" />
+                                        @if(false)
+                                        <label>Search Product</label>
                                         <input type="text" class="form-control" wire:model.live="searchQuery" placeholder="Product Name or SKU">
-
-                                        @if(!empty($searchResults))
                                         <div class="card position-absolute w-100 z-50" style="max-height: 200px; overflow-y: auto;">
                                             <ul class="list-group">
                                                 @foreach ($searchResults as $product)
-                                                    <li class="list-group-item list-group-item-action" wire:click="addProduct({{ $product->id }})" style="cursor: pointer;">
-                                                        {{ $product->name }} ({{ $product->sku }})
-                                                    </li>
+                                                <li class="list-group-item list-group-item-action" wire:click="addProduct({{ $product->id }})" style="cursor: pointer;">
+                                                    {{ $product->name }} ({{ $product->sku }})
+                                                </li>
                                                 @endforeach
                                             </ul>
                                         </div>
                                         @endif
+
                                     </div>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="table-responsive table-responsive--lg">
-                                <table class="productTable table border">
-                                    <thead class="border bg--dark">
-                                        <tr>
-                                            <th>@lang('Name')</th>
-                                            <th>@lang('Quantity')<span class="text--danger">*</span></th>
-                                            <th>@lang('Price')<span class="text--danger">*</span></th>
-                                            <th>@lang('Total')</th>
-                                            <th>@lang('Action')</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-
-
-                                        @foreach ($products as $index => $product)
-                                        <tr>
-                                            <td>{{ $product['name'] }}</td>
-                                            {{-- <td>{{ $product['stock'] }}</td> --}}
-                                            <td>
-                                                <input type="number" wire:model.live="products.{{ $index }}.quantity" class="form-control">
-                                                @error("products.$index.quantity") <small class="text-danger">{{ $message }}</small> @enderror
-                                            </td>
-                                            <td>
-                                                <input type="text" wire:model.live="products.{{ $index }}.price" class="form-control">
-                                                @error("products.$index.price") <small class="text-danger">{{ $message }}</small> @enderror
-                                            </td>
-
-                                            <td>
-                                                {{ number_format($products[$index]['total'], 2) }}
-                                            </td>
-
-                                            </td>
-                                            <td>
-                                                <button type="button" class="btn btn-danger" wire:click="removeProduct({{ $index }})">
-                                                    @lang('Remove')
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        @endforeach
-
-                                    </tbody>
-                                </table>
-
-                            </div>
-                        </div>
-                        <div class="row">
-                            {{-- Vehicle & Driver Info Row --}}
-                            <div class="col-md-6 col-sm-6">
-                                <div class="form-group">
-                                    <label>@lang('Vehicle Number')</label>
-                                    <input class="form-control" wire:model.defer="vehicle_number" type="text">
                                 </div>
                             </div>
-                            <div class="col-md-6 col-sm-6">
-                                <div class="form-group">
-                                    <label>@lang('Driver Name')</label>
-                                    <input class="form-control" wire:model.defer="driver_name" type="text">
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-sm-6">
-                                <div class="form-group">
-                                    <label>@lang('Driver Contact')</label>
-                                    <input class="form-control" wire:model.defer="driver_contact" type="text">
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-sm-6">
-                                <div class="form-group">
-                                    <label>@lang('Fare')</label>
-                                    <input class="form-control" wire:model.defer="fare" type="number" step="any">
-                                </div>
-                            </div>
+                            <div class="row mb-3">
+                                <div class="table-responsive table-responsive--lg">
+                                    <table class="productTable table border">
+                                        <thead class="border bg--dark">
+                                            <tr>
+                                                <th>@lang('Name')</th>
+                                                <th>@lang('Quantity')<span class="text--danger">*</span></th>
+                                                <th>@lang('Weight')</th>
+                                                <th>@lang('Price')<span class="text--danger">*</span></th>
+                                                <th>@lang('Total')</th>
+                                                <th>@lang('Action')</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
 
-                            {{-- Note & Pricing Row --}}
-                            <div class="col-md-7 col-sm-6">
-                                <div class="form-group">
-                                    <label>@lang('Note')</label>
-                                    <textarea class="form-control" wire:model.defer="note" rows="8">{{ old('note', @$purchase->note) }}</textarea>
+
+                                            @foreach ($products as $index => $product)
+                                            <tr>
+                                                <td>{{ $product['name'] }}</td>
+                                                {{-- <td>{{ $product['stock'] }}</td> --}}
+                                                <td>
+                                                    <input type="number" wire:model.live="products.{{ $index }}.quantity" class="form-control">
+                                                    @error("products.$index.quantity") <small class="text-danger">{{ $message }}</small> @enderror
+                                                </td>
+                                                <td>
+                                                    @if($product['unit'] == 'KG' || $product['unit'] == 'Kg' || $product['unit'] == 'kg')
+                                                    <input type="number" wire:model.live="products.{{ $index }}.net_weight" class="form-control">
+                                                    {{ $product['unit'] }}
+                                                    @error("products.$index.net_weight") <small class="text-danger">{{ $message }}</small> @enderror
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    <input type="text" wire:model.live="products.{{ $index }}.price" class="form-control">
+                                                    @error("products.$index.price") <small class="text-danger">{{ $message }}</small> @enderror
+                                                </td>
+
+                                                <td>
+                                                    {{ number_format($products[$index]['total'], 2) }}
+                                                </td>
+
+                                                </td>
+                                                <td>
+                                                    <button type="button" class="btn btn-danger" wire:click="removeProduct({{ $index }})">
+                                                        @lang('Remove')
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            @endforeach
+
+                                        </tbody>
+                                    </table>
+
                                 </div>
                             </div>
-
-                            <div class="col-md-5 col-sm-6">
-                                <div class="form-group">
-                                    <label>@lang('Total Price')</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                        <input class="form-control total_price" type="number" wire:model="total_price" readonly>
+                            <div class="row">
+                                {{-- Vehicle & Driver Info Row --}}
+                                <div class="col-md-6 col-sm-6">
+                                    <div class="form-group">
+                                        <label>@lang('Vehicle Number')</label>
+                                        <input class="form-control" wire:model.defer="vehicle_number" type="text">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-6">
+                                    <div class="form-group">
+                                        <label>@lang('Driver Name')</label>
+                                        <input class="form-control" wire:model.defer="driver_name" type="text">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-6">
+                                    <div class="form-group">
+                                        <label>@lang('Driver Contact')</label>
+                                        <input class="form-control" wire:model.defer="driver_contact" type="text">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-6">
+                                    <div class="form-group">
+                                        <label>@lang('Fare')</label>
+                                        <input class="form-control" wire:model.defer="fare" type="number" step="any">
                                     </div>
                                 </div>
 
-                                <div class="form-group">
-                                    <label>@lang('Discount')</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                        <input class="form-control" type="number" step="any" wire:model.live="discount">
+                                {{-- Note & Pricing Row --}}
+                                <div class="col-md-7 col-sm-6">
+                                    <div class="form-group">
+                                        <label>@lang('Note')</label>
+                                        <textarea class="form-control" wire:model.defer="note" rows="8">{{ old('note', @$purchase->note) }}</textarea>
                                     </div>
                                 </div>
 
-                                <div class="form-group">
-                                    <label>@lang('Payable Amount')</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                        <input class="form-control" type="number" wire:model="payable_amount" disabled>
+                                <div class="col-md-5 col-sm-6">
+                                    <div class="form-group">
+                                        <label>@lang('Total Price')</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">{{ gs('cur_sym') }}</span>
+                                            <input class="form-control total_price" type="number" wire:model="total_price" readonly>
+                                        </div>
                                     </div>
-                                </div>
 
-                                @isset($purchase)
+                                    <div class="form-group">
+                                        <label>@lang('Discount')</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">{{ gs('cur_sym') }}</span>
+                                            <input class="form-control" type="number" step="any" wire:model.live="discount">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>@lang('Payable Amount')</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">{{ gs('cur_sym') }}</span>
+                                            <input class="form-control" type="number" wire:model="payable_amount" disabled>
+                                        </div>
+                                    </div>
+
+                                    @isset($purchase)
                                     <div class="form-group">
                                         <label>@lang('Paid Amount')</label>
                                         <div class="input-group">
@@ -377,24 +394,24 @@
                                             <input class="form-control" wire:model="due_amount" type="number" disabled>
                                         </div>
                                     </div>
-                                @endisset
+                                    @endisset
+                                </div>
                             </div>
-                        </div>
 
 
-                         {{-- Submit --}}
-                        <div class="mt-4">
-                            @if ($errors->any())
-                            <div class="alert alert-danger">
-                                <ul>
-                                    @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
+                            {{-- Submit --}}
+                            <div class="mt-4">
+                                @if ($errors->any())
+                                <div class="alert alert-danger">
+                                    <ul>
+                                        @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                                @endif
+                                <button class="btn btn--primary" type="submit">@lang('Save Purchase')</button>
                             </div>
-                            @endif
-                            <button class="btn btn--primary" type="submit">@lang('Save Purchase')</button>
-                        </div>
                     </form>
                 </div>
             </div>
@@ -433,7 +450,7 @@
                                     <select name="bank_id" id="bank_id" class="form-control" wire:model="bankId">
                                         <option value="" selected>@lang('Select Bank')</option>
                                         @foreach($banks as $bank)
-                                            <option value="{{ $bank->id }}">{{ $bank->name }}</option>
+                                        <option value="{{ $bank->id }}">{{ $bank->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -463,7 +480,7 @@
                                     <div class="input-group">
                                         <button type="button" class="input-group-text">{{ gs('cur_sym') }}</button>
                                         <input type="number" step="any"
-                                        wire:model="modal_rec_bank" name="received_amount_bank" class="form-control">
+                                            wire:model="modal_rec_bank" name="received_amount_bank" class="form-control">
                                     </div>
                                     @error('modal_rec_bank')
                                     <small class="text-danger">{{ $message }}</small>
@@ -478,10 +495,10 @@
                                         <input class="form-control" wire:model="modal_paid_amount" type="number" step="any" required>
                                     </div>
                                     @error('modal_paid_amount')
-                                        <small class="text-danger">{{ $message }}</small>
+                                    <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
-                            @endif
+                                @endif
                             </div>
                         </div>
                     </div>

@@ -80,6 +80,8 @@ class AllSales extends Component
     public $modal_payment_method = '';
     public $modal_rec_bank;
     public $modal_receivable_amount;
+    public $searchAbleProducts = [];
+    public $selected_product_id = null;
 
 
 
@@ -188,14 +190,18 @@ class AllSales extends Component
         $this->products = [];
 
         foreach ($sale->saleDetails as $item) {
+            $stock = $item->product->productStock->where('warehouse_id', $this->warehouse_id)->first();
+
             $this->products[] = [
-                'id'       => $item->product->id,
-                'name'     => $item->product->name,
-                'sku'      => $item->product->sku,
-                'stock'    => $item->product->productStock->first()->quantity ?? 0,
-                'quantity' => $item->quantity,
-                'price'    => $item->price,
-                'total'    => $item->price * $item->quantity,
+                'id'         => $item->product->id,
+                'name'       => $item->product->name,
+                'sku'        => $item->product->sku,
+                'stock'      => $stock ? $stock->quantity : 0,
+                'quantity'   => $item->quantity,
+                'net_weight' => $item->net_weight,
+                'unit'       => $item->product->unit->name ?? '',
+                'price'      => $item->price,
+                'total'      => $item->price * $item->quantity,
             ];
         }
 
@@ -220,6 +226,26 @@ class AllSales extends Component
 
         $this->searchResults = $products->with('unit')->get();
     }
+    public function getProductsSearchable()
+
+    {
+        $warehouse = $this->warehouse_id;
+
+        if (!$warehouse) {
+            $this->searchAbleProducts = [];
+            $this->dispatch('notify', status: 'error', message: 'Select Whereouse First');
+        } else {
+
+            $this->searchAbleProducts = Product::query()->whereHas('productStock', function ($q) use ($warehouse) {
+                $q->where('warehouse_id', $warehouse)->where('quantity', '>', 0);
+            })->get()->map(function ($product) {
+                return [
+                    'id' => $product->id,
+                    'text' => $product->name . ' (' . $product->sku . ')',
+                ];
+            });
+        }
+    }
 
     public function updated($name, $value)
     {
@@ -236,6 +262,14 @@ class AllSales extends Component
             $this->recalculateTotals();
             $this->getTotalPrice();
         }
+        if ($name === 'warehouse_id') {
+
+            $this->getProductsSearchable();
+        }
+
+        if ($name === 'selected_product_id') {
+            $this->addProduct($value);
+        }
         if ($name === 'discount') {
             $this->recalculateTotals();
             $this->getTotalPrice();
@@ -249,6 +283,10 @@ class AllSales extends Component
             $this->recalculateTotals();
             $this->getTotalPrice();
         }
+        if (str($name)->contains(['net_weight'])) {
+            $this->recalculateTotals();
+            $this->getTotalPrice();
+        }
     }
     public function recalculateTotals()
     {
@@ -256,7 +294,14 @@ class AllSales extends Component
         foreach ($this->products as $index => $product) {
             $price = $product['price'] ?? 0;
             $quantity = $product['quantity'] ?? 0;
-            $this->products[$index]['total'] = (float)$price * (float)$quantity;
+            $net_weight = $product['net_weight'] ?? 1;
+            if ($product['unit'] == 'kg' || $product['unit'] == 'Kg' || $product['unit'] == 'KG') {
+
+                $this->products[$index]['total'] = (float)$price  * (float)$net_weight;
+            } else {
+
+                $this->products[$index]['total'] = (float)$price * (float)$quantity;
+            }
         }
     }
     public function resetForm()
@@ -269,6 +314,7 @@ class AllSales extends Component
             'discount',
             'searchQuery',
             'searchResults',
+            'searchAbleProducts',
         ]);
     }
 
@@ -277,19 +323,22 @@ class AllSales extends Component
         $product = Product::find($productId);
 
         if (!$product || !$product->productStock) return;
-
+        $stock = $product->productStock->where('warehouse_id', $this->warehouse_id)->first();
         $this->products[] = [
             'id' => $product->id,
             'name' => $product->name,
             'sku' => $product->sku,
             'price' => $product->price ?? 0,
             'quantity' => 1,
-            'stock' => $product->productStock->first()->quantity ?? 0,
+            'net_weight' => 0,
+            'unit' =>  $product->unit->name ?? '',
+            'stock' => $stock ? $stock->quantity : 0,
             'total' => $product->price ?? 0,
         ];
 
         $this->searchQuery = '';
         $this->searchResults = [];
+        $this->searchAbleProducts = [];
     }
 
 
@@ -315,6 +364,7 @@ class AllSales extends Component
             'products'      => 'required|array',
             'products.*.id' => 'required',
             'products.*.quantity' => 'required|numeric|min:1',
+            'products.*.net_weight' => 'nullable',
             'products.*.price'    => 'required|numeric|min:0',
         ]);
 
@@ -393,9 +443,10 @@ class AllSales extends Component
                 return [
                     'sale_id' => $sale->id,
                     'product_id' => $product['id'],
-                    'quantity' => $product['quantity'],
+                    'quantity' => $product['quantity'] ?? 0,
+                    'net_weight' => $product['net_weight'] ?? 0,
                     'price' => $product['price'],
-                    'total' => $product['quantity'] * $product['price'],
+                    'total' => $product['total'],
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
@@ -420,7 +471,7 @@ class AllSales extends Component
             $wareHouseDetail->date = now();
             $wareHouseDetail->stock_in = 0;
             $wareHouseDetail->stock_out = $product['quantity'];
-            $wareHouseDetail->amount = $product['quantity'] * $product['price'];
+            $wareHouseDetail->amount = $product['total'];
             $wareHouseDetail->save();
 
             // Notify the user of success
@@ -754,6 +805,7 @@ class AllSales extends Component
 
     public function render()
     {
+        $this->dispatch('re-init-select-2-component');
         return view('livewire.admin.sale-management.all-sales');
     }
 }
