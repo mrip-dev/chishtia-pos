@@ -84,6 +84,7 @@ class CustomerController extends Controller
         $customer->mobile  = $request->mobile;
         $customer->address = $request->address;
         $customer->opening_balance = $request->opening_balance;
+        $customer->booklet_no = $request->booklet_no;
         $customer->save();
 
         Action::newEntry($customer, $id ? 'UPDATED' : 'CREATED');
@@ -113,6 +114,7 @@ class CustomerController extends Controller
     {
         $request->validate([
             'name'    => 'required|string|max:40',
+            'booklet_no'    => 'required|string|max:100',
             'email'   => 'nullable',
             'mobile'  => 'nullable',
             'address' => 'string|max:500',

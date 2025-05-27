@@ -9,6 +9,7 @@
                             <thead>
                                 <tr>
                                     <th>@lang('Name') | @lang('Address')</th>
+                                    <th>@lang('Book Let')</th>
                                     <th>@lang('Mobile') | @lang('Email')</th>
                                     <th>@lang('Opening Balance')</th>
                                     <th>@lang('Receivable')</th>
@@ -23,6 +24,10 @@
                                             <span class="fw-bold">{{ $customer->name }}</span>
                                             <br>
                                             {{ strLimit($customer->address, 40) }}
+                                        </td>
+                                         <td>
+                                            <span class="fw-bold">{{ $customer->booklet_no }}</span>
+
                                         </td>
                                         <td>
                                             <span class="fw-bold">{{ $customer->mobile }}</span> <br> {{ $customer->email }}
@@ -108,6 +113,12 @@
                                 <div class="form-group">
                                     <label class="form-label">Email</label>
                                     <input type="email" class="form-control " name="email" value="{{ old('email') }}" >
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label class="form-label">Book Let No.</label>
+                                    <input type="text" class="form-control " name="booklet_no" value="{{ old('booklet_no') }}" required>
                                 </div>
                             </div>
 

@@ -106,6 +106,7 @@ class SupplierController extends Controller
         $supplier->company_name = $request->company_name;
         $supplier->address      = $request->address;
         $supplier->opening_balance = $request->opening_balance ?? 0.00;
+        $supplier->booklet_no = $request->booklet_no;
         $supplier->save();
         Action::newEntry($supplier, $id ? 'UPDATED' : 'CREATED');
     }
@@ -114,6 +115,7 @@ class SupplierController extends Controller
     {
         $request->validate([
             'name'         => 'required|string|max:40',
+            'booklet_no'   => 'required|string|max:100',
             'email'        => 'nullable',
             'mobile'       => 'nullable',
             'company_name' => 'nullable|string|max:40',
