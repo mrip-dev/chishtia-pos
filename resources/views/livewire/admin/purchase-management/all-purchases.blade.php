@@ -50,6 +50,7 @@
                                         <th>@lang('Supplier') | @lang('Mobile')</th>
                                         <th>@lang('Driver Name') | @lang('Contact')</th>
                                         <th>@lang('Vehicle No') | @lang('Fare')</th>
+                                        <th>@lang('Loading') | @lang('Unloading')</th>
                                         <th>@lang('Total Amount') | @lang('Warehouse')</th>
                                         <th>@lang('Discount') | @lang('Payable') </th>
                                         <th>@lang('Paid') | @lang('Due')</th>
@@ -85,7 +86,10 @@
                                             <br>
                                             {{ $purchase->fare }}
                                         </td>
+                                        <td>
+                                            {{ $purchase->loading }}
 
+                                        </td>
                                         <td>
                                             <span class="fw-bold">{{ showAmount($purchase->total_price) }}</span>
                                             <br>
@@ -342,6 +346,12 @@
                                     <div class="form-group">
                                         <label>@lang('Fare')</label>
                                         <input class="form-control" wire:model.defer="fare" type="number" step="any">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-6">
+                                    <div class="form-group">
+                                        <label>@lang('Loading / Unloading')</label>
+                                        <input class="form-control" type="number" step="any" wire:model.defer="loading"></input>
                                     </div>
                                 </div>
 

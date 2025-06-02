@@ -48,6 +48,7 @@
                                     <th>@lang('Customer') | @lang('Mobile')</th>
                                     <th>@lang('Driver Name') | @lang('Mobile')</th>
                                     <th>@lang('Vehicle No') | @lang('Fare')</th>
+                                    <th>@lang('Loading') | @lang('Unloading')</th>
                                     <th>@lang('Warehouse') | @lang('Total Amount')</th>
                                     <th>@lang('Discount') | @lang('Receivable')</th>
                                     <th>@lang('Received') | @lang('Due')</th>
@@ -81,6 +82,10 @@
                                         {{ $sale->vehicle_number }}
                                         <br>
                                         {{ $sale->fare }}
+                                    </td>
+                                    <td>
+                                        {{ $sale->loading }}
+
                                     </td>
 
                                     <td>
@@ -198,7 +203,7 @@
                         <div class="row mb-3">
                             <div class="col-xl-3 col-sm-6">
                                 <label>@lang('Invoice No.')</label>
-                                <input type="text" class="form-control" wire:model="invoice_no" >
+                                <input type="text" class="form-control" wire:model="invoice_no">
                                 @error('invoice_no') <small class="text-danger">{{ $message }}</small> @enderror
                             </div>
 
@@ -333,6 +338,12 @@
                                 <div class="form-group">
                                     <label>@lang('Fare')</label>
                                     <input class="form-control" wire:model.defer="fare"></input>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-6">
+                                <div class="form-group">
+                                    <label>@lang('Loading / Unloading')</label>
+                                    <input class="form-control" type="number" step="any" wire:model.defer="loading"></input>
                                 </div>
                             </div>
 

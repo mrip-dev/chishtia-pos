@@ -65,6 +65,7 @@ class AllPurchases extends Component
     public $driver_name = '';
     public $driver_contact = '';
     public $fare = 0;
+    public $loading = 0;
     public $searchAbleProducts = [];
     public $selected_product_id = null;
 
@@ -170,6 +171,7 @@ class AllPurchases extends Component
         $this->driver_name = $purchase->driver_name;
         $this->driver_contact = $purchase->driver_contact;
         $this->fare = $purchase->fare;
+        $this->loading = $purchase->loading;
         $this->products = [];
 
         foreach ($purchase->purchaseDetails as $item) {
@@ -406,6 +408,8 @@ class AllPurchases extends Component
             $purchase->driver_name = $this->driver_name;
             $purchase->driver_contact = $this->driver_contact;
             $purchase->fare = $this->fare;
+            $purchase->loading = $this->loading;
+
             $purchase->save();
             Action::newEntry($purchase, $this->purchaseId ? 'UPDATED' : 'CREATED');
             // Prepare sale details data

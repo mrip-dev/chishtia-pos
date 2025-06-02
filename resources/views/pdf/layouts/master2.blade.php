@@ -169,6 +169,28 @@
             margin-right: auto;
         }
     </style>
+    <style>
+        body {
+            font-size: 10px; /* Smaller font to fit more content */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed; /* Forces column widths to respect constraints */
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 5px;
+            word-wrap: break-word; /* Forces long text to wrap */
+            font-size: 9px;
+        }
+        th {
+            background-color: #97ca9c;
+        }
+        tr {
+            page-break-inside: avoid;
+        }
+    </style>
 </head>
 
 <body>

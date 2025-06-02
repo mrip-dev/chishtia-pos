@@ -66,6 +66,7 @@ class AllSales extends Component
     public $driver_name = '';
     public $driver_contact = '';
     public $fare = 0;
+    public $loading = 0;
 
     public $editMode = false;
     public $saleId = null;
@@ -186,6 +187,8 @@ class AllSales extends Component
         $this->driver_name = $sale->driver_name;
         $this->driver_contact = $sale->driver_contact;
         $this->fare = $sale->fare;
+        $this->loading = $sale->loading;
+
         $this->due_amount = $sale->due_amount;
 
         $this->products = [];
@@ -437,6 +440,7 @@ class AllSales extends Component
             $sale->driver_name = $this->driver_name;
             $sale->driver_contact = $this->driver_contact;
             $sale->fare = $this->fare;
+            $sale->loading = $this->loading;
             $sale->save();
             Action::newEntry($sale, $this->saleId ? 'UPDATED' : 'CREATED');
             // Prepare sale details data
