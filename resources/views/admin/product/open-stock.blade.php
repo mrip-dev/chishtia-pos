@@ -14,12 +14,15 @@
                                 <div class="col-sm-12">
                                     <div class="form-group">
                                         <label>@lang('Product')</label>
-                                        <select class="form-control select2" name="product_id" required>
+                                        <select class="form-control select2" name="product_id" required onchange="checkUnit(this)">
                                             <option value="" selected disabled>@lang('Select One')</option>
                                             @foreach ($products as $product)
-                                            <option value="{{ $product->id }}" @selected($product->id == @$product->product_id)>
+                                            <option value="{{ $product->id }}"
+                                                data-unit="{{ strtolower($product->unit->name) }}"
+                                                @selected($product->id == @$product->product_id)>
                                                 {{ __($product->name) }}
                                             </option>
+
                                             @endforeach
                                         </select>
                                     </div>
@@ -27,7 +30,7 @@
                                 <fieldset class="card p-3 mb-3 border">
                                     <legend class="form-label mb-2">@lang('Product Stock')</legend>
                                     <div class="row">
-                                        <div class="col-md-5">
+                                        <div class="col-md-6">
                                             <div class="form-group">
                                                 <label class="form-label">@lang('Warehouse')</label>
                                                 <select class="form-control select2" name="warehouse_id" data-minimum-results-for-search="-1" required>
@@ -41,10 +44,17 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-7">
+                                        <div class="col-md-6">
                                             <div class="form-group">
                                                 <label>@lang('Product Quantity')</label>
                                                 <input class="form-control" name="stock_quantity" type="number" min="1">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6" id="net_weight" style="display: none;">
+                                            <div class="form-group">
+                                                <label>@lang('Net Weight')</label>
+                                                <input class="form-control" name="net_weight" type="number"
+                                                    placeholder="@lang('Net Weight')" step="any" min="0">
                                             </div>
                                         </div>
 
@@ -65,26 +75,26 @@
     </div>
 </div>
 <script>
-    function selectUnit(selectElement) {
-        const selectedText = selectElement.options[selectElement.selectedIndex].text.trim();
+    function checkUnit(select) {
+        const selectedOption = select.options[select.selectedIndex];
+        const unit = selectedOption.getAttribute('data-unit');
 
-        if (selectedText === 'KG' || selectedText === 'kg' || selectedText === 'Kg') {
-            // Do something when "KG" is selected
+        if (unit === 'kg') {
             document.getElementById('net_weight').style.display = 'block';
         } else {
-            // Hide if not KG
             document.getElementById('net_weight').style.display = 'none';
         }
     }
 
-    // Optional: Trigger on page load if editing product
-    document.addEventListener("DOMContentLoaded", function() {
-        const unitSelect = document.querySelector('select[name="unit_id"]');
-        if (unitSelect) {
-            selectUnit(unitSelect);
+    // On page load (in case of edit)
+    document.addEventListener("DOMContentLoaded", function () {
+        const productSelect = document.querySelector('select[name="product_id"]');
+        if (productSelect) {
+            checkUnit(productSelect);
         }
     });
 </script>
+
 
 @endsection
 

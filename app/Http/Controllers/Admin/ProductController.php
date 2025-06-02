@@ -24,7 +24,7 @@ class ProductController extends Controller
 
     protected function getProducts()
     {
-        return Product::searchable(['name', 'sku', 'alert_quantity'])->with('category:id,name', 'brand:id,name', 'unit:id,name', 'productStock:id,product_id,quantity', 'saleDetails')->orderByDesc('id');
+        return Product::searchable(['name', 'sku', 'alert_quantity'])->with('category:id,name', 'brand:id,name', 'unit:id,name', 'productStock:id,product_id,quantity,net_weight', 'saleDetails')->orderByDesc('id');
     }
 
     public function index()
@@ -134,24 +134,26 @@ class ProductController extends Controller
         $notification = 'Stock updated successfully';
 
         if ($request->warehouse_id && $request->stock_quantity) {
-            $this->storeStock($request->warehouse_id, $request->product_id, $request->stock_quantity);
+            $this->storeStock($request->warehouse_id, $request->product_id, $request->stock_quantity, $request->net_weight);
         }
 
         $notify[] = ['success',  $notification];
         return back()->withNotify($notify);
     }
-    protected function storeStock($warehouse_id, $productid, $quantity)
+    protected function storeStock($warehouse_id, $productid, $quantity, $net_weight = null)
     {
 
         $previousStock = ProductStock::where('warehouse_id', $warehouse_id)->where('product_id', $productid)->first();
         if ($previousStock) {
             $previousStock->quantity += $quantity;
+            $previousStock->net_weight += $net_weight ?? 0;
             $previousStock->save();
         } else {
             $stock               = new ProductStock();
             $stock->warehouse_id = $warehouse_id;
             $stock->product_id   = $productid;
             $stock->quantity     = $quantity;
+            $stock->net_weight     = $net_weight ?? 0;
             $stock->save();
         }
     }

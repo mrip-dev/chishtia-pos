@@ -153,6 +153,12 @@ class AllSales extends Component
 
         $this->sale_date = now()->format('Y-m-d');
         $this->customers = Customer::select('id', 'name', 'mobile')->get();
+          $this->customers = $this->customers->map(function ($customer) {
+            return [
+                'id' => $customer->id,
+                'text' => $customer->name,
+            ];
+        })->toArray();
         $this->warehouses =  Warehouse::active()->orderBy('name')->get();
         $lastSale      = Sale::orderBy('id', 'DESC')->first();
         $lastInvoiceNo = $lastSale->invoice_no ?? 0;
@@ -167,6 +173,14 @@ class AllSales extends Component
         $this->loadSale($id);
         $this->selectedSale = Sale::find($id);
         $this->customers = Customer::select('id', 'name', 'mobile')->get();
+        /// map Customers to include only id and name
+        $this->customers = $this->customers->map(function ($customer) {
+            return [
+                'id' => $customer->id,
+                'text' => $customer->name,
+            ];
+        })->toArray();
+        $this->searchQuery = '';
         $this->warehouses =  Warehouse::active()->orderBy('name')->get();
         $this->getProductsSearchable();
     }
@@ -201,6 +215,7 @@ class AllSales extends Component
                 'name'       => $item->product->name,
                 'sku'        => $item->product->sku,
                 'stock'      => $stock ? $stock->quantity : 0,
+                'stock_weight' => $stock ? $stock->net_weight : 0,
                 'quantity'   => $item->quantity,
                 'net_weight' => $item->net_weight,
                 'unit'       => $item->product->unit->name ?? '',
@@ -290,6 +305,7 @@ class AllSales extends Component
         if (str($name)->contains(['net_weight'])) {
             $this->recalculateTotals();
             $this->getTotalPrice();
+            $this->checkWeightStockAvailability();
         }
     }
     public function recalculateTotals()
@@ -337,6 +353,7 @@ class AllSales extends Component
             'net_weight' => 0,
             'unit' =>  $product->unit->name ?? '',
             'stock' => $stock ? $stock->quantity : 0,
+            'stock_weight' => $stock ? $stock->net_weight : 0,
             'total' => $product->price ?? 0,
         ];
 
@@ -543,6 +560,57 @@ class AllSales extends Component
 
         return true;
     }
+    protected function checkWeightStockAvailability()
+    {
+        $products = $this->products;
+        $notify = [];
+
+        foreach ($products as $index => $product) {
+            $product = (object) $product;
+
+            $productStock = ProductStock::where('product_id', $product->id)
+                ->where('warehouse_id', $this->warehouse_id)
+                ->first();
+
+            // Calculate old net weight if in edit mode
+            $oldNetWeight = 0;
+            if (!empty($this->saleId)) {
+                $oldDetail = SaleDetails::where('sale_id', $this->saleId)
+                    ->where('product_id', $product->id)
+                    ->first();
+                $oldNetWeight = $oldDetail ? $oldDetail->net_weight : 0;
+            }
+
+            // How much more net weight is needed?
+            $additionalNetWeightNeeded = (float)$product->net_weight - (float)$oldNetWeight;
+
+            // Check if the additional net weight can be fulfilled
+            if ($additionalNetWeightNeeded > 0 && (!$productStock || $additionalNetWeightNeeded > $productStock->net_weight)) {
+                $maxNetWeight = (float)$oldNetWeight + ($productStock ? (float)$productStock->net_weight : 0);
+
+                // Update product net weight to maximum allowed
+                $this->products[$index]['net_weight'] = $maxNetWeight;
+                $this->products[$index]['total'] = (float)$product->price * (float)$maxNetWeight;
+
+                $notify[] = [
+                    'product' => $product->name ?? 'Unnamed Product',
+                    'available' => $productStock ? (float)$productStock->net_weight : 0,
+                    'requested' => (float)$additionalNetWeightNeeded,
+                ];
+            }
+        }
+
+        if (count($notify) > 0) {
+            $message = 'Insufficient weight stock for the following products: ';
+            foreach ($notify as $item) {
+                $message .= "{$item['product']} (Available: {$item['available']} kg, Requested: {$item['requested']} kg) ";
+            }
+            $this->dispatch('notify', status: 'error', message: $message);
+            return false;
+        }
+
+        return true;
+    }
 
     protected function updateProductStock($saleId = null)
     {
@@ -557,6 +625,7 @@ class AllSales extends Component
 
                 if ($productStock) {
                     $productStock->quantity += $detail->quantity; // Restore stock
+                    $productStock->net_weight += $detail->net_weight ?? 0; // Restore net weight
                     $productStock->save();
                 }
             }
@@ -574,10 +643,12 @@ class AllSales extends Component
 
             if ($productStock) {
                 $productStock->quantity -= $product->quantity;
+                $productStock->net_weight -= $product->net_weight ?? 0; // Deduct net weight
                 $productStock->save();
             }
             $productTotal = Product::find($product->id);
             $productTotal->total_sale += $product->quantity;
+            $productTotal->total_sale_weight += $product->net_weight ?? 0;
             $productTotal->save();
         }
     }

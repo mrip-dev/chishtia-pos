@@ -527,6 +527,7 @@ class AllPurchases extends Component
 
                 if ($productStock) {
                     $productStock->quantity -= $detail->quantity; // Restore stock
+                    $productStock->net_weight -= $detail->net_weight ?? 0; // Restore net weight
                     $productStock->save();
                 }
             }
@@ -544,12 +545,14 @@ class AllPurchases extends Component
 
             if ($productStock) {
                 $productStock->quantity += $product->quantity;
+                $productStock->net_weight += $product->net_weight ?? 0;
                 $productStock->save();
             } else {
                 $stock = new ProductStock();
                 $stock->warehouse_id = $this->warehouse_id;
                 $stock->product_id   = $product->id;
                 $stock->quantity     = $product->quantity;
+                $stock->net_weight  = $product->net_weight ?? 0;
                 $stock->save();
             }
         }

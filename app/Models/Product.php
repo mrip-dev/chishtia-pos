@@ -71,4 +71,9 @@ class Product extends Model
     {
         return $this->productStock->sum('quantity');
     }
+     public function totalWeightInStock()
+    {
+        return $this->productStock->sum('net_weight');
+    }
+
 }

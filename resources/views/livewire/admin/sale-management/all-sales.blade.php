@@ -209,14 +209,12 @@
 
                             <div class="col-xl-3 col-sm-6">
                                 <label>@lang('Customer')</label>
-                                <select class="form-control" wire:model="customer_id">
-                                    <option value="">@lang('Select One')</option>
-                                    @foreach ($customers as $customer)
-                                    <option value="{{ $customer->id }}">
-                                        {{ $customer->name }} +{{ $customer->mobile }}
-                                    </option>
-                                    @endforeach
-                                </select>
+                                 <x-select2
+                                id="product-select-select-customer"
+                                dataArray="customers"
+                                wire:model="customer_id"
+                                placeholder="Select a customer"
+                                :allowAdd="false" />
                                 @error('customer_id') <small class="text-danger">{{ $message }}</small> @enderror
                             </div>
 
@@ -273,6 +271,7 @@
                                     <th>@lang('Product')</th>
                                     <th>@lang('Stock')</th>
                                     <th>@lang('Quantity')</th>
+                                    <th>@lang('Weight Stock')</th>
                                     <th>@lang('Weight')</th>
                                     <th>@lang('Price')</th>
                                     <th>@lang('Total')</th>
@@ -283,10 +282,15 @@
                                 @foreach ($products as $index => $product)
                                 <tr>
                                     <td>{{ $product['name'] }}</td>
-                                    <td>{{ $product['stock'] }}</td>
+                                    <td>
+                                        {{ $product['stock'] }}
+                                    </td>
                                     <td>
                                         <input type="number" wire:model.live="products.{{ $index }}.quantity" class="form-control">
                                         @error("products.$index.quantity") <small class="text-danger">{{ $message }}</small> @enderror
+                                    </td>
+                                    <td>
+                                        {{ $product['stock_weight'] }}
                                     </td>
                                     <td>
                                         @if($product['unit'] == 'KG' || $product['unit'] == 'Kg' || $product['unit'] == 'kg')
