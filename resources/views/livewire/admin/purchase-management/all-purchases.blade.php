@@ -48,12 +48,12 @@
                                     <tr>
                                         <th>@lang('Invoice No.') | @lang('Date')</th>
                                         <th>@lang('Supplier') | @lang('Mobile')</th>
-                                        <th>@lang('Driver Name') | @lang('Contact')</th>
+                                        <!-- <th>@lang('Driver Name') | @lang('Contact')</th> -->
                                         <th>@lang('Vehicle No') | @lang('Fare')</th>
                                         <th>@lang('Loading') | @lang('Unloading')</th>
-                                        <th>@lang('Total Amount') | @lang('Warehouse')</th>
-                                        <th>@lang('Discount') | @lang('Payable') </th>
-                                        <th>@lang('Paid') | @lang('Due')</th>
+                                        <th> @lang('Warehouse') | @lang('Unit Price')</th>
+                                        <th>@lang('Total Amount') </th>
+                                        <!-- <th>@lang('Paid') | @lang('Due')</th> -->
                                         <th>@lang('Action')</th>
                                     </tr>
                                 </thead>
@@ -76,11 +76,11 @@
                                             <br>
                                             {{ $purchase->supplier?->mobile }}
                                         </td>
-                                        <td>
+                                        {{-- <td>
                                             <span class="text--success fw-bold"> {{ $purchase->driver_name }}</span>
                                             <br>
                                             {{ $purchase->driver_contact }}
-                                        </td>
+                                        </td> --}}
                                         <td>
                                             {{ $purchase->vehicle_number }}
                                             <br>
@@ -91,15 +91,18 @@
 
                                         </td>
                                         <td>
-                                            <span class="fw-bold">{{ showAmount($purchase->total_price) }}</span>
-                                            <br>
                                             {{ $purchase->warehouse->name }}
+                                            <br>
+                                            <span class="fw-bold">{{ showAmount($purchase->total_price) }}</span>
+
+
                                         </td>
                                         <td>
-                                            {{ showAmount($purchase->discount_amount) }}
-                                            <br>
+                                            {{-- {{ showAmount($purchase->discount_amount) }} --}}
+                                            <!-- <br> -->
                                             <span class="fw-bold">{{ showAmount($purchase->payable_amount) }}</span>
                                         </td>
+                                        {{--
                                         <td>
                                             {{ showAmount($purchase->paid_amount) }}
 
@@ -115,6 +118,7 @@
                                                 </span>
                                                 @endif
                                         </td>
+                                        --}}
 
                                         <td>
                                             <div class="button--group">

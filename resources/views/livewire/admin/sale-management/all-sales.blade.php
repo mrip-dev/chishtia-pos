@@ -46,12 +46,12 @@
                                 <tr>
                                     <th>@lang('Invoice No.') | @lang('Date')</th>
                                     <th>@lang('Customer') | @lang('Mobile')</th>
-                                    <th>@lang('Driver Name') | @lang('Mobile')</th>
+                                    <!-- <th>@lang('Driver Name') | @lang('Mobile')</th> -->
                                     <th>@lang('Vehicle No') | @lang('Fare')</th>
                                     <th>@lang('Loading') | @lang('Unloading')</th>
-                                    <th>@lang('Warehouse') | @lang('Total Amount')</th>
-                                    <th>@lang('Discount') | @lang('Receivable')</th>
-                                    <th>@lang('Received') | @lang('Due')</th>
+                                    <th>@lang('Warehouse') | @lang('Unit price')</th>
+                                    <th>@lang('Total Amount')</th>
+                                    <!-- <th>@lang('Received') | @lang('Due')</th> -->
                                     <th>@lang('Action')</th>
                             </thead>
                             <tbody>
@@ -73,11 +73,11 @@
                                         <br>
                                         {{ $sale->customer->mobile }}
                                     </td>
-                                    <td>
+                                    <!-- <td>
                                         <span class="text--success fw-bold"> {{ $sale->driver_name }}</span>
                                         <br>
-                                        +{{ $sale->driver_contact }}
-                                    </td>
+                                        {{ $sale->driver_contact }}
+                                    </td> -->
                                     <td>
                                         {{ $sale->vehicle_number }}
                                         <br>
@@ -95,13 +95,14 @@
                                             class="fw-bold">{{ showAmount($sale->total_price) }}</span>
                                     </td>
 
-                                    <td>{{ showAmount($sale->discount_amount) }}
+                                    <td>
+                                        <!-- {{ showAmount($sale->discount_amount) }} -->
                                         <br>
                                         <span class="fw-bold">
                                             {{ showAmount($sale->receivable_amount) }}</span>
                                     </td>
 
-                                    <td>
+                                    <!-- <td>
                                         {{ showAmount($sale->received_amount) }}
                                         <br>
                                         <span
@@ -109,7 +110,7 @@
                                                 class="fw-bold">
                                                 {{ showAmount($sale->due_amount) }}
                                         </span>
-                                    </td>
+                                    </td> -->
 
                                     <td>
                                         <div class="button--group">
