@@ -128,6 +128,13 @@
 
                                             <div class="dropdown-menu">
                                                 @permit('admin.customer.payment.store')
+                                                <li>
+                                                    <a wire:click="openExpenseModal({{$sale->id}})" href="javascript:void(0)"
+                                                        class="dropdown-item">
+                                                        <i class="la la-money-bill-wave"></i> @lang('Pay Expense')
+                                                    </a>
+                                                </li>
+
                                                 <a href="javascript:void(0)" wire:click="payMentModal({{$sale->id}})" class="dropdown-item paymentModalBtn"
                                                     data-customer_id="{{ $sale->customer_id }}"
                                                     data-customer="{{ $sale->customer->name }}"
@@ -210,12 +217,12 @@
 
                             <div class="col-xl-3 col-sm-6">
                                 <label>@lang('Customer')</label>
-                                 <x-select2
-                                id="product-select-select-customer"
-                                dataArray="customers"
-                                wire:model="customer_id"
-                                placeholder="Select a customer"
-                                :allowAdd="false" />
+                                <x-select2
+                                    id="product-select-select-customer"
+                                    dataArray="customers"
+                                    wire:model="customer_id"
+                                    placeholder="Select a customer"
+                                    :allowAdd="false" />
                                 @error('customer_id') <small class="text-danger">{{ $message }}</small> @enderror
                             </div>
 
@@ -499,6 +506,76 @@
                     </div>
                 </div>
 
+                <div wire:ignore.self class="modal fade" id="cuModal" tabindex="-1" role="dialog" aria-labelledby="cuModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <form wire:submit.prevent="storeExpense">
+                            <div class="modal-content">
+                                <div class="modal-header bg--primary te">
+                                    <h5 class="modal-title text-center w-100 text-white" id="cuModalLabel">Add New Expense</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+
+                                <div class="modal-body">
+                                    {{-- Expense Type --}}
+                                    <div class="row">
+                                        <div class="form-group col-md-6">
+                                            <label>@lang('Type')</label>
+                                            <select class="form-control" wire:model.live="expense_type_id" required>
+                                                <option value="">@lang('Select One')</option>
+                                                @foreach ($categories as $item)
+                                                <option value="{{ $item->id }}">{{ __($item->name) }}</option>
+                                                @endforeach
+                                            </select>
+                                            @error('expense_type_id') <small class="text-danger">{{ $message }}</small> @enderror
+                                        </div>
+
+                                        {{-- Date --}}
+                                        <div class="form-group col-md-6">
+                                            <label>@lang('Date of Expense')</label>
+                                            <input type="date" class="form-control" wire:model="date_of_expense">
+                                            @error('date_of_expense') <small class="text-danger">{{ $message }}</small> @enderror
+                                        </div>
+                                    </div>
+
+                                    {{-- Bank --}}
+                                    <div class="row">
+                                        <div class="form-group col-md-6">
+                                            <label>@lang('Bank Name')</label>
+                                            <select class="form-control" wire:model="bank_id">
+                                                <option value="">@lang('Select Bank')</option>
+                                                @foreach($banks as $bank)
+                                                <option value="{{ $bank->id }}">{{ $bank->name }}</option>
+                                                @endforeach
+                                            </select>
+                                            @error('bank_id') <small class="text-danger">{{ $message }}</small> @enderror
+                                        </div>
+
+                                        {{-- Amount --}}
+                                        <div class="form-group col-md-6">
+                                            <label>@lang('Amount')</label>
+                                            <div class="input-group">
+                                                <button class="input-group-text">{{ gs('cur_sym') }}</button>
+                                                <input type="number" class="form-control" wire:model="exp_amount" readonly step="any" required>
+                                            </div>
+                                            @error('exp_amount') <small class="text-danger">{{ $message }}</small> @enderror
+                                        </div>
+                                    </div>
+
+                                    {{-- Note --}}
+                                    <div class="form-group col-md-12">
+                                        <label>@lang('Note')</label>
+                                        <textarea class="form-control" wire:model="note" rows="5"></textarea>
+                                        @error('note') <small class="text-danger">{{ $message }}</small> @enderror
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button class="btn btn--primary h-45 w-100 permit" type="submit">@lang('Submit')</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
 
 
                 @push('style')
@@ -523,6 +600,14 @@
                             modal.modal('show');
                         });
                     })(jQuery);
+                    window.addEventListener('open-expense-modal', () => {
+                        $('#cuModal').modal('show'); // Open the modal
+                    });
+
+                    window.addEventListener('close-modal', () => {
+                        $('#cuModal').modal('hide'); // Close the modal
+                    });
                 </script>
+
                 @endpush
             </div>

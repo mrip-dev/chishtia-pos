@@ -5,6 +5,7 @@ namespace App\Livewire\Admin\PurchaseManagement;
 use App\Models\Action;
 use App\Models\Bank;
 use App\Models\BankTransaction;
+use App\Models\ExpenseType;
 use App\Models\SupplierTransaction as ModelsSupplierTransaction;
 use App\Models\Product;
 use App\Models\ProductStock;
@@ -18,12 +19,14 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use App\Traits\DailyBookEntryTrait;
-
+use App\Traits\ManagesExpenseTransactions;
 use Livewire\Component;
 
 class AllPurchases extends Component
 {
     use DailyBookEntryTrait;
+    use ManagesExpenseTransactions;
+
     public $purchases = [];
     public $banks = [];
     public $selectedPurchase = null;
@@ -69,6 +72,9 @@ class AllPurchases extends Component
     public $searchAbleProducts = [];
     public $selected_product_id = null;
 
+    public $expense_type_id, $date_of_expense, $exp_amount, $bank_id, $expense_id;
+    public $categories = [];
+    public $selected_id;
 
     protected function rules()
     {
@@ -262,6 +268,15 @@ class AllPurchases extends Component
         if (str($name)->contains(['price'])) {
             $this->recalculateTotals();
             $this->getTotalPrice();
+        }
+          if($name === 'expense_type_id'){
+            $this->expense_type_id = (int)$value;
+            $expenseType = ExpenseType::find($this->expense_type_id);
+            if($expenseType && $expenseType->name == 'Fare'){
+                $this->exp_amount= $this->fare;
+            } elseif($expenseType && $expenseType->name == 'Loading'){
+                $this->exp_amount = $this->loading;
+            }
         }
     }
     public function recalculateTotals()
@@ -759,7 +774,62 @@ class AllPurchases extends Component
         $this->dispatch('notify', status: 'success', message: $notification);
     }
 
+ public function openExpenseModal($id)
+    {
+        $this->purchaseId = $id ?? null;
+        $selectedItem = Purchase::find($id);
+        $this->fare = $selectedItem->fare ?? 0;
+        $this->loading = $selectedItem->loading ?? 0;
+        // Ensure these categories exist
+        $requiredCategories = ['Fare', 'Loading'];
 
+        foreach ($requiredCategories as $category) {
+            ExpenseType::firstOrCreate(['name' => $category]);
+        }
+
+        // Now fetch them
+        $this->categories = ExpenseType::orderBy('name')
+            ->whereIn('name', $requiredCategories)
+            ->get();
+
+        $this->banks = Bank::all();
+        $this->expense_type_id = null;
+        $this->date_of_expense = now()->format('Y-m-d');
+        $this->exp_amount = 0.00;
+
+        $this->dispatch('open-expense-modal');
+    }
+
+    public function storeExpense()
+    {
+        $this->validate([
+            'expense_type_id' => 'required|exists:expense_types,id',
+            'date_of_expense' => 'required|date',
+            'exp_amount'      => 'required|numeric|min:1',
+            'bank_id'         => 'nullable|exists:banks,id',
+        ]);
+        if($this->exp_amount <= 0){
+            $this->dispatch('notify', status: 'error', message: 'Expense amount must be greater than zero.');
+            return;
+        }
+
+
+        $this->createOrUpdateExpenseTransaction(
+            $this->expense_type_id,
+            $this->date_of_expense,
+            $this->exp_amount,
+            $this->bank_id,
+            $this->note,
+            $this->selected_id,
+            'App\Models\Purchase',
+            $this->purchaseId
+        );
+        $notification = $this->selected_id ? 'Expense updated successfully' : 'Expense added successfully';
+        $this->dispatch('close-modal');
+        $this->dispatch('notify', status: 'success', message: $notification);
+
+        $this->reset(['expense_type_id', 'date_of_expense', 'exp_amount', 'note', 'bank_id', 'expense_id']);
+    }
 
     public function render()
     {

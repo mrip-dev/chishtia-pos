@@ -16,6 +16,7 @@
                                     <th>@lang('Date')</th>
                                     <th>@lang('Amount')</th>
                                     <th>@lang('Note')</th>
+                                    <th>@lang('Source')</th>
                                     <th>@lang('Action')</th>
                                 </tr>
                             </thead>
@@ -27,6 +28,7 @@
                                         <td>{{ showDateTime($expense->date_of_expense, 'd M, Y') }}</td>
                                         <td>{{ showAmount($expense->amount) }}</td>
                                         <td>{{ strLimit($expense->note, 35) }}</td>
+                                        <td>{{ $expense->getDataModelNameAttribute() }}</td>
                                         <td>
                                             <button class="btn btn-sm btn-outline--primary"
                                             wire:click="edit({{ $expense->id }})">

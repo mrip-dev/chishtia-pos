@@ -9,6 +9,7 @@ use App\Models\Bank;
 use App\Models\Action;
 use App\Models\BankTransaction;
 use App\Models\DailyBookDetail;
+use App\Traits\ManagesExpenseTransactions;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Livewire\WithPagination;
@@ -17,6 +18,7 @@ use Illuminate\Support\Facades\File;
 class AllExpenses extends Component
 {
     use WithPagination;
+    use ManagesExpenseTransactions;
 
     public $pageTitle = 'All Expenses';
     public $expense_type_id, $date_of_expense, $amount, $note, $bank_id, $expense_id;
@@ -58,66 +60,15 @@ class AllExpenses extends Component
     {
         $this->validate();
 
-        $expense = $this->expense_id ? Expense::findOrFail($this->expense_id) : new Expense();
-        $notification = $this->expense_id ? 'Expense updated successfully' : 'Expense added successfully';
-
-        $expense->expense_type_id = $this->expense_type_id;
-        $expense->date_of_expense = Carbon::parse($this->date_of_expense);
-        $expense->amount          = $this->amount;
-        $expense->note            = $this->note;
-        $expense->bank_id         = $this->bank_id;
-        $expense->save();
-        Action::newEntry($expense, $this->expense_id ? 'UPDATED' : 'CREATED');
-
-        $bank = Bank::findOrFail($this->bank_id);
-
-        // Step 1: Check if this is the first transaction for this bank
-        $lastTransaction = BankTransaction::where('bank_id', $this->bank_id)->latest()->first();
-
-        if ($lastTransaction) {
-            // Not first transaction, use current_balance
-            $openingBalance = $bank->current_balance;
-        } else {
-            // First transaction, use bank's opening_balance
-            $openingBalance = $bank->opening_balance;
-        }
-
-        // Step 2: Credit and Debit (assuming expense)
-        $creditAmount = $this->amount;
-        $debitAmount = null;
-
-        // Step 3: Closing balance
-        $closingBalance = $openingBalance - $creditAmount;
-
-        // Step 4: Create BankTransaction
-        $bankTransaction = new BankTransaction();
-        $bankTransaction->opening_balance = $openingBalance;
-        $bankTransaction->closing_balance = $closingBalance;
-        $bankTransaction->bank_id = $this->bank_id;
-        $bankTransaction->transactable_id = $expense->id;
-        $bankTransaction->debit = $debitAmount;
-        $bankTransaction->credit = $creditAmount;
-        $bankTransaction->amount = $this->amount;
-        $bankTransaction->module_id = $expense->id;
-        $bankTransaction->transactable_id  = $expense->id;
-        $bankTransaction->transactable_type  = 'Expense';
-        $bankTransaction->data_model = 'Expense';
-        $bankTransaction->source = 'Expense';
-        $bankTransaction->save();
-
-        // Step 5: Update current_balance in bank table
-        $bank->current_balance = $closingBalance;
-        $bank->save();
-
-        $this->handleExpenseDailyBookEntry(
-            $expense->amount,
-            $expense->bank_id,
-            'Expense',
-            $expense->id
+        $this->createOrUpdateExpenseTransaction(
+            $this->expense_type_id,
+            $this->date_of_expense,
+            $this->amount,
+            $this->bank_id,
+            $this->note,
+            $this->selected_id
         );
-
-
-
+        $notification = $this->selected_id ? 'Expense updated successfully' : 'Expense added successfully';
         $this->dispatch('close-modal');
         $this->dispatch('notify', status: 'success', message: $notification);
 
@@ -265,5 +216,75 @@ class AllExpenses extends Component
         }
 
         $this->dispatch('notify', status: 'success', message: 'Expenses imported successfully');
+    }
+      public function storeOld()
+    {
+        $this->validate();
+
+
+        $expense = $this->expense_id ? Expense::findOrFail($this->expense_id) : new Expense();
+        $notification = $this->expense_id ? 'Expense updated successfully' : 'Expense added successfully';
+
+        $expense->expense_type_id = $this->expense_type_id;
+        $expense->date_of_expense = Carbon::parse($this->date_of_expense);
+        $expense->amount          = $this->amount;
+        $expense->note            = $this->note;
+        $expense->bank_id         = $this->bank_id;
+        $expense->save();
+        Action::newEntry($expense, $this->expense_id ? 'UPDATED' : 'CREATED');
+
+        $bank = Bank::findOrFail($this->bank_id);
+
+        // Step 1: Check if this is the first transaction for this bank
+        $lastTransaction = BankTransaction::where('bank_id', $this->bank_id)->latest()->first();
+
+        if ($lastTransaction) {
+            // Not first transaction, use current_balance
+            $openingBalance = $bank->current_balance;
+        } else {
+            // First transaction, use bank's opening_balance
+            $openingBalance = $bank->opening_balance;
+        }
+
+        // Step 2: Credit and Debit (assuming expense)
+        $creditAmount = $this->amount;
+        $debitAmount = null;
+
+        // Step 3: Closing balance
+        $closingBalance = $openingBalance - $creditAmount;
+
+        // Step 4: Create BankTransaction
+        $bankTransaction = new BankTransaction();
+        $bankTransaction->opening_balance = $openingBalance;
+        $bankTransaction->closing_balance = $closingBalance;
+        $bankTransaction->bank_id = $this->bank_id;
+        $bankTransaction->transactable_id = $expense->id;
+        $bankTransaction->debit = $debitAmount;
+        $bankTransaction->credit = $creditAmount;
+        $bankTransaction->amount = $this->amount;
+        $bankTransaction->module_id = $expense->id;
+        $bankTransaction->transactable_id  = $expense->id;
+        $bankTransaction->transactable_type  = 'Expense';
+        $bankTransaction->data_model = 'Expense';
+        $bankTransaction->source = 'Expense';
+        $bankTransaction->save();
+
+        // Step 5: Update current_balance in bank table
+        $bank->current_balance = $closingBalance;
+        $bank->save();
+
+        $this->handleExpenseDailyBookEntry(
+            $expense->amount,
+            $expense->bank_id,
+            'Expense',
+            $expense->id
+        );
+
+
+        $notification = $this->selected_id ? 'Expense updated successfully' : 'Expense added successfully';
+        $this->dispatch('close-modal');
+        $this->dispatch('notify', status: 'success', message: $notification);
+
+        $this->reset(['expense_type_id', 'date_of_expense', 'amount', 'note', 'bank_id', 'expense_id']);
     }
 }

@@ -18,16 +18,19 @@ use App\Models\Bank;
 use App\Models\BankTransaction;
 use App\Models\CustomerPayment;
 use App\Models\CustomerTransaction as ModelsCustomerTransaction;
+use App\Models\ExpenseType;
 use App\Models\SaleDetails;
 use App\Models\WareHouseDetailHistory;
 use Carbon\Carbon;
 use Illuminate\Validation\Rule;
 use App\Traits\DailyBookEntryTrait;
+use App\Traits\ManagesExpenseTransactions;
 use Illuminate\Notifications\Action as NotificationsAction;
 
 class AllSales extends Component
 {
     use DailyBookEntryTrait;
+    use ManagesExpenseTransactions;
 
     public $sales = [];
     public $banks = [];
@@ -84,7 +87,9 @@ class AllSales extends Component
     public $searchAbleProducts = [];
     public $selected_product_id = null;
 
-
+    public $expense_type_id, $date_of_expense, $exp_amount, $bank_id, $expense_id;
+    public $categories = [];
+    public $selected_id;
 
 
     protected function rules()
@@ -119,6 +124,7 @@ class AllSales extends Component
 
     public function mount()
     {
+
         $this->loadSales();
     }
     public function loadSales()
@@ -153,7 +159,7 @@ class AllSales extends Component
 
         $this->sale_date = now()->format('Y-m-d');
         $this->customers = Customer::select('id', 'name', 'mobile')->get();
-          $this->customers = $this->customers->map(function ($customer) {
+        $this->customers = $this->customers->map(function ($customer) {
             return [
                 'id' => $customer->id,
                 'text' => $customer->name,
@@ -306,6 +312,15 @@ class AllSales extends Component
             $this->recalculateTotals();
             $this->getTotalPrice();
             $this->checkWeightStockAvailability();
+        }
+        if($name === 'expense_type_id'){
+            $this->expense_type_id = (int)$value;
+            $expenseType = ExpenseType::find($this->expense_type_id);
+            if($expenseType && $expenseType->name == 'Fare'){
+                $this->exp_amount= $this->fare;
+            } elseif($expenseType && $expenseType->name == 'Loading'){
+                $this->exp_amount = $this->loading;
+            }
         }
     }
     public function recalculateTotals()
@@ -507,6 +522,62 @@ class AllSales extends Component
             DB::rollBack();
             $this->addError('form', 'An error occurred: ' . $e->getMessage());
         }
+    }
+    public function openExpenseModal($id)
+    {
+        $this->saleId = $id ?? null;
+        $selectedSale = Sale::find($id);
+        $this->fare = $selectedSale->fare ?? 0;
+        $this->loading = $selectedSale->loading ?? 0;
+        // Ensure these categories exist
+        $requiredCategories = ['Fare', 'Loading'];
+
+        foreach ($requiredCategories as $category) {
+            ExpenseType::firstOrCreate(['name' => $category]);
+        }
+
+        // Now fetch them
+        $this->categories = ExpenseType::orderBy('name')
+            ->whereIn('name', $requiredCategories)
+            ->get();
+
+        $this->banks = Bank::all();
+        $this->expense_type_id = null;
+        $this->date_of_expense = now()->format('Y-m-d');
+        $this->exp_amount = 0.00;
+
+        $this->dispatch('open-expense-modal');
+    }
+
+    public function storeExpense()
+    {
+        $this->validate([
+            'expense_type_id' => 'required|exists:expense_types,id',
+            'date_of_expense' => 'required|date',
+            'exp_amount'      => 'required|numeric|min:1',
+            'bank_id'         => 'nullable|exists:banks,id',
+        ]);
+        if($this->exp_amount <= 0){
+            $this->dispatch('notify', status: 'error', message: 'Expense amount must be greater than zero.');
+            return;
+        }
+
+
+        $this->createOrUpdateExpenseTransaction(
+            $this->expense_type_id,
+            $this->date_of_expense,
+            $this->exp_amount,
+            $this->bank_id,
+            $this->note,
+            $this->selected_id,
+            'App\Models\Sale',
+            $this->saleId
+        );
+        $notification = $this->selected_id ? 'Expense updated successfully' : 'Expense added successfully';
+        $this->dispatch('close-modal');
+        $this->dispatch('notify', status: 'success', message: $notification);
+
+        $this->reset(['expense_type_id', 'date_of_expense', 'exp_amount', 'note', 'bank_id', 'expense_id']);
     }
 
     protected function checkStockAvailability()

@@ -17,4 +17,22 @@ class Expense extends Model
     {
         return $this->belongsTo(Bank::class);
     }
+
+    public function dataModel()
+    {
+        return $this->morphTo();
+    }
+    public function getDataModelNameAttribute()
+    {
+        return $this->data_model ? class_basename($this->data_model) : null;
+    }
+    public function getDataModelIdAttribute()
+    {
+        return $this->data_model ? $this->data_model->invoice_no : null;
+    }
+    //// Get Invoice NO
+    public function getInvoiceNoAttribute()
+    {
+        return $this->data_model ? $this->data_model->invoice_no : null;
+    }
 }
