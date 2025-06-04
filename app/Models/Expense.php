@@ -20,7 +20,7 @@ class Expense extends Model
 
     public function dataModel()
     {
-        return $this->morphTo();
+        return $this->morphTo(__FUNCTION__, 'data_model','model_id');
     }
     public function getDataModelNameAttribute()
     {

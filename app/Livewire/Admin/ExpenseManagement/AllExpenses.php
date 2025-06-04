@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\File;
 class AllExpenses extends Component
 {
     use WithPagination;
+
+    protected string $paginationTheme = 'bootstrap';
     use ManagesExpenseTransactions;
 
     public $pageTitle = 'All Expenses';
@@ -141,11 +143,7 @@ class AllExpenses extends Component
     public function delete()
     {
         $expense = Expense::findOrFail($this->deleteId);
-
-
-
         $expense->delete();
-
         $this->dispatch('close-modal');
         $this->dispatch('notify', status: 'success', message: 'Expense deleted successfully!');
         $this->deleteId = null;

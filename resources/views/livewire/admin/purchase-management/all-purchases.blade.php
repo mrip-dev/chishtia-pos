@@ -221,14 +221,13 @@
                             <div class="col-xl-3 col-sm-6">
                                 <div class="form-group" id="supplier-wrapper">
                                     <label class="form-label">@lang('Supplier')</label>
-                                    <select class="select2 form-control" wire:model="supplier_id" required>
-                                        <option value="" selected>@lang('Select One')</option>
-                                        @foreach ($suppliers as $supplier)
-                                        <option value="{{ $supplier->id }}">
-                                            {{ $supplier->name }}
-                                        </option>
-                                        @endforeach
-                                    </select>
+                                     <x-select2
+                                    id="product-select-select-supplier"
+                                    dataArray="suppliers"
+                                    wire:model="supplier_id"
+                                    placeholder="Select a supplier"
+                                    :allowAdd="false" />
+
                                 </div>
                             </div>
 

@@ -138,6 +138,12 @@ class AllPurchases extends Component
         $this->supplier_id = null;
         $this->purchase_date = now()->format('Y-m-d');
         $this->suppliers = Supplier::select('id', 'name', 'mobile')->get();
+         $this->suppliers = $this->suppliers->map(function ($supplier) {
+            return [
+                'id' => $supplier->id,
+                'text' => $supplier->name,
+            ];
+        })->toArray();
         $this->warehouses =  Warehouse::active()->orderBy('name')->get();
         $lastPurchase      = Purchase::orderBy('id', 'DESC')->first();
         $lastInvoiceNo = $lastPurchase->invoice_no ?? 0;
@@ -156,8 +162,14 @@ class AllPurchases extends Component
         $this->loadPurchase($id);
         $this->selectedPurchase = Purchase::find($id);
         $this->suppliers = Supplier::select('id', 'name', 'mobile')->get();
+        $this->suppliers = $this->suppliers->map(function ($supplier) {
+            return [
+                'id' => $supplier->id,
+                'text' => $supplier->name,
+            ];
+        })->toArray();
         $this->warehouses =  Warehouse::active()->orderBy('name')->get();
-         $this->getProductsSearchable();
+        $this->getProductsSearchable();
     }
     public function loadPurchase($id)
     {
@@ -250,7 +262,6 @@ class AllPurchases extends Component
         }
         if ($name === 'selected_product_id') {
             $this->addProduct($value);
-
         }
         if ($name === 'discount') {
             $this->recalculateTotals();
@@ -269,12 +280,12 @@ class AllPurchases extends Component
             $this->recalculateTotals();
             $this->getTotalPrice();
         }
-          if($name === 'expense_type_id'){
+        if ($name === 'expense_type_id') {
             $this->expense_type_id = (int)$value;
             $expenseType = ExpenseType::find($this->expense_type_id);
-            if($expenseType && $expenseType->name == 'Fare'){
-                $this->exp_amount= $this->fare;
-            } elseif($expenseType && $expenseType->name == 'Loading'){
+            if ($expenseType && $expenseType->name == 'Fare') {
+                $this->exp_amount = $this->fare;
+            } elseif ($expenseType && $expenseType->name == 'Loading') {
                 $this->exp_amount = $this->loading;
             }
         }
@@ -328,7 +339,7 @@ class AllPurchases extends Component
 
         $this->searchQuery = '';
         $this->searchResults = [];
-         $this->searchAbleProducts = [];
+        $this->searchAbleProducts = [];
     }
     public function removeProduct($index)
     {
@@ -774,7 +785,7 @@ class AllPurchases extends Component
         $this->dispatch('notify', status: 'success', message: $notification);
     }
 
- public function openExpenseModal($id)
+    public function openExpenseModal($id)
     {
         $this->purchaseId = $id ?? null;
         $selectedItem = Purchase::find($id);
@@ -808,7 +819,7 @@ class AllPurchases extends Component
             'exp_amount'      => 'required|numeric|min:1',
             'bank_id'         => 'nullable|exists:banks,id',
         ]);
-        if($this->exp_amount <= 0){
+        if ($this->exp_amount <= 0) {
             $this->dispatch('notify', status: 'error', message: 'Expense amount must be greater than zero.');
             return;
         }
