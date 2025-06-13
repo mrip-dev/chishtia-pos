@@ -16,13 +16,7 @@
                                                 {{ __($adjustment->warehouse->name) }}</option>
                                         </select>
                                     @else
-                                        <select class="form-control select2" name="warehouse_id" data-minimum-results-for-search="-1" required>
-                                            <option value="" selected disabled>@lang('Select One')</option>
-                                            @foreach ($warehouses as $warehouse)
-                                                <option value="{{ $warehouse->id }}">
-                                                    {{ __($warehouse->name) }}</option>
-                                            @endforeach
-                                        </select>
+                                       @livewire('select2', ['id' => 'product-select-select-warehouse', 'options' => $warehouses,'name'=> 'warehouse_id', 'placeholder' => 'Select a warehouse'])
                                     @endif
                                 </div>
 

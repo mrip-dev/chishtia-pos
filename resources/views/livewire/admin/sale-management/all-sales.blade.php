@@ -115,10 +115,13 @@
                                     <td>
                                         <div class="button--group">
 
+                                            @if ($sale->return_status !== 1)
                                             <a wire:click.prevent="editSale({{ $sale->id }})"
                                                 class="btn btn-sm btn-outline--primary ms-1">
                                                 <i class="la la-pen"></i> @lang('Edit')
                                             </a>
+                                            @endif
+
 
                                             <button type="button"
                                                 class="btn btn-sm btn-outline--info ms-1 dropdown-toggle"
@@ -211,7 +214,7 @@
                         <div class="row mb-3">
                             <div class="col-xl-3 col-sm-6">
                                 <label>@lang('Invoice No.')</label>
-                                <input type="text" class="form-control" wire:model="invoice_no">
+                                <input type="text" class="form-control" wire:model="invoice_no" readonly>
                                 @error('invoice_no') <small class="text-danger">{{ $message }}</small> @enderror
                             </div>
 
@@ -234,12 +237,13 @@
 
                             <div class="col-xl-3 col-sm-6">
                                 <label>@lang('Warehouse')</label>
-                                <select class="form-control" wire:model.live="warehouse_id">
-                                    <option value="">@lang('Select One')</option>
-                                    @foreach ($warehouses as $warehouse)
-                                    <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
-                                    @endforeach
-                                </select>
+                                <x-select2
+                                    id="product-select-select-warehouse"
+                                    dataArray="warehouses"
+                                    wire:model="warehouse_id"
+                                    placeholder="Select a warehouse"
+                                    :allowAdd="false" />
+
                                 @error('warehouse_id') <small class="text-danger">{{ $message }}</small> @enderror
                             </div>
                         </div>

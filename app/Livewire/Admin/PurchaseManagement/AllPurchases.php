@@ -145,7 +145,13 @@ class AllPurchases extends Component
             ];
         })->toArray();
         $this->warehouses =  Warehouse::active()->orderBy('name')->get();
-        $lastPurchase      = Purchase::orderBy('id', 'DESC')->first();
+        $this->warehouses = $this->warehouses->map(function ($warehouse) {
+            return [
+                'id' => $warehouse->id,
+                'text' => $warehouse->name,
+            ];
+        })->toArray();
+        $lastPurchase      = Purchase::orderBy('invoice_no', 'DESC')->first();
         $lastInvoiceNo = $lastPurchase->invoice_no ?? 0;
 
 
@@ -169,6 +175,12 @@ class AllPurchases extends Component
             ];
         })->toArray();
         $this->warehouses =  Warehouse::active()->orderBy('name')->get();
+        $this->warehouses = $this->warehouses->map(function ($warehouse) {
+            return [
+                'id' => $warehouse->id,
+                'text' => $warehouse->name,
+            ];
+        })->toArray();
         $this->getProductsSearchable();
     }
     public function loadPurchase($id)

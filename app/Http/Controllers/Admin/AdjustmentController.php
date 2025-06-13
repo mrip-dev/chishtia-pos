@@ -88,6 +88,12 @@ class AdjustmentController extends Controller
     {
         $pageTitle  = 'New Adjustment';
         $warehouses = Warehouse::active()->orderBy('name')->get();
+        $warehouses =$warehouses->map(function ($warehouse) {
+            return [
+                'id' => $warehouse->id,
+                'text' => $warehouse->name,
+            ];
+        })->toArray();
         return view('admin.adjustment.form', compact('pageTitle', 'warehouses'));
     }
 

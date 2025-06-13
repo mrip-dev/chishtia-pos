@@ -33,6 +33,7 @@ class StockReportController extends Controller
         $warehouses        = Warehouse::orderBy('name')->get();
         $stocksByProduct   = collect([]);
         $stocksByWarehouse = collect([]);
+        $warehouse         = collect([]);
         $productName       = null;
         $pdfButton         = false;
         if ($request->type) {
@@ -41,7 +42,7 @@ class StockReportController extends Controller
         }
         if ($request->type == 'warehouse') {
             $pageTitle = 'Products in ';
-            return downloadPDF('pdf.warehouse.report', compact('pageTitle', 'stocksByWarehouse'));
+            return downloadPDF('pdf.warehouse.report', compact('pageTitle', 'stocksByWarehouse', 'warehouse', 'warehouses', 'pdfButton'));
         } else if (request()->type == 'product') {
             $pageTitle = 'Stock report of ';
             return downloadPDF('pdf.product.stock_details', compact('pageTitle', 'stocksByProduct'));
@@ -125,6 +126,7 @@ class StockReportController extends Controller
 
         if ($request->warehouse) {
             $data['stocksByWarehouse'] = ProductStock::where('warehouse_id', $request->warehouse)->where('quantity', '>', 0)->with('product.brand', 'product.category', 'product.unit')->get();
+            $data['warehouse'] = Warehouse::find($request->warehouse);
         }
 
         if ($request->product) {

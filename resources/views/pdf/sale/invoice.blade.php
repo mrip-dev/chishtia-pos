@@ -32,8 +32,8 @@
         }
     </style>
 
-    <div class="flex">
-        <div>
+    <div class="list--row mb-15px">
+        <div class="float-left">
             <h6 class="title">@lang('Bill To')</h6>
             <p class="mb-5px">@lang('Name'): {{ $customer->name }}</p>
             <p class="mb-5px">@lang('Mobile'): {{ $customer->mobile }}</p>
@@ -41,7 +41,7 @@
             <p class="mb-5px">@lang('Address'): {{ $customer->address }}</p>
         </div>
 
-        <div style="text-align: right;">
+        <div class="float-right">
             <h6 class="mb-5px">@lang('Bill From')</h6>
             <p class="strong">{{ __(gs('site_name')) }}</p>
             <p class="mb-5px">@lang('Invoice No.'): #<b>{{ $sale->invoice_no }}</b></p>
@@ -79,39 +79,42 @@
         </tbody>
     </table>
 
-    <div class="flex-row" style="margin-top: 30px;">
-        <div></div> <!-- Spacer -->
-        <div class="summary-content">
-            <div class="clearfix border-bottom">
-                <p>@lang('Subtotal')</p>
-                <p>{{ showAmount($sale->total_price) }}</p>
+     <div class="list--row mb-15px mt-3">
+
+        <div class="float-right border list--row summary-content">
+            <div class="border-bottom clearfix">
+                <p class="float-left"> @lang('Subtotal')</p>
+                <p class="float-right">{{ showAmount($sale->total_price) }}</p>
             </div>
 
-            <div class="clearfix border-bottom">
-                <p>@lang('Discount')</p>
-                <p>{{ showAmount($sale->discount_amount) }}</p>
+            <div class="border-bottom clearfix">
+                <p class="float-left">@lang('Lessed')</p>
+                <p class="float-right">{{ showAmount($sale->discount_amount) }}</p>
             </div>
 
-            <div class="clearfix border-bottom">
-                <p>@lang('Grand Total')</p>
-                <p>{{ showAmount(abs($sale->receivable_amount)) }}</p>
+            <div class="border-bottom clearfix">
+                <p class="float-left">@lang('Grand Total')</p>
+                <p class="float-right">{{ showAmount($sale->receivable_amount) }}</p>
             </div>
 
-            <div class="clearfix border-bottom">
-                <p>@lang('Received')</p>
-                <p>{{ showAmount($sale->received_amount) }}</p>
+            <div class="border-bottom clearfix">
+                <p class="float-left">
+                    @lang('Received')
+                </p>
+                <p class="float-right">{{ showAmount($sale->received_amount) }}</p>
             </div>
 
-            <div class="clearfix strong">
-                <p>
+            <div class="clearfix">
+                <p class="float-left">
                     @if ($sale->due_amount >= 0)
                         @lang('Receivable')
                     @else
                         @lang('Payable')
                     @endif
                 </p>
-                <p>{{ showAmount(abs($sale->due_amount)) }}</p>
+                <p class="float-right strong">{{ showAmount(abs($sale->due_amount)) }}</p>
             </div>
         </div>
     </div>
+
 @endsection

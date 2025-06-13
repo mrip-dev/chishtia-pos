@@ -2,10 +2,20 @@
 
 @section('content')
 
-    <h1>Day Book Report for {{ $dailyBookDate }}</h1>
+<div class="list--row mb-15px">
+        <div class="float-left">
 
-    <p><strong>Opening Balance:</strong> {{ number_format($opening_balance, 2) }}</p>
-    <p><strong>Closing Balance:</strong> {{ number_format($closing_balance, 2) }}</p>
+            <p class="mb-5px"><strong>Opening Balance:</strong> : {{ number_format($opening_balance, 2) }}</p>
+
+        </div>
+
+        <div class="float-right">
+
+            <p class="strong"><strong>Closing Balance:</strong> : {{ number_format($closing_balance, 2) }}</p>
+
+        </div>
+    </div>
+
 
     <table>
         <thead>

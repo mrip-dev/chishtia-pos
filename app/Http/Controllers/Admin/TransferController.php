@@ -81,6 +81,12 @@ class TransferController extends Controller
     {
         $pageTitle  = 'New Transfer';
         $warehouses = Warehouse::active()->orderBy('name')->get();
+        $warehouses = $warehouses->map(function ($warehouse) {
+            return [
+                'id' => $warehouse->id,
+                'text' => $warehouse->name,
+            ];
+        })->toArray();
         return view('admin.transfer.form', compact('pageTitle', 'warehouses'));
     }
 

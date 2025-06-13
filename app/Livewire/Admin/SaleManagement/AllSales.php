@@ -166,7 +166,13 @@ class AllSales extends Component
             ];
         })->toArray();
         $this->warehouses =  Warehouse::active()->orderBy('name')->get();
-        $lastSale      = Sale::orderBy('id', 'DESC')->first();
+        $this->warehouses = $this->warehouses->map(function ($warehouse) {
+            return [
+                'id' => $warehouse->id,
+                'text' => $warehouse->name,
+            ];
+        })->toArray();
+        $lastSale      = Sale::orderBy('invoice_no', 'DESC')->first();
         $lastInvoiceNo = $lastSale->invoice_no ?? 0;
         $this->invoice_no = generateInvoiceNumber($lastInvoiceNo);
     }
@@ -188,6 +194,12 @@ class AllSales extends Component
         })->toArray();
         $this->searchQuery = '';
         $this->warehouses =  Warehouse::active()->orderBy('name')->get();
+        $this->warehouses = $this->warehouses->map(function ($warehouse) {
+            return [
+                'id' => $warehouse->id,
+                'text' => $warehouse->name,
+            ];
+        })->toArray();
         $this->getProductsSearchable();
     }
     public function loadSale($id)

@@ -16,6 +16,7 @@ class WareHouseDetail extends Component
     public $search = ''; // Search term for filtering results
     public $startDate = null;
     public $endDate = null;
+     protected string $paginationTheme = 'bootstrap';
 
     public function mount($id)  // The ID is passed when the component is initialized
     {

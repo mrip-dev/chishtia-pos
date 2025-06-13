@@ -122,12 +122,14 @@
 
                                             <td>
                                                 <div class="button--group">
+                                                    @if ($purchase->return_status !== 1)
                                                     @permit('admin.purchase.edit')
                                                     <a wire:click.prevent="editPurchase({{ $purchase->id }})"
                                                         class="btn btn-sm btn-outline--primary ms-1">
                                                         <i class="la la-pen"></i> @lang('Edit')
                                                     </a>
                                                     @endpermit
+                                                    @endif
                                                     <button class="btn btn-sm btn-outline--info ms-1 dropdown-toggle" data-bs-toggle="dropdown" type="button"
                                                         aria-expanded="false">
                                                         <i class="la la-ellipsis-v"></i>@lang('More')
@@ -214,19 +216,19 @@
                             <div class="col-xl-3 col-sm-6">
                                 <div class="form-group">
                                     <label>@lang('Invoice No:')</label>
-                                    <input class="form-control" name="invoice_no" type="text" wire:model="invoice_no"
+                                    <input class="form-control" name="invoice_no" readonly type="text" wire:model="invoice_no"
                                         required>
                                 </div>
                             </div>
                             <div class="col-xl-3 col-sm-6">
                                 <div class="form-group" id="supplier-wrapper">
                                     <label class="form-label">@lang('Supplier')</label>
-                                     <x-select2
-                                    id="product-select-select-supplier"
-                                    dataArray="suppliers"
-                                    wire:model="supplier_id"
-                                    placeholder="Select a supplier"
-                                    :allowAdd="false" />
+                                    <x-select2
+                                        id="product-select-select-supplier"
+                                        dataArray="suppliers"
+                                        wire:model="supplier_id"
+                                        placeholder="Select a supplier"
+                                        :allowAdd="false" />
 
                                 </div>
                             </div>
@@ -240,14 +242,12 @@
                             <div class="col-xl-3 col-sm-6">
                                 <div class="form-group">
                                     <label class="form-label">@lang('Warehouse')</label>
-                                    <select class="form-control select2" wire:model.live="warehouse_id" data-minimum-results-for-search="-1" required>
-                                        <option value="">@lang('Select One')</option>
-                                        @foreach ($warehouses as $warehouse)
-                                        <option value="{{ $warehouse->id }}" @selected($warehouse->id == @$purchase->warehouse_id)>
-                                            {{ __($warehouse->name) }}
-                                        </option>
-                                        @endforeach
-                                    </select>
+                                    <x-select2
+                                        id="product-select-select-warehouse"
+                                        dataArray="warehouses"
+                                        wire:model="warehouse_id"
+                                        placeholder="Select a warehouse"
+                                        :allowAdd="false" />
                                 </div>
                             </div>
                             <div class="col-sm-12">

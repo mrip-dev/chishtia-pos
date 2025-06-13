@@ -116,7 +116,7 @@
 
                         <div class="form-group">
                             <label>@lang('Role')</label>
-                            <select name="role_id" class="form-control" required>
+                            <select name="role_id" class="form-control select2" required>
                                 <option value="" disabled selected>@lang('Select One')</option>
                                 @foreach ($roles as $role)
                                     <option value="{{ $role->id }}">{{ $role->name }}</option>

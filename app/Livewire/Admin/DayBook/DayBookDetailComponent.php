@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Livewire\Admin\DayBook;
+
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\DailyBookDetail;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
@@ -42,7 +43,7 @@ class DayBookDetailComponent extends Component
         $this->loadBookDetails();
     }
 
-     public function calculateBalances()
+    public function calculateBalances()
     {
         $details = DailyBookDetail::whereDate('date', $this->dailyBookDate)
             ->orderBy('date', 'desc')
@@ -68,15 +69,23 @@ class DayBookDetailComponent extends Component
         //     $query->where('source', 'like', '%' . $this->search . '%');
         // }
 
-        $bookDetails = $query->orderBy('id', 'desc')->get();
 
+        $bookDetails = $query->orderBy('id', 'asc')->get();
+
+        if ($bookDetails->isEmpty()) {
+            $opening_balance = 0;
+            $closing_balance = 0;
+        } else {
+            $opening_balance = $bookDetails->first()?->opening_balance ?? 0;
+            $closing_balance = $bookDetails->last()?->closing_balance ?? 0;
+        }
         // Generate PDF
         $pdf = Pdf::loadView('admin.partials.daybook-pdf', [
             'pageTitle' => 'Day Book Report',
             'bookDetails' => $bookDetails,
-            'dailyBookDate' => $this->dailyBookDate,
-            'opening_balance' => $this->opening_balance,
-            'closing_balance' => $this->closing_balance,
+            'dailyBookDate' => $date,
+            'opening_balance' => $opening_balance,
+            'closing_balance' => $closing_balance,
         ])->setOption('defaultFont', 'Arial');
 
         // Ensure directory exists
@@ -109,16 +118,16 @@ class DayBookDetailComponent extends Component
         switch ($dataModel) {
 
             case 'Sale':
-                return redirect()->to('/admin/manage/sale/?module_id=' . $id.'#module_id_' . $id);
+                return redirect()->to('/admin/manage/sale/?module_id=' . $id . '#module_id_' . $id);
                 break;
             case 'Purchase':
-                return  redirect()->to('/admin/manage/purchase/?module_id=' . $id.'#module_id_' . $id);
+                return  redirect()->to('/admin/manage/purchase/?module_id=' . $id . '#module_id_' . $id);
                 break;
             case 'Expense':
-               return redirect()->to('/admin/manage/expense/?module_id=' . $id.'#module_id_' . $id);
+                return redirect()->to('/admin/manage/expense/?module_id=' . $id . '#module_id_' . $id);
                 break;
-             case 'Stock':
-                return redirect()->to('/admin/services/stock-in/?module_id=' . $id.'#module_id_' . $id);
+            case 'Stock':
+                return redirect()->to('/admin/services/stock-in/?module_id=' . $id . '#module_id_' . $id);
                 break;
         }
     }

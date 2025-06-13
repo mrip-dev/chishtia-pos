@@ -23,7 +23,7 @@
                                 <div class="form-group">
                                     <label>@lang('Date')</label>
                                     <input class="form-control timepicker" name="return_date" id="return_date_picker"
-                                        type="text" value="{{ $return_date }}" autocomplete="off">
+                                        type="text" value="{{ $return_date }}" autocomplete="off"  @if ($editMode) disabled @endif>
                                     @error('return_date') <span class="text-danger">{{ $message }}</span> @enderror
                                 </div>
                             </div>

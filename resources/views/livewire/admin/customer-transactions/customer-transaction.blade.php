@@ -36,23 +36,23 @@
             </button>
             @endif
         </div>
-        <div class="col-md-12 d-flex justify-content-end align-items-start gap-2 p-2 mt-3">
-            <a href="{{ route('admin.customers.pdf', [
+        <div class="col-md-12 d-flex justify-content-end align-items-start  mt-3">
+            <!-- <a href="{{ route('admin.customers.pdf', [
                     'search' => $search,
                     'start_date' => $startDate,
                     'end_date' => $endDate,
                     'customer_id' => $customerId,
                 ]) }}" class="btn btn-outline--primary">
                     View PDF
-                </a>
-                <button wire:click="generateInvoice('{{ $customerId }}', '{{ $startDate }}', '{{ $endDate }}', '{{ $search }}')" class="btn btn--primary d-flex gap-1">
-                    Download PDF
-                    <span wire:loading wire:target="generateInvoice">
-                        <i class="spinner-border  spinner-border-sm  text--primary"></i>
+                </a> -->
+            <button wire:click="generateInvoice('{{ $customerId }}', '{{ $startDate }}', '{{ $endDate }}', '{{ $search }}')" class="btn btn--primary">
+                Download PDF
+                <span wire:loading wire:target="generateInvoice">
+                    <i class="spinner-border  spinner-border-sm  text--primary"></i>
 
-                    </span>
-                </button>
-            </div>
+                </span>
+            </button>
+        </div>
     </div>
 
 
