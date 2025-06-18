@@ -153,6 +153,7 @@ class AllSales extends Component
 
     public function createSale()
     {
+         $this->resetForm();
         $this->isCreating = !$this->isCreating;
         $this->selectedSale = null;
         $this->saleDetails = [];
@@ -175,6 +176,7 @@ class AllSales extends Component
         $lastSale      = Sale::orderBy('invoice_no', 'DESC')->first();
         $lastInvoiceNo = $lastSale->invoice_no ?? 0;
         $this->invoice_no = generateInvoiceNumber($lastInvoiceNo);
+
     }
     public function editSale($id)
     {
@@ -362,6 +364,19 @@ class AllSales extends Component
             'searchQuery',
             'searchResults',
             'searchAbleProducts',
+            'received_amount',
+            'vehicle_number',
+            'driver_name',
+            'driver_contact',
+            'fare',
+            'loading',
+            'sale_date',
+            'invoice_no',
+            'total_price',
+            'due_amount',
+            'receivable_amount',
+            'searchInput',
+            'selected_product_id',
         ]);
     }
 

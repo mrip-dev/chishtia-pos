@@ -132,13 +132,14 @@ class AllPurchases extends Component
     }
     public function createPurchase()
     {
+        $this->resetForm();
         $this->isCreating = !$this->isCreating;
         $this->selectedPurchase = null;
         $this->purchaseDetails = [];
         $this->supplier_id = null;
         $this->purchase_date = now()->format('Y-m-d');
         $this->suppliers = Supplier::select('id', 'name', 'mobile')->get();
-         $this->suppliers = $this->suppliers->map(function ($supplier) {
+        $this->suppliers = $this->suppliers->map(function ($supplier) {
             return [
                 'id' => $supplier->id,
                 'text' => $supplier->name,
@@ -328,7 +329,20 @@ class AllPurchases extends Component
             'discount',
             'searchQuery',
             'searchResults',
-            'searchAbleProducts'
+            'searchAbleProducts',
+            'paid_amount',
+            'vehicle_number',
+            'driver_name',
+            'driver_contact',
+            'fare',
+            'loading',
+            'purchase_date',
+            'invoice_no',
+            'total_price',
+            'due_amount',
+            'payable_amount',
+            'searchInput',
+            'selected_product_id',
         ]);
     }
     public function addProduct($productId)
