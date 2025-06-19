@@ -12,22 +12,30 @@ class Stock extends Model
     protected static function booted()
     {
         static::creating(function ($stock) {
-            $stock->tracking_id = self::generateTrackingId();
+            $stock->tracking_id = self::generateTrackingId($stock->stock_type);
         });
     }
 
-    public static function generateTrackingId()
+    public static function generateTrackingId($type)
     {
-        // Get the last integer tracking number (e.g., CTN-10002 -> 10002)
-        $lastTracking = self::orderByDesc('id')->value('tracking_id');
+
+        if (!in_array($type, ['in', 'out'])) {
+            $prefix = 'G-'; // Default to 'GIN-' if type is not recognized
+        }
+        $prefix = strtoupper($type) === 'OUT' ? 'GOUT-' : 'GIN-';
+
+        // Get the latest tracking_id for this type
+        $lastTracking = self::where('tracking_id', 'like', $prefix . '%')
+            ->orderByDesc('id')
+            ->value('tracking_id');
 
         $lastNumber = 10000; // Default start
 
-        if ($lastTracking && preg_match('/CTN-(\d+)/', $lastTracking, $matches)) {
+        if ($lastTracking && preg_match('/' . $prefix . '(\d+)/', $lastTracking, $matches)) {
             $lastNumber = (int) $matches[1];
         }
 
-        return 'CTN-' . ($lastNumber + 1);
+        return $prefix . ($lastNumber + 1);
     }
 
 

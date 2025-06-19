@@ -1,7 +1,7 @@
-@extends('pdf.layouts.master')
+@extends('pdf.layouts.master2')
 
 
-@section('main-content')
+@section('content')
 <div class="card-header">
     <div class="justify-content-between align-items-start">
         <div class="row">
@@ -21,6 +21,7 @@
             <tr>
                 <th>Product</th>
                 <th>Quantity</th>
+                <th>Weight</th>
             </tr>
         </thead>
         <tbody>
@@ -28,6 +29,7 @@
             <tr>
                 <td>{{ $entry->product?->name }}</td>
                 <td>{{ $entry->quantity }}</td>
+                  <td>{{ $entry->net_weight ?? 0 }} @if($entry->product->unit->name && strtolower($entry->product->unit->name)=='kg') {{ $entry->product->unit->name}} @endif</td>
             </tr>
             @endforeach
         </tbody>

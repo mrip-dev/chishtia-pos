@@ -18,7 +18,7 @@
                                     <tr>
                                         <td>
                                             <a
-                                                href="{{ route('admin.purchase.return.edit', $entry->actionable_id) }}">{{ $entry->actionable->purchase->invoice_no }}</a>
+                                                href="{{ route('admin.purchase.return.edit', $entry->actionable_id) }}">{{ $entry->actionable?->purchase->invoice_no }}</a>
                                         </td>
                                         @include('admin.reports.data_entry.partials.common_columns')
                                     </tr>

@@ -105,6 +105,7 @@ class ManageStock extends Component
         return [
             'modal_rec_amount.required' => 'Cash amount is required when payment method is cash or both.',
             'modal_rec_bank.required'   => 'Bank amount is required when payment method is bank or both.',
+            'stockItems.*.product_id.required'   => 'Pleae Select Product.',
         ];
     }
 
@@ -112,7 +113,6 @@ class ManageStock extends Component
     {
         $this->stock_type = $type;
         $this->loadStocks();
-
     }
     public function loadStocks()
     {
@@ -141,7 +141,7 @@ class ManageStock extends Component
         $this->users = [];
         $this->getProducts();
         $this->stockItems = [
-            ['product_id' => null, 'quantity' => 1, 'unit_price' => 0, 'total_amount' => 0]
+            ['product_id' => null, 'quantity' => 1, 'unit_price' => 0, 'total_amount' => 0, 'net_weight' => 0, 'is_kg' => false]
         ];
         $suppliers = Supplier::select('id', 'name', 'mobile')->get();
         $clients = Customer::select('id', 'name', 'mobile')->get();
@@ -177,13 +177,21 @@ class ManageStock extends Component
             $this->getProducts();
         }
         if (str_starts_with($name, 'stockItems.')) {
-
-
             $index = explode('.', $name)[1];
-
+            $product_id = (float)$this->stockItems[$index]['product_id'];
             $quant = (float)$this->stockItems[$index]['quantity'];
+            $net_weight = (float)$this->stockItems[$index]['net_weight'];
             $unit_price = (float)$this->stockItems[$index]['unit_price'];
-            $this->stockItems[$index]['total_amount'] = $quant * $unit_price;
+            if ($product_id) {
+                $product = Product::find($product_id);
+                if ($product && $product->unit && strtolower($product->unit->name) == 'kg') {
+                    $this->stockItems[$index]['is_kg'] = true;
+                    $this->stockItems[$index]['total_amount'] = $net_weight * $unit_price;
+                } else {
+                    $this->stockItems[$index]['is_kg'] = false;
+                    $this->stockItems[$index]['total_amount'] = $quant * $unit_price;
+                }
+            }
             $this->recalculateTotalAmount();
         }
     }
@@ -198,11 +206,10 @@ class ManageStock extends Component
             'id' => $p->id,
             'text' => $p->name,
         ])->toArray();
-
     }
     public function addItem()
     {
-        $this->stockItems[] = ['product_id' => null, 'quantity' => 1, 'unit_price' => 0, 'total_amount' => 0];
+        $this->stockItems[] = ['product_id' => null, 'quantity' => 1, 'unit_price' => 0, 'total_amount' => 0, 'net_weight' => 0, 'is_kg' => false];
     }
 
     public function removeItem($index)
@@ -230,16 +237,23 @@ class ManageStock extends Component
         /////////////////  Check Stock Availability for all Products
         foreach ($this->stockItems as $item) {
             $availableStock = $this->checkAvailableStock($item['product_id'], $this->warehouse_id, $selecteduserId, $selecteduserModel);
-            if ($this->stock_type == 'out' && $availableStock < $item['quantity']) {
+            $availableStockWeight = $this->checkAvailableStockWeight($item['product_id'], $this->warehouse_id, $selecteduserId, $selecteduserModel);
+            if ($this->stock_type == 'out') {
                 ///// Product
                 $product = Product::find($item['product_id']);
                 if ($product) {
                     $productName = $product->name;
+
+                    if ($product->unit && strtolower($product->unit->name) == 'kg' && ($availableStockWeight < $item['net_weight'] || $availableStockWeight==0)) {
+                        $this->dispatch('notify', status: 'error', message: 'Insufficient Weight for product: ' . $productName);
+                        return;
+                    } else if ($availableStock < $item['quantity']) {
+                        $this->dispatch('notify', status: 'error', message: 'Insufficient Quantity for product: ' . $productName);
+                        return;
+                    }
                 } else {
                     $productName = 'Unknown Product';
                 }
-                $this->dispatch('notify', status: 'error', message: 'Insufficient stock for product: ' . $productName);
-                return;
             }
         }
 
@@ -260,12 +274,13 @@ class ManageStock extends Component
                 'stock_id' => $stock->id,
                 'product_id' => $item['product_id'],
                 'quantity' => $item['quantity'],
+                'net_weight' => $item['net_weight'],
                 'unit_price' => $item['unit_price'],
                 'total_amount' => $item['total_amount'],
 
             ]);
             ///////////   Update Service Stock Detail
-            $stockdetail = $this->updateServiceStock($item['product_id'], $item['quantity'], $this->stock_type, $this->warehouse_id, $selecteduserId, $selecteduserModel);
+            $stockdetail = $this->updateServiceStock($item['product_id'], $item['quantity'], $this->stock_type, $this->warehouse_id, $selecteduserId, $selecteduserModel, $item['net_weight']);
         }
         $stock->total_amount = $this->recalculateTotalAmount();
         $stock->due_amount = $this->recalculateTotalAmount();
@@ -325,7 +340,7 @@ class ManageStock extends Component
         return $total;
     }
 
-    public function updateServiceStock($product_id, $quantity, $stock_type, $warehouse_id, $user_id, $user_model)
+    public function updateServiceStock($product_id, $quantity, $stock_type, $warehouse_id, $user_id, $user_model, $net_weight)
     {
         $stockDetail = ServiceStockDetail::where('product_id', $product_id)
             ->where('warehouse_id', $warehouse_id)
@@ -336,8 +351,10 @@ class ManageStock extends Component
         if ($stockDetail) {
             if ($stock_type == 'in') {
                 $stockDetail->increment('quantity', $quantity);
+                $stockDetail->increment('net_weight', $net_weight);
             } else {
                 $stockDetail->decrement('quantity', $quantity);
+                $stockDetail->decrement('net_weight', $net_weight);
             }
         } else {
             ServiceStockDetail::create([
@@ -346,6 +363,7 @@ class ManageStock extends Component
                 'user_id' => $user_id,
                 'user_model' => $user_model,
                 'quantity' => ($stock_type == 'in') ? $quantity : -$quantity,
+                'net_weight' => ($stock_type == 'in') ? $net_weight : -$net_weight,
             ]);
         }
     }
@@ -358,7 +376,20 @@ class ManageStock extends Component
             ->first();
 
         if ($stockDetail) {
-            return $stockDetail->quantity;
+            return $stockDetail->quantity ?? 0;
+        }
+        return 0;
+    }
+    public function checkAvailableStockWeight($product_id, $warehouse_id, $user_id, $user_model)
+    {
+        $stockDetail = ServiceStockDetail::where('product_id', $product_id)
+            ->where('warehouse_id', $warehouse_id)
+            ->where('user_id', $user_id)
+            ->where('user_model', $user_model)
+            ->first();
+
+        if ($stockDetail) {
+            return $stockDetail->net_weight ?? 0;
         }
         return 0;
     }
@@ -451,7 +482,7 @@ class ManageStock extends Component
         $stock->bank_id = $this->bankId;
         $stock->save();
 
-         $this->handlePaymentTransaction(
+        $this->handlePaymentTransaction(
             $this->modal_payment_method,
             $amount_cash,
             $amount_bank,
@@ -461,7 +492,7 @@ class ManageStock extends Component
             'debit'
         );
 
-        $this->handleDailyBookEntries($amount_cash,$amount_bank,'debit',$this->modal_payment_method,'Stock',$stock->id);
+        $this->handleDailyBookEntries($amount_cash, $amount_bank, 'debit', $this->modal_payment_method, 'Stock', $stock->id);
 
         session()->flash('success', 'Payment updated successfully!');
         $this->dispatch('notify', status: 'success', message: 'Payment updated successfully!');

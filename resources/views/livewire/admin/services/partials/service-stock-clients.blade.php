@@ -114,7 +114,8 @@
                                 </td>
                                 <td class="text-start">
                                     @foreach ($item->stockInOuts as $product)
-                                    <span class="text--primary"> {{ $product->product?->name }} : {{ $product->quantity }}</span>
+
+                                    <span class="text--primary"> {{ $product->product?->name }} <span class="text-dark"> QTY: {{ $product->quantity }}</span>  Weight: {{ $product->net_weight ?? 0 }} @if($product->product->unit->name && strtolower($product->product->unit->name)=='kg') {{ $product->product->unit->name}} @endif</span>
                                     <br>
                                     @endforeach
 
@@ -216,6 +217,7 @@
                     <tr>
                         <th>Product</th>
                         <th>Quantity</th>
+                        <th>Weight</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -223,6 +225,7 @@
                     <tr>
                         <td>{{ $entry->product?->name }}</td>
                         <td>{{ $entry->quantity }}</td>
+                          <td>{{ $entry->net_weight ?? 0 }} @if($entry->product->unit->name && strtolower($entry->product->unit->name)=='kg') {{ $entry->product->unit->name}} @endif</td>
                     </tr>
                     @endforeach
                 </tbody>

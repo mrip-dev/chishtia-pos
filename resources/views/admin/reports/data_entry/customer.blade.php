@@ -17,12 +17,12 @@
                                 @forelse($entries as $entry)
                                     <tr>
                                         <td>
-                                            <a href="{{ route('admin.customer.index') }}?search={{ $entry->actionable->mobile }}">{{ $entry->actionable->name }}</a>
+                                            <a href="{{ route('admin.customer.index') }}?search={{ $entry->actionable?->mobile }}">{{ $entry->actionable?->name }}</a>
 
                                         </td>
 
                                         <td>
-                                            +{{ $entry->actionable->mobile }}
+                                            +{{ $entry->actionable?->mobile }}
                                         </td>
                                         @include('admin.reports.data_entry.partials.common_columns')
                                     </tr>

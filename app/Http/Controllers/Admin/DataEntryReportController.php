@@ -113,11 +113,17 @@ class DataEntryReportController extends Controller
     private function entries($type)
     {
         $pageTitle  = $this->pageTitle;
-        $entries    = Action::where('actionable_type', $this->model)->with('actionable', 'admin');
+
+        $entries = Action::where('actionable_type', $this->model)
+            ->whereHas('actionable') // ✅ exclude if related record missing
+            ->with('actionable', 'admin');
+
         if (count($this->relations)) {
             $entries->with($this->relations);
         }
+
         $entries = $entries->latest()->paginate(getPaginate());
+
         return view('admin.reports.data_entry.' . $type, compact('entries', 'pageTitle', 'type'));
     }
 }

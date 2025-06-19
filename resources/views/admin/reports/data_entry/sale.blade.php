@@ -17,7 +17,7 @@
                                 @forelse($entries as $entry)
                                     <tr>
                                         <td>
-                                            <a href="{{ route('admin.sale.edit', $entry->actionable_id) }}">{{ $entry->actionable->invoice_no }}</a>
+                                            <a href="{{ route('admin.sale.edit', $entry->actionable_id) }}">{{ $entry->actionable?->invoice_no }}</a>
                                         </td>
                                         @include('admin.reports.data_entry.partials.common_columns')
                                     </tr>

@@ -2,26 +2,20 @@
 
 
 @section('content')
-<!-- Customer Info -->
-<div class="top-section">
-    <table style="width: 100%; margin-top: 50px; font-size: 13px;">
-        <tr>
-            <td style="text-align: left;border:none;">
-                <div class="customer-info">
-                    Customer: {{ $selectedUser?->name ?? 'N/A' }}
-                </div>
-            </td>
-            <td style="text-align: right;border:none;">
-                <div class="customer-date">
-                    Date: {{ now()->format('d-m-Y') }}
-                </div>
-            </td>
-        </tr>
-    </table>
+<div class="list--row mb-15px">
+    <div class="float-left">
+        <p class="mb-5px"><strong> Customer: {{ $selectedUser?->name ?? 'N/A' }}</p>
+
+    </div>
+    <div class="float-right">
+        <p class="mb-5px"> Date: {{ now()->format('d-m-Y') }}</p>
+
+    </div>
 </div>
+
 <div class="row">
     <div class="col-md-12">
-        <h4 class="p-3">Stock In/Out</h4>
+        <h6 class="p-3">Stock In/Out</h6>
         <table class="table table--light table-bordered style--two bg--white">
             <thead>
                 <tr>
@@ -61,7 +55,7 @@
                     </td>
                     <td class="text-start">
                         @foreach ($item->stockInOuts as $product)
-                        <span class="text--primary"> {{ $product->product?->name }} : {{ $product->quantity }}</span>
+                           <span class="text--primary"> {{ $product->product?->name }} <span class="text-dark"> QTY: {{ $product->quantity }}</span>  Weight: {{ $product->net_weight ?? 0 }} @if($product->product->unit->name && strtolower($product->product->unit->name)=='kg') {{ $product->product->unit->name}} @endif</span>
                         <br>
                         @endforeach
 
@@ -78,7 +72,7 @@
     </div>
 
     <div class="col-md-12">
-        <h4 class="p-3">Stock Transfered</h4>
+        <h6 class="p-3">Stock Transfered</h6>
         <div class="table-responsive--md table-responsive">
             <table class="table table--light table-bordered style--two bg--white">
                 <thead>
@@ -118,7 +112,7 @@
         </div>
     </div>
     <div class="col-md-12">
-        <h4 class="p-3">Stock Received</h4>
+        <h6 class="p-3">Stock Received</h6>
         <div class="table-responsive--md table-responsive">
             <table class="table table--light table-bordered style--two bg--white">
                 <thead>
@@ -158,12 +152,13 @@
     </div>
 </div>
 
-<h4 class="p-3">Available Stock</h4>
+<h6 class="p-3">Available Stock</h6>
 <table class="table table--light table-bordered style--two bg--white">
     <thead>
         <tr>
             <th>Product</th>
             <th>Quantity</th>
+            <th>Weight</th>
         </tr>
     </thead>
     <tbody>
@@ -171,6 +166,8 @@
         <tr>
             <td>{{ $entry->product?->name }}</td>
             <td>{{ $entry->quantity }}</td>
+            <td>{{ $entry->net_weight ?? 0 }} @if($entry->product->unit->name && strtolower($entry->product->unit->name)=='kg') {{ $entry->product->unit->name}} @endif</td>
+
         </tr>
         @endforeach
     </tbody>

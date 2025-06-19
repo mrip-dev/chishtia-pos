@@ -79,19 +79,27 @@
                                             :allowAdd="false" />
                                     </div>
                                 </div>
-                                <div class="col-xl-3 col-sm-6">
+                                <div class="col-xl-2 col-sm-6">
                                     <div class="form-group">
                                         <label class="form-label">@lang('Quantity')</label>
                                         <input type="number" class="form-control" min="0" wire:model.live="stockItems.{{ $index }}.quantity" placeholder="@lang('Quantity')" required>
                                     </div>
                                 </div>
-                                <div class="col-xl-3 col-sm-6">
+                                @if($item['is_kg'])
+                                <div class="col-xl-2 col-sm-6">
+                                    <div class="form-group">
+                                        <label class="form-label">@lang('Weight')</label>
+                                        <input type="number" class="form-control" min="0" wire:model.live="stockItems.{{ $index }}.net_weight" placeholder="@lang('Weight')" required>
+                                    </div>
+                                </div>
+                                @endif
+                                <div class="col-xl-2 col-sm-6">
                                     <div class="form-group">
                                         <label class="form-label">@lang('Service Charges')</label>
                                         <input type="number" class="form-control" min="0" wire:model.live="stockItems.{{ $index }}.unit_price" placeholder="@lang('Service Charges')" required>
                                     </div>
                                 </div>
-                                <div class="col-xl-3 col-sm-6">
+                                <div class="col-xl-2 col-sm-6">
                                     <div class="form-group">
                                         <label class="form-label">@lang('Amount')</label>
                                         <input type="text" class="form-control" wire:model.live="stockItems.{{ $index }}.total_amount" readonly placeholder="@lang('Total Amount')">
