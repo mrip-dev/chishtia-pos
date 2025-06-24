@@ -257,27 +257,24 @@
                             <div class="col-xl-3 col-sm-6">
                                 <div class="form-group" id="Users-wrapper">
                                     <label class="form-label">@lang('From User')</label>
-                                    <select class="select2 form-control" wire:model.live="from_user_id" required>
-                                        <option value="" selected>@lang('Select One')</option>
-                                        @foreach ($users as $index => $user)
-                                        <option value="{{ $index }}" @selected($index==@$item->from_user_id)>
-                                            {{ $user['name'] }}
-                                        </option>
-                                        @endforeach
-                                    </select>
+
+                                     <x-select2
+                                    id="vc-select-select-fromuser"
+                                    dataArray="users"
+                                    wire:model="from_user_id"
+                                    placeholder="Select one"
+                                    :allowAdd="false" />
                                 </div>
                             </div>
                             <div class="col-xl-3 col-sm-6">
                                 <div class="form-group" id="Users-wrapper">
                                     <label class="form-label">@lang('To User')</label>
-                                    <select class="select2 form-control" wire:model.live="to_user_id" required>
-                                        <option value="" selected>@lang('Select One')</option>
-                                        @foreach ($users as $index => $user)
-                                        <option value="{{ $index }}" @selected($index==@$item->to_user_id)>
-                                            {{ $user['name'] }}
-                                        </option>
-                                        @endforeach
-                                    </select>
+                                     <x-select2
+                                    id="vc-select-select-touser"
+                                    dataArray="users"
+                                    wire:model="to_user_id"
+                                    placeholder="Select one"
+                                    :allowAdd="false" />
                                 </div>
                             </div>
                             <div class="col-xl-3 col-sm-6">
@@ -329,6 +326,7 @@
                                             <input type="number" class="form-control" min="0" wire:model.live="stockItems.{{ $index }}.quantity" placeholder="@lang('Quantity')" required>
                                         </div>
                                     </div>
+
                                     <div class="col-xl-3 col-sm-6">
                                         <div class="form-group">
                                             <label class="form-label">@lang('Service Charges')</label>

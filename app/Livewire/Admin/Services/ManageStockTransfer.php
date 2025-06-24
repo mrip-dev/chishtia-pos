@@ -108,36 +108,38 @@ class ManageStockTransfer extends Component
         ];
 
         $this->warehouses =  Warehouse::active()->orderBy('name')->get();
-        $this->getusers();
+        $this->users = [];
+        $this->users = $this->loadUsers();
     }
 
-
-    public function getusers()
+    private function loadUsers(): array
     {
-        $suppliers = Supplier::select('id', 'name', 'mobile')->get();
-        $clients = Customer::select('id', 'name', 'mobile')->get();
-        $this->users = [];
-        $supplierUsers = $suppliers->mapWithKeys(function ($supplier) {
-            $uniqueName = $supplier->name . '_Supplier_' . $supplier->id;
-            return [$uniqueName => [
-                'id' => $supplier->id,
-                'name' => $supplier->name,
-                'unique_name' => $uniqueName,
-                'model' => 'Supplier',
-            ]];
-        });
+        $formattedUsers = [];
 
-        $customerUsers = $clients->mapWithKeys(function ($client) {
-            $uniqueName = $client->name . '_Customer_' . $client->id;
-            return [$uniqueName => [
-                'id' => $client->id,
-                'name' => $client->name,
-                'unique_name' => $uniqueName,
-                'model' => 'Customer',
-            ]];
-        });
+        // Get data from models
+        $suppliers = Supplier::select('id', 'name')->orderBy('name')->get();
+        $clients = Customer::select('id', 'name')->orderBy('name')->get();
 
-        $this->users = $supplierUsers->merge($customerUsers)->all();
+        // Add Suppliers to the array with a unique identifier
+        foreach ($suppliers as $supplier) {
+            // Key: "Supplier-12", Value: "Supplier Name (Vendor)"
+
+            $formattedUsers[] = [
+                'id'   => 'Supplier-' . $supplier->id,
+                'text' => $supplier->name . ' (Supplier)',
+            ];
+        }
+
+        // Add Clients to the array with a unique identifier
+        foreach ($clients as $client) {
+            // Key: "Customer-8", Value: "Client Name (Client)"
+            $formattedUsers[] = [
+                'id'   => 'Customer-' . $client->id,
+                'text' => $client->name . ' (Customer)',
+            ];
+        }
+
+        return $formattedUsers;
     }
     public function updated($name, $value)
     {
@@ -155,11 +157,14 @@ class ManageStockTransfer extends Component
                 $this->dispatch('notify', status: 'error', message: 'From and To user cannot be same');
                 $this->from_user_id = null;
                 $this->to_user_id = null;
+            } else {
+                if ($name === 'from_user_id') {
+                    list($this->fromUserModel, $this->fromUserId) = explode('-', $value, 2);
+                }
+                if ($name === 'to_user_id') {
+                    list($this->toUserModel, $this->toUserId) = explode('-', $value, 2);
+                }
             }
-            $this->fromUserId = $this->users[$this->from_user_id]['id'] ?? null;
-            $this->fromUserModel = $this->users[$this->from_user_id]['model'] ?? null;
-            $this->toUserId = $this->users[$this->to_user_id]['id'] ?? null;
-            $this->toUserModel = $this->users[$this->to_user_id]['model'] ?? null;
         }
 
         if (str_starts_with($name, 'stockItems.')) {

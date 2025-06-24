@@ -13,28 +13,44 @@
                         <div class="col-xl-3 col-sm-6">
                             <div class="form-group">
                                 <label class="form-label">@lang('Warehouse')</label>
-                                <select class="form-control select2" wire:model.live="warehouse_id" @if($selected_stock_id) disabled @endif data-minimum-results-for-search="-1" required>
-                                    <option value="">@lang('Select One')</option>
-                                    @foreach ($warehouses as $warehouse)
-                                    <option value="{{ $warehouse->id }}" @selected($warehouse->id == @$item->warehouse_id)>
-                                        {{ __($warehouse->name) }}
-                                    </option>
-                                    @endforeach
-                                </select>
+                                 @if($selected_stock_id)
+                                <x-select2
+                                    id="vc-select-select-were"
+                                    disabled="true"
+                                    dataArray="warehouses"
+                                    wire:model="warehouse_id"
+                                    placeholder="Select one"
+                                    :allowAdd="false" />
+                                @else
+                                <x-select2
+                                    id="vc-select-select-were"
+                                    dataArray="warehouses"
+                                    wire:model="warehouse_id"
+                                    placeholder="Select one"
+                                    :allowAdd="false" />
+                                @endif
+
                             </div>
                         </div>
                         <div class="col-xl-3 col-sm-6">
                             <div class="form-group" id="supplier-wrapper">
                                 <label class="form-label">@lang('Vendor / Client')</label>
-                                <select class="select2 form-control" wire:model="user_id" @if($selected_stock_id) disabled @endif required>
-                                    <option value="" selected>@lang('Select One')</option>
-                                    @foreach ($users as $index => $user)
-                                    <option value="{{ $index }}" @selected($index==@$item->user_id)>
-                                        {{ __($user['name']) }}
-                                    </option>
-
-                                    @endforeach
-                                </select>
+                                @if($selected_stock_id)
+                                <x-select2
+                                    id="vc-select-select-cv"
+                                    disabled="true"
+                                    dataArray="users"
+                                    wire:model="user_id"
+                                    placeholder="Select a Client"
+                                    :allowAdd="false" />
+                                @else
+                                <x-select2
+                                    id="vc-select-select-cv"
+                                    dataArray="users"
+                                    wire:model="user_id"
+                                    placeholder="Select a Client"
+                                    :allowAdd="false" />
+                                @endif
                             </div>
                         </div>
 
@@ -62,7 +78,7 @@
                                 <input type="text" class="form-control" wire:model="driver_contact" placeholder="@lang('Driver Contact')" required>
                             </div>
                         </div>
-                         <div class="col-xl-3 col-sm-6">
+                        <div class="col-xl-3 col-sm-6">
                             <div class="form-group">
                                 <label class="form-label">@lang('Fare')</label>
                                 <input type="text" class="form-control" wire:model="fare" placeholder="@lang('Fare')" required>

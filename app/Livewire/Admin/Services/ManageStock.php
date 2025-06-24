@@ -26,6 +26,7 @@ class ManageStock extends Component
 
     public $stocks = [];
     public $users = [];
+     public ?string $user_identifier = ''; // The wire:model property, e.g., "Supplier-15"
     public $products = [];
     public $suppliers = [];
     public $clients = [];
@@ -44,6 +45,7 @@ class ManageStock extends Component
 
     public $selectedStock = null;
     public $showDetails = false;
+
 
     public $user_id;
     public $driver_name;
@@ -146,29 +148,16 @@ class ManageStock extends Component
         $this->stockItems = [
             ['product_id' => null, 'quantity' => 1, 'unit_price' => 0, 'total_amount' => 0, 'net_weight' => 0, 'is_kg' => false]
         ];
-        $suppliers = Supplier::select('id', 'name', 'mobile')->get();
-        $clients = Customer::select('id', 'name', 'mobile')->get();
-        foreach ($suppliers as $supplier) {
-            $this->users[] = [
-                'id' => $supplier->id,
-                'name' => $supplier->name,
-                'model' => 'Supplier',
-            ];
-        }
-        foreach ($clients as $client) {
-            $this->users[] = [
-                'id' => $client->id,
-                'name' => $client->name,
-                'model' => 'Customer',
-            ];
-        }
+        $this->users = $this->loadUsers();
 
         $this->warehouses =  Warehouse::active()->orderBy('name')->get();
+        $this->warehouses = $this->warehouses->map(function ($warehouse) {
+            return [
+                'id' => $warehouse->id,
+                'text' => $warehouse->name,
+            ];
+        })->toArray();
     }
-
-
-
-
     public function updated($name, $value)
     {
         if ($name === 'searchTerm' || $name === 'startDate' || $name === 'endDate') {
@@ -218,26 +207,15 @@ class ManageStock extends Component
         $this->isCreating = !$this->isCreating;
         $this->showDetails = false;
         $this->users = [];
+        $this->users = $this->loadUsers();
         $this->getProducts();
-
-        $suppliers = Supplier::select('id', 'name', 'mobile')->get();
-        $clients = Customer::select('id', 'name', 'mobile')->get();
-        foreach ($suppliers as $supplier) {
-            $this->users[] = [
-                'id' => $supplier->id,
-                'name' => $supplier->name,
-                'model' => 'Supplier',
+       $this->warehouses =  Warehouse::active()->orderBy('name')->get();
+        $this->warehouses = $this->warehouses->map(function ($warehouse) {
+            return [
+                'id' => $warehouse->id,
+                'text' => $warehouse->name,
             ];
-        }
-        foreach ($clients as $client) {
-            $this->users[] = [
-                'id' => $client->id,
-                'name' => $client->name,
-                'model' => 'Customer',
-            ];
-        }
-
-        $this->warehouses =  Warehouse::active()->orderBy('name')->get();
+        })->toArray();
         $this->selected_stock_id = $stockId;
 
         $searchTermDetails = '%' . $this->searchTermDetails . '%'; // assuming this is coming from Livewire or input
@@ -265,17 +243,10 @@ class ManageStock extends Component
         $this->driver_name = $this->selectedStock->driver_name;
         $this->driver_contact = $this->selectedStock->driver_contact;
 
-        $user_id = $this->selectedStock->user_id;
-        $user_model = $this->selectedStock->user_model;
-        $selected_user_index = null;
+        $user_id = $this->selectedStock->user_id ?? null;
+        $user_model = $this->selectedStock->user_model ?? null;
+        $this->user_id = $user_model . '-' . $user_id;
 
-        foreach ($this->users as $index => $user) {
-            if ($user['id'] == $user_id && $user['model'] == $user_model) {
-                $selected_user_index = $index;
-                break;
-            }
-        }
-        $this->user_id = $selected_user_index;
         $this->stockItems = [];
 
         foreach ($this->selectedStock->stockInOuts as $item) {
@@ -306,7 +277,7 @@ class ManageStock extends Component
             'title' => 'required|string',
             'stock_type' => 'required|in:in,out',
             'warehouse_id' => 'required|integer',
-            'user_id' => 'required|integer',
+            'user_id' => 'required',
             'labour' => 'nullable',
             'fare' => 'nullable',
             'vehicle_number' => 'nullable|string',
@@ -315,8 +286,8 @@ class ManageStock extends Component
             'stockItems.*.product_id' => 'required|integer',
             'stockItems.*.quantity' => 'required|numeric|min:1',
         ]);
-        $selecteduserId = $this->users[$this->user_id]['id'];
-        $selecteduserModel = $this->users[$this->user_id]['model'];
+        list($selecteduserModel, $selecteduserId) = explode('-', $this->user_id, 2);
+
         /////////////////  Check Stock Availability for all Products
         foreach ($this->stockItems as $item) {
             $availableStock = $this->checkAvailableStock($item['product_id'], $this->warehouse_id, $selecteduserId, $selecteduserModel);
@@ -484,7 +455,37 @@ class ManageStock extends Component
         }
         return $total;
     }
+    // In your Livewire Component
 
+    private function loadUsers(): array
+    {
+        $formattedUsers = [];
+
+        // Get data from models
+        $suppliers = Supplier::select('id', 'name')->orderBy('name')->get();
+        $clients = Customer::select('id', 'name')->orderBy('name')->get();
+
+        // Add Suppliers to the array with a unique identifier
+        foreach ($suppliers as $supplier) {
+            // Key: "Supplier-12", Value: "Supplier Name (Vendor)"
+
+             $formattedUsers[] = [
+                'id'   => 'Supplier-' . $supplier->id,
+                'text' => $supplier->name . ' (Supplier)',
+            ];
+        }
+
+        // Add Clients to the array with a unique identifier
+        foreach ($clients as $client) {
+            // Key: "Customer-8", Value: "Client Name (Client)"
+           $formattedUsers[] = [
+                'id'   => 'Customer-' . $client->id,
+                'text' => $client->name . ' (Customer)',
+            ];
+        }
+
+        return $formattedUsers;
+    }
     public function updateServiceStock($product_id, $quantity, $stock_type, $warehouse_id, $user_id, $user_model, $net_weight)
     {
         $stockDetail = ServiceStockDetail::where('product_id', $product_id)
