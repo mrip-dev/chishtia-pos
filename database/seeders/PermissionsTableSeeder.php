@@ -177,6 +177,8 @@ class PermissionsTableSeeder extends Seeder
             ['id' => 229, 'name' => 'Manufacturing Unit', 'group' => 'ManufacturingUnitController', 'code' => 'admin.production_flow'],
             ['id' => 230, 'name' => 'Manage Expenses', 'group' => 'ExpenseTypeController', 'code' => 'admin.manage_expense'],
             ['id' => 231, 'name' => 'Banks Management', 'group' => 'BanksManagementController', 'code' => 'admin.bank.index'],
+            ['id' => 232, 'name' => 'Service Stock Edit', 'group' => 'ServiceStockController', 'code' => 'admin.manage_stock_in.edit'],
+
 
         ];
 

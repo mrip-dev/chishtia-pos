@@ -50,6 +50,7 @@ class ManageStock extends Component
     public $driver_contact;
     public $vehicle_number;
     public $labour;
+    public $fare;
 
     public $searchTermDetails = '';
     public $startDateDetails = '';
@@ -136,6 +137,8 @@ class ManageStock extends Component
     }
     public function createStock()
     {
+        $this->resetForm();
+
         $this->isCreating = !$this->isCreating;
         $this->showDetails = false;
         $this->users = [];
@@ -162,6 +165,7 @@ class ManageStock extends Component
 
         $this->warehouses =  Warehouse::active()->orderBy('name')->get();
     }
+
 
 
 
@@ -207,6 +211,84 @@ class ManageStock extends Component
             'text' => $p->name,
         ])->toArray();
     }
+    public function editDetails($stockId)
+    {
+        $this->resetForm();
+
+        $this->isCreating = !$this->isCreating;
+        $this->showDetails = false;
+        $this->users = [];
+        $this->getProducts();
+
+        $suppliers = Supplier::select('id', 'name', 'mobile')->get();
+        $clients = Customer::select('id', 'name', 'mobile')->get();
+        foreach ($suppliers as $supplier) {
+            $this->users[] = [
+                'id' => $supplier->id,
+                'name' => $supplier->name,
+                'model' => 'Supplier',
+            ];
+        }
+        foreach ($clients as $client) {
+            $this->users[] = [
+                'id' => $client->id,
+                'name' => $client->name,
+                'model' => 'Customer',
+            ];
+        }
+
+        $this->warehouses =  Warehouse::active()->orderBy('name')->get();
+        $this->selected_stock_id = $stockId;
+
+        $searchTermDetails = '%' . $this->searchTermDetails . '%'; // assuming this is coming from Livewire or input
+        $start = $this->startDateDetails ? Carbon::parse($this->startDateDetails)->startOfDay() : null;
+        $end = $this->endDateDetails ? Carbon::parse($this->endDateDetails)->endOfDay() : null;
+
+        $this->selectedStock = Stock::with(['stockInOuts' => function ($query) use ($searchTermDetails, $start, $end) {
+            $query->whereHas('product', function ($q) use ($searchTermDetails) {
+                $q->where('name', 'like', $searchTermDetails);
+            })->with('product');
+            if ($start && $end) {
+                $query->whereBetween('created_at', [$start, $end]);
+            } elseif ($start) {
+                $query->where('created_at', '>=', $start);
+            } elseif ($end) {
+                $query->where('created_at', '<=', $end);
+            }
+        }])->find($this->selected_stock_id);
+        $this->title = $this->selectedStock->title;
+        $this->warehouse_id = $this->selectedStock->warehouse_id;
+        $this->stock_type = $this->selectedStock->stock_type;
+        $this->labour = $this->selectedStock->labour;
+        $this->fare = $this->selectedStock->fare;
+        $this->vehicle_number = $this->selectedStock->vehicle_number;
+        $this->driver_name = $this->selectedStock->driver_name;
+        $this->driver_contact = $this->selectedStock->driver_contact;
+
+        $user_id = $this->selectedStock->user_id;
+        $user_model = $this->selectedStock->user_model;
+        $selected_user_index = null;
+
+        foreach ($this->users as $index => $user) {
+            if ($user['id'] == $user_id && $user['model'] == $user_model) {
+                $selected_user_index = $index;
+                break;
+            }
+        }
+        $this->user_id = $selected_user_index;
+        $this->stockItems = [];
+
+        foreach ($this->selectedStock->stockInOuts as $item) {
+            $this->stockItems[] = [
+                'product_id' => $item->product_id,
+                'quantity' => $item->quantity,
+                'unit_price' => $item->unit_price,
+                'total_amount' => $item->total_amount,
+                'net_weight' => $item->net_weight ?? 0,
+                'is_kg' => strtolower($item->product->unit->name) === 'kg', // fallback if unit missing
+            ];
+        }
+    }
     public function addItem()
     {
         $this->stockItems[] = ['product_id' => null, 'quantity' => 1, 'unit_price' => 0, 'total_amount' => 0, 'net_weight' => 0, 'is_kg' => false];
@@ -225,7 +307,8 @@ class ManageStock extends Component
             'stock_type' => 'required|in:in,out',
             'warehouse_id' => 'required|integer',
             'user_id' => 'required|integer',
-            'labour' => 'nullable|string',
+            'labour' => 'nullable',
+            'fare' => 'nullable',
             'vehicle_number' => 'nullable|string',
             'driver_name' => 'nullable|string',
             'driver_contact' => 'nullable|string',
@@ -244,7 +327,7 @@ class ManageStock extends Component
                 if ($product) {
                     $productName = $product->name;
 
-                    if ($product->unit && strtolower($product->unit->name) == 'kg' && ($availableStockWeight < $item['net_weight'] || $availableStockWeight==0)) {
+                    if ($product->unit && strtolower($product->unit->name) == 'kg' && ($availableStockWeight < $item['net_weight'] || $availableStockWeight == 0)) {
                         $this->dispatch('notify', status: 'error', message: 'Insufficient Weight for product: ' . $productName);
                         return;
                     } else if ($availableStock < $item['quantity']) {
@@ -257,18 +340,54 @@ class ManageStock extends Component
             }
         }
 
-        $stock = Stock::create([
-            'title' => $this->title,
-            'stock_type' => $this->stock_type,
-            'warehouse_id' => $this->warehouse_id,
-            'user_id' => $selecteduserId,
-            'user_model'   => $selecteduserModel,
-            'labour' => $this->labour,
-            'vehicle_number' => $this->vehicle_number,
-            'driver_name' => $this->driver_name,
-            'driver_contact' => $this->driver_contact,
-        ]);
+        // Create or update stock
+        if ($this->selected_stock_id) {
+            $stock = Stock::findOrFail($this->selected_stock_id);
+            $stock->update([
+                'title' => $this->title,
+                'stock_type' => $this->stock_type,
+                'warehouse_id' => $this->warehouse_id,
+                'user_id' => $selecteduserId,
+                'user_model' => $selecteduserModel,
+                'labour' => $this->labour,
+                'fare' => $this->fare,
+                'vehicle_number' => $this->vehicle_number,
+                'driver_name' => $this->driver_name,
+                'driver_contact' => $this->driver_contact,
+            ]);
+            foreach ($stock->stockInOuts as $stk) {
 
+                $this->updateServiceStockOld($stk->product_id, $stk->quantity, $this->stock_type, $this->warehouse_id, $selecteduserId, $selecteduserModel, $stk->net_weight);
+            }
+            // Delete old items
+            $stock->stockInOuts()->delete();
+            foreach ($this->stockItems as $item) {
+                StockInOut::create([
+                    'stock_id' => $stock->id,
+                    'product_id' => $item['product_id'],
+                    'quantity' => $item['quantity'],
+                    'net_weight' => $item['net_weight'],
+                    'unit_price' => $item['unit_price'],
+                    'total_amount' => $item['total_amount'],
+                ]);
+
+                // Update service stock
+
+            }
+        } else {
+            $stock = Stock::create([
+                'title' => $this->title,
+                'stock_type' => $this->stock_type,
+                'warehouse_id' => $this->warehouse_id,
+                'user_id' => $selecteduserId,
+                'user_model' => $selecteduserModel,
+                'labour' => $this->labour,
+                'fare' => $this->fare,
+                'vehicle_number' => $this->vehicle_number,
+                'driver_name' => $this->driver_name,
+                'driver_contact' => $this->driver_contact,
+            ]);
+        }
         foreach ($this->stockItems as $item) {
             StockInOut::create([
                 'stock_id' => $stock->id,
@@ -277,22 +396,48 @@ class ManageStock extends Component
                 'net_weight' => $item['net_weight'],
                 'unit_price' => $item['unit_price'],
                 'total_amount' => $item['total_amount'],
-
             ]);
-            ///////////   Update Service Stock Detail
-            $stockdetail = $this->updateServiceStock($item['product_id'], $item['quantity'], $this->stock_type, $this->warehouse_id, $selecteduserId, $selecteduserModel, $item['net_weight']);
+
+            // Update service stock
+            $this->updateServiceStock(
+                $item['product_id'],
+                $item['quantity'],
+                $this->stock_type,
+                $this->warehouse_id,
+                $selecteduserId,
+                $selecteduserModel,
+                $item['net_weight']
+            );
         }
+        // Save items
+
         $stock->total_amount = $this->recalculateTotalAmount();
         $stock->due_amount = $this->recalculateTotalAmount();
         $stock->save();
-        ///////////   Update Service Stock Detail
-        $this->dispatch('notify', status: 'success', message: 'Stock saved successfully');
 
+        $this->dispatch('notify', status: 'success', message: $this->selected_stock_id ? 'Stock updated successfully' : 'Stock created successfully');
         $this->isCreating = false;
-        $this->loadStocks(); // reload stocks
+        // Reset state
+        $this->resetForm();
+        $this->loadStocks();
     }
 
+    public function resetForm()
+    {
 
+        $this->selected_stock_id = null;
+        $this->title = '';
+        $this->warehouse_id = null;
+        $this->user_id = null;
+        $this->labour = '';
+        $this->fare = '';
+        $this->vehicle_number = '';
+        $this->driver_name = '';
+        $this->driver_contact = '';
+        $this->stockItems = [
+            ['product_id' => null, 'quantity' => 1, 'unit_price' => 0, 'total_amount' => 0, 'net_weight' => 0, 'is_kg' => false]
+        ];
+    }
     public function viewDetails($stockId)
     {
         $this->selected_stock_id = $stockId;
@@ -365,6 +510,24 @@ class ManageStock extends Component
                 'quantity' => ($stock_type == 'in') ? $quantity : -$quantity,
                 'net_weight' => ($stock_type == 'in') ? $net_weight : -$net_weight,
             ]);
+        }
+    }
+    public function updateServiceStockOld($product_id, $quantity, $stock_type, $warehouse_id, $user_id, $user_model, $net_weight)
+    {
+        $stockDetail = ServiceStockDetail::where('product_id', $product_id)
+            ->where('warehouse_id', $warehouse_id)
+            ->where('user_id', $user_id)
+            ->where('user_model', $user_model)
+            ->first();
+
+        if ($stockDetail) {
+            if ($stock_type == 'out') {
+                $stockDetail->increment('quantity', $quantity);
+                $stockDetail->increment('net_weight', $net_weight);
+            } else {
+                $stockDetail->decrement('quantity', $quantity);
+                $stockDetail->decrement('net_weight', $net_weight);
+            }
         }
     }
     public function checkAvailableStock($product_id, $warehouse_id, $user_id, $user_model)

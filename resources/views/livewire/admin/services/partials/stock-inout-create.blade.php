@@ -13,7 +13,7 @@
                         <div class="col-xl-3 col-sm-6">
                             <div class="form-group">
                                 <label class="form-label">@lang('Warehouse')</label>
-                                <select class="form-control select2" wire:model.live="warehouse_id" data-minimum-results-for-search="-1" required>
+                                <select class="form-control select2" wire:model.live="warehouse_id" @if($selected_stock_id) disabled @endif data-minimum-results-for-search="-1" required>
                                     <option value="">@lang('Select One')</option>
                                     @foreach ($warehouses as $warehouse)
                                     <option value="{{ $warehouse->id }}" @selected($warehouse->id == @$item->warehouse_id)>
@@ -26,7 +26,7 @@
                         <div class="col-xl-3 col-sm-6">
                             <div class="form-group" id="supplier-wrapper">
                                 <label class="form-label">@lang('Vendor / Client')</label>
-                                <select class="select2 form-control" wire:model="user_id" required>
+                                <select class="select2 form-control" wire:model="user_id" @if($selected_stock_id) disabled @endif required>
                                     <option value="" selected>@lang('Select One')</option>
                                     @foreach ($users as $index => $user)
                                     <option value="{{ $index }}" @selected($index==@$item->user_id)>
@@ -62,6 +62,12 @@
                                 <input type="text" class="form-control" wire:model="driver_contact" placeholder="@lang('Driver Contact')" required>
                             </div>
                         </div>
+                         <div class="col-xl-3 col-sm-6">
+                            <div class="form-group">
+                                <label class="form-label">@lang('Fare')</label>
+                                <input type="text" class="form-control" wire:model="fare" placeholder="@lang('Fare')" required>
+                            </div>
+                        </div>
 
                     </div>
                     @foreach ($stockItems as $index => $item)
@@ -82,41 +88,47 @@
                                 <div class="col-xl-2 col-sm-6">
                                     <div class="form-group">
                                         <label class="form-label">@lang('Quantity')</label>
-                                        <input type="number" class="form-control" min="0" wire:model.live="stockItems.{{ $index }}.quantity" placeholder="@lang('Quantity')" required>
+                                        {{-- USE DEBOUNCE INSTEAD OF LIVE --}}
+                                        <input type="number" class="form-control" min="0" wire:model.live.debounce.700ms="stockItems.{{ $index }}.quantity" placeholder="@lang('Quantity')" required>
                                     </div>
                                 </div>
                                 @if($item['is_kg'])
                                 <div class="col-xl-2 col-sm-6">
                                     <div class="form-group">
                                         <label class="form-label">@lang('Weight')</label>
-                                        <input type="number" class="form-control" min="0" wire:model.live="stockItems.{{ $index }}.net_weight" placeholder="@lang('Weight')" required>
+                                        {{-- USE DEBOUNCE INSTEAD OF LIVE --}}
+                                        <input type="number" class="form-control" min="0" wire:model.live.debounce.700ms="stockItems.{{ $index }}.net_weight" placeholder="@lang('Weight')" required>
                                     </div>
                                 </div>
                                 @endif
                                 <div class="col-xl-2 col-sm-6">
                                     <div class="form-group">
                                         <label class="form-label">@lang('Service Charges')</label>
-                                        <input type="number" class="form-control" min="0" wire:model.live="stockItems.{{ $index }}.unit_price" placeholder="@lang('Service Charges')" required>
+                                        {{-- USE DEBOUNCE INSTEAD OF LIVE --}}
+                                        <input type="number" class="form-control" min="0" wire:model.live.debounce.700ms="stockItems.{{ $index }}.unit_price" placeholder="@lang('Service Charges')" required>
                                     </div>
                                 </div>
                                 <div class="col-xl-2 col-sm-6">
                                     <div class="form-group">
                                         <label class="form-label">@lang('Amount')</label>
-                                        <input type="text" class="form-control" wire:model.live="stockItems.{{ $index }}.total_amount" readonly placeholder="@lang('Total Amount')">
+                                        {{-- CORRECTION: Use value attribute for readonly fields, not wire:model --}}
+                                        <input type="text" class="form-control" value="{{ number_format($item['total_amount'] ?? 0, 2) }}" readonly placeholder="@lang('Total Amount')">
                                     </div>
                                 </div>
                             </div>
 
                             <div class="d-flex justify-content-end mt-2">
-                                @if($loop->first)
-                                <button type="button" wire:click="addItem" class="btn btn--primary">Add More</button>
-                                @elseif($loop->last)
-                                <button type="button" wire:click="addItem" class="btn btn--primary">Add More</button>
-                                <button type="button" wire:click="removeItem({{ $index }})" class="btn btn-danger"><i class="las la-times"></i></button>
-                                @else
-                                <button type="button" wire:click="removeItem({{ $index }})" class="btn btn-danger"><i class="las la-times"></i></button>
+                                <button type="button" wire:click="addItem" class="btn btn--primary me-2">
+                                    <i class="las la-plus"></i> Add More
+                                </button>
+
+                                @if(count($stockItems) > 1)
+                                <button type="button" wire:click="removeItem({{ $index }})" class="btn btn-danger">
+                                    <i class="las la-times"></i>
+                                </button>
                                 @endif
                             </div>
+
                         </div>
                     </div>
                     @endforeach

@@ -260,7 +260,7 @@
 
 
                             @if($searchResults && false)
-                            <input type="text" class="form-control" wire:model.live="searchQuery" placeholder="@lang('Product Name or SKU')">
+                            <input type="text" class="form-control" wire:model.live.debounce.700ms="searchQuery" placeholder="@lang('Product Name or SKU')">
                             @error('products') <small class="text-danger">{{ $message }}</small> @enderror
 
                             <div class="card p-2 shadow">
@@ -298,7 +298,7 @@
                                         {{ $product['stock'] }}
                                     </td>
                                     <td>
-                                        <input type="number" wire:model.live="products.{{ $index }}.quantity" class="form-control">
+                                        <input type="number" wire:model.live.debounce.700ms="products.{{ $index }}.quantity" class="form-control">
                                         @error("products.$index.quantity") <small class="text-danger">{{ $message }}</small> @enderror
                                     </td>
                                     <td>
@@ -306,13 +306,13 @@
                                     </td>
                                     <td>
                                         @if($product['unit'] == 'KG' || $product['unit'] == 'Kg' || $product['unit'] == 'kg')
-                                        <input type="number" wire:model.live="products.{{ $index }}.net_weight" class="form-control">
+                                        <input type="number" wire:model.live.debounce.700ms="products.{{ $index }}.net_weight" class="form-control">
                                         {{ $product['unit'] }}
                                         @error("products.$index.net_weight") <small class="text-danger">{{ $message }}</small> @enderror
                                         @endif
                                     </td>
                                     <td>
-                                        <input type="text" wire:model.live="products.{{ $index }}.price" class="form-control">
+                                        <input type="text" wire:model.live.debounce.700ms="products.{{ $index }}.price" class="form-control">
                                         @error("products.$index.price") <small class="text-danger">{{ $message }}</small> @enderror
                                     </td>
 
@@ -385,7 +385,7 @@
                                     <label>@lang('Discount')</label>
                                     <div class="input-group">
                                         <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                        <input class="form-control" type="number" step="any" wire:model.live="discount">
+                                        <input class="form-control" type="number" step="any" wire:model.live.debounce.700ms="discount">
                                     </div>
                                 </div>
 
@@ -478,7 +478,7 @@
 
                                             <div class="form-group mb-3">
                                                 <label>@lang('Payment Method')</label>
-                                                <select name="payment_method" class="form-control" id="paymentMethodSelect" wire:model.live="modal_payment_method" required>
+                                                <select name="payment_method" class="form-control" id="paymentMethodSelect" wire:model.live.debounce.700ms="modal_payment_method" required>
                                                     {{-- <option value="" disabled selected>@lang('Select Payment Method')</option>
                                         <option value="">----- choose -----</option> --}}
                                                     <option value="cash">@lang('Cash')</option>
@@ -524,7 +524,7 @@
                                     <div class="row">
                                         <div class="form-group col-md-6">
                                             <label>@lang('Type')</label>
-                                            <select class="form-control" wire:model.live="expense_type_id" required>
+                                            <select class="form-control" wire:model.live.debounce.700ms="expense_type_id" required>
                                                 <option value="">@lang('Select One')</option>
                                                 @foreach ($categories as $item)
                                                 <option value="{{ $item->id }}">{{ __($item->name) }}</option>

@@ -65,8 +65,14 @@
 
                                             <a wire:click.prevent="viewDetails({{ $item->id }})"
                                                 class="btn btn-sm btn-outline--primary ms-1">
-                                                <i class="la la-chart"></i> @lang('Details')
+                                                <i class="la la-eye"></i>
                                             </a>
+                                             @permit(['admin.manage_stock_in.edit'])
+                                            <a wire:click.prevent="editDetails({{ $item->id }})"
+                                                class="btn btn-sm btn-outline--primary ms-1">
+                                                <i class="la la-pencil"></i>
+                                            </a>
+                                            @endpermit
                                             @permit(['admin.stock_client_payment'])
                                             @if($stock_type=='in')
                                             <button type="button"
