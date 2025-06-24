@@ -64,7 +64,7 @@
                                                 <td class="text-start" width="18%">
                                                     <div class="input-group">
                                                         <input class="form-control quantity"
-                                                               wire:model.live="products.{{ $index }}.quantity"
+                                                               wire:model.live.debounce.500ms="products.{{ $index }}.quantity"
                                                                type="number" min="0"
                                                                title="{{ $isKg ? 'For KG items, use Return Weight field. Quantity here might represent units like bags.' : '' }}">
                                                         <span class="input-group-text">{{ $product['unit_name'] }}</span>
@@ -82,7 +82,7 @@
                                                     @if($isKg)
                                                         <div class="input-group">
                                                             <input class="form-control net_weight"
-                                                                   wire:model.live="products.{{ $index }}.net_weight"
+                                                                   wire:model.live.debounce.500ms="products.{{ $index }}.net_weight"
                                                                    type="number" step="any" min="0">
                                                             <span class="input-group-text">@lang('kg')</span>
                                                         </div>
@@ -134,7 +134,7 @@
                                             <label> @lang('Discount')</label>
                                             <div class="input-group">
                                                 <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                                <input class="form-control" wire:model.live="discount" type="number" step="any" min="0">
+                                                <input class="form-control" wire:model.live.debounce.500ms="discount" type="number" step="any" min="0">
                                             </div>
                                             @error('discount') <span class="text-danger">{{ $message }}</span> @enderror
                                         </div>

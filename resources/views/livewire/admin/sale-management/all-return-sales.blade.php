@@ -62,12 +62,12 @@
                                             </td>
 
                                             <td class="text-start">
-                                                <input wire:model.live="products.{{ $index }}.product_id" type="hidden">
-                                                <input wire:model.live="products.{{ $index }}.price" type="hidden">
+                                                <input wire:model.live.debounce.500ms="products.{{ $index }}.product_id" type="hidden">
+                                                <input wire:model.live.debounce.500ms="products.{{ $index }}.price" type="hidden">
 
                                                 <div class="input-group">
                                                     <input class="form-control quantity"
-                                                        wire:model.live="products.{{ $index }}.quantity"
+                                                        wire:model.live.debounce.500ms="products.{{ $index }}.quantity"
                                                         type="number" min="0"
                                                         data-original-sale-qty="{{ $product['sale_quantity'] }}"
                                                         data-original-stock-qty="{{ $product['stock_quantity'] }}">
@@ -87,7 +87,7 @@
                                                 @if(strtolower($product['unit_name']) == 'kg')
                                                 <div class="input-group">
                                                     <input class="form-control net_weight"
-                                                        wire:model.live="products.{{ $index }}.net_weight"
+                                                        wire:model.live.debounce.500ms="products.{{ $index }}.net_weight"
                                                         type="number" min="0"
                                                         data-original-sale-qty="{{ $product['sale_weight'] }}"
                                                         data-original-stock-qty="{{ $product['stock_weight'] }}">
@@ -138,7 +138,7 @@
                                             <label> @lang('Discount')</label>
                                             <div class="input-group">
                                                 <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                                <input class="form-control" wire:model.live="discount" type="number" step="any" min="0">
+                                                <input class="form-control" wire:model.live.debounce.500ms="discount" type="number" step="any" min="0">
                                             </div>
                                             @error('discount') <span class="text-danger">{{ $message }}</span> @enderror
                                         </div>
