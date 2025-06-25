@@ -133,6 +133,7 @@ class AllPurchases extends Component
     public function createPurchase()
     {
         $this->resetForm();
+        $this->purchaseId = null;
         $this->isCreating = !$this->isCreating;
         $this->selectedPurchase = null;
         $this->purchaseDetails = [];
@@ -323,6 +324,7 @@ class AllPurchases extends Component
     {
         $this->reset([
             'products',
+            'purchaseId',
             'supplier_id',
             'warehouse_id',
             'note',

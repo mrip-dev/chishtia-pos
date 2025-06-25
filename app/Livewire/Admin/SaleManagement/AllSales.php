@@ -153,7 +153,8 @@ class AllSales extends Component
 
     public function createSale()
     {
-         $this->resetForm();
+        $this->resetForm();
+        $this->saleId = null;
         $this->isCreating = !$this->isCreating;
         $this->selectedSale = null;
         $this->saleDetails = [];
@@ -357,6 +358,7 @@ class AllSales extends Component
     {
         $this->reset([
             'products',
+            'saleId',
             'customer_id',
             'warehouse_id',
             'note',
