@@ -14,7 +14,7 @@
                                 <th>@lang('Stock') </th>
                                 <th>@lang('Total Sale') | @lang('Alert Qty')</th>
                                 <th>@lang('Unit')</th>
-                                <th>@lang('Net Weight')</th>
+                                <!-- <th>@lang('Net Weight')</th> -->
                                 <th>@lang('Action')</th>
                             </tr>
                         </thead>
@@ -60,7 +60,7 @@
                                 </td>
 
                                 <td> {{ $product->unit->name }}</td>
-                                <td> {{ $product->net_weight ?? '' }}</td>
+                                <!-- <td> {{ $product->net_weight ?? '' }}</td> -->
 
                                 <td>
                                     @permit('admin.product.edit')

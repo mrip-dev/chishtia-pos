@@ -49,7 +49,7 @@
                                     <!-- <th>@lang('Driver Name') | @lang('Mobile')</th> -->
                                     <th>@lang('Vehicle No') | @lang('Fare')</th>
                                     <th>@lang('Loading') | @lang('Unloading')</th>
-                                    <th>@lang('Warehouse') | @lang('Unit price')</th>
+                                    <th>@lang('Warehouse') </th>
                                     <th>@lang('Total Amount')</th>
                                     <!-- <th>@lang('Received') | @lang('Due')</th> -->
                                     <th>@lang('Action')</th>
@@ -91,8 +91,8 @@
                                     <td>
                                         {{ $sale->warehouse->name }}
                                         <br>
-                                        <span
-                                            class="fw-bold">{{ showAmount($sale->total_price) }}</span>
+                                        <!-- <span
+                                            class="fw-bold">{{ showAmount($sale->total_price) }}</span> -->
                                     </td>
 
                                     <td>
