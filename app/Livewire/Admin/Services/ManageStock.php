@@ -29,8 +29,8 @@ class ManageStock extends Component
 
     public $stocks = [];
     public $users = [];
-       public $note = '';
-       public $selected_id;
+    public $note = '';
+    public $selected_id;
     public ?string $user_identifier = ''; // The wire:model property, e.g., "Supplier-15"
     public $products = [];
     public $suppliers = [];

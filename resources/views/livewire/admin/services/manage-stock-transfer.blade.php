@@ -229,6 +229,7 @@
                     <tr>
                         <th>Product</th>
                         <th>Quantity</th>
+                        <th>Weight</th>
                         <th>Service Charges</th>
                         <th>Total Amount</th>
 
@@ -239,6 +240,7 @@
                     <tr>
                         <td>{{ $entry->product?->name }}</td>
                         <td>{{ $entry->quantity }}</td>
+                        <td>{{ $entry->net_weight }}</td>
                         <td>{{ $entry->unit_price }}</td>
                         <td>{{ $entry->total_amount }}</td>
                     </tr>
@@ -258,23 +260,23 @@
                                 <div class="form-group" id="Users-wrapper">
                                     <label class="form-label">@lang('From User')</label>
 
-                                     <x-select2
-                                    id="vc-select-select-fromuser"
-                                    dataArray="users"
-                                    wire:model="from_user_id"
-                                    placeholder="Select one"
-                                    :allowAdd="false" />
+                                    <x-select2
+                                        id="vc-select-select-fromuser"
+                                        dataArray="users"
+                                        wire:model="from_user_id"
+                                        placeholder="Select one"
+                                        :allowAdd="false" />
                                 </div>
                             </div>
                             <div class="col-xl-3 col-sm-6">
                                 <div class="form-group" id="Users-wrapper">
                                     <label class="form-label">@lang('To User')</label>
-                                     <x-select2
-                                    id="vc-select-select-touser"
-                                    dataArray="users"
-                                    wire:model="to_user_id"
-                                    placeholder="Select one"
-                                    :allowAdd="false" />
+                                    <x-select2
+                                        id="vc-select-select-touser"
+                                        dataArray="users"
+                                        wire:model="to_user_id"
+                                        placeholder="Select one"
+                                        :allowAdd="false" />
                                 </div>
                             </div>
                             <div class="col-xl-3 col-sm-6">
@@ -313,21 +315,29 @@
                                         <div class="form-group">
                                             <label class="form-label">@lang('Product')</label>
                                             <x-select2
-                                            id="product-select-{{ $index }}-select"
-                                            dataArray="products"
-                                            wire:model="stockItems.{{ $index }}.product_id"
-                                            placeholder="Select a product"
-                                            :allowAdd="false" />
+                                                id="product-select-{{ $index }}-select"
+                                                dataArray="products"
+                                                wire:model="stockItems.{{ $index }}.product_id"
+                                                placeholder="Select a product"
+                                                :allowAdd="false" />
                                         </div>
                                     </div>
-                                    <div class="col-xl-3 col-sm-6">
+                                    <div class="col-xl-2 col-sm-6">
                                         <div class="form-group">
                                             <label class="form-label">@lang('Quantity')</label>
                                             <input type="number" class="form-control" min="0" wire:model.live="stockItems.{{ $index }}.quantity" placeholder="@lang('Quantity')" required>
                                         </div>
                                     </div>
-
-                                    <div class="col-xl-3 col-sm-6">
+                                    @if($item['is_kg'])
+                                    <div class="col-xl-2 col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">@lang('Weight')</label>
+                                            {{-- USE DEBOUNCE INSTEAD OF LIVE --}}
+                                            <input type="number" class="form-control" min="0" wire:model.live.debounce.700ms="stockItems.{{ $index }}.net_weight" placeholder="@lang('Weight')" required>
+                                        </div>
+                                    </div>
+                                    @endif
+                                    <div class="col-xl-2 col-sm-6">
                                         <div class="form-group">
                                             <label class="form-label">@lang('Service Charges')</label>
                                             <input type="number" class="form-control" min="0" wire:model.live="stockItems.{{ $index }}.unit_price" placeholder="@lang('Service Charges')" required>

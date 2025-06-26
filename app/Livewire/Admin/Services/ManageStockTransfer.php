@@ -99,12 +99,13 @@ class ManageStockTransfer extends Component
     }
     public function createStock()
     {
+        $this->resetForm();
         $this->isCreating = !$this->isCreating;
         $this->showDetails = false;
 
         $this->getProducts();
         $this->stockItems = [
-            ['product_id' => null, 'quantity' => 1, 'unit_price' => 0, 'total_amount' => 0]
+            ['product_id' => null, 'quantity' => 1, 'unit_price' => 0, 'total_amount' => 0, 'net_weight' => 0, 'is_kg' => false]
         ];
 
         $this->warehouses =  Warehouse::active()->orderBy('name')->get();
@@ -172,21 +173,36 @@ class ManageStockTransfer extends Component
             $index = explode('.', $name)[1];
             $quant = (float)$this->stockItems[$index]['quantity'];
             $product_id = (float)$this->stockItems[$index]['product_id'];
-            $availableStock = $this->checkAvailableStock($product_id, $this->from_warehouse_id, $this->fromUserId, $this->fromUserModel);
-            if ($availableStock < $quant) {
-                ///// Product
-                $product = Product::find($product_id);
-                if ($product) {
-                    $productName = $product->name;
-                } else {
-                    $productName = 'Unknown Product';
-                }
-                $this->dispatch('notify', status: 'error', message: 'Insufficient stock for product: ' . $productName);
-                $this->stockItems[$index]['quantity'] = 1;
-                $this->stockItems[$index]['unit_price'] = 0;
-            }
+            $net_weight = (float)$this->stockItems[$index]['net_weight'];
             $unit_price = (float)$this->stockItems[$index]['unit_price'];
-            $this->stockItems[$index]['total_amount'] = $quant * $unit_price;
+            if ($product_id) {
+                $product = Product::find($product_id);
+                $productName = $product->name ?? 'Unknown Product';
+                $availableStock = $this->checkAvailableStock($product_id, $this->from_warehouse_id, $this->fromUserId, $this->fromUserModel);
+                if ($availableStock < $quant) {
+                    $this->dispatch('notify', status: 'error', message: 'Insufficient Quantity for product: ' . $productName);
+                    $this->stockItems[$index]['quantity'] = 1;
+                    $this->stockItems[$index]['unit_price'] = 0;
+                }
+                if ($product && $product->unit && strtolower($product->unit->name) == 'kg') {
+                    $availableStockWeight = $this->checkAvailableStockWeight($product_id, $this->from_warehouse_id, $this->fromUserId, $this->fromUserModel);
+                    if ($availableStockWeight < $net_weight) {
+                        $this->dispatch('notify', status: 'error', message: 'Insufficient Weight for product: ' . $productName);
+                        $this->stockItems[$index]['quantity'] = 1;
+                        $this->stockItems[$index]['unit_price'] = 0;
+                    } else {
+                        $this->stockItems[$index]['is_kg'] = false;
+                        $this->stockItems[$index]['total_amount'] = $quant * $unit_price;
+                    }
+                    $this->stockItems[$index]['is_kg'] = true;
+                    $this->stockItems[$index]['total_amount'] = $net_weight * $unit_price;
+                } else {
+
+                    $this->stockItems[$index]['is_kg'] = false;
+                    $this->stockItems[$index]['total_amount'] = $quant * $unit_price;
+                }
+            }
+
             $this->recalculateTotalAmount();
         }
     }
@@ -200,7 +216,7 @@ class ManageStockTransfer extends Component
     }
     public function addItem()
     {
-        $this->stockItems[] = ['product_id' => null, 'quantity' => 1, 'unit_price' => 0, 'total_amount' => 0];
+        $this->stockItems[] = ['product_id' => null, 'quantity' => 1, 'unit_price' => 0, 'total_amount' => 0, 'net_weight' => 0, 'is_kg' => false];
     }
 
     public function removeItem($index)
@@ -222,17 +238,18 @@ class ManageStockTransfer extends Component
 
         /////////////////  Check Stock Availability for all Products
         foreach ($this->stockItems as $item) {
+            $product = Product::find($item['product_id']);
+            $productName = $product->name ?? 'Unknown Product';
             $availableStock = $this->checkAvailableStock($item['product_id'], $this->from_warehouse_id, $this->fromUserId, $this->fromUserModel);
             if ($availableStock < $item['quantity']) {
-                ///// Product
-                $product = Product::find($item['product_id']);
-                if ($product) {
-                    $productName = $product->name;
-                } else {
-                    $productName = 'Unknown Product';
-                }
                 $this->dispatch('notify', status: 'error', message: 'Insufficient stock for product: ' . $productName);
                 return;
+            }
+            if ($product && $product->unit && strtolower($product->unit->name) == 'kg') {
+                $availableStockWeight = $this->checkAvailableStockWeight($item['product_id'], $this->from_warehouse_id, $this->fromUserId, $this->fromUserModel);
+                if ($availableStockWeight < $item['net_weight']) {
+                    $this->dispatch('notify', status: 'error', message: 'Insufficient Weight for product: ' . $productName);
+                }
             }
         }
 
@@ -250,15 +267,16 @@ class ManageStockTransfer extends Component
                 'stock_transfer_id' => $stock->id,
                 'product_id' => $item['product_id'],
                 'quantity' => $item['quantity'],
+                'net_weight' => $item['net_weight'],
                 'unit_price' => $item['unit_price'],
                 'total_amount' => $item['total_amount'],
 
             ]);
 
             //////  update Stoc for from user
-            $this->updateServiceStock($item['product_id'], $item['quantity'], 'out', $this->from_warehouse_id, $this->fromUserId, $this->fromUserModel);
+            $this->updateServiceStock($item['product_id'], $item['quantity'], 'out', $this->from_warehouse_id, $this->fromUserId, $this->fromUserModel,$item['net_weight']);
             //////  update Stoc for to user
-            $this->updateServiceStock($item['product_id'], $item['quantity'], 'in', $this->to_warehouse_id, $this->toUserId, $this->toUserModel);
+            $this->updateServiceStock($item['product_id'], $item['quantity'], 'in', $this->to_warehouse_id, $this->toUserId, $this->toUserModel,$item['net_weight']);
         }
 
         $this->dispatch('notify', status: 'success', message: 'Stock saved successfully');
@@ -325,8 +343,7 @@ class ManageStockTransfer extends Component
         }
         return $total;
     }
-
-    public function updateServiceStock($product_id, $quantity, $stock_type, $warehouse_id, $user_id, $user_model)
+    public function updateServiceStock($product_id, $quantity, $stock_type, $warehouse_id, $user_id, $user_model, $net_weight)
     {
         $stockDetail = ServiceStockDetail::where('product_id', $product_id)
             ->where('warehouse_id', $warehouse_id)
@@ -337,8 +354,10 @@ class ManageStockTransfer extends Component
         if ($stockDetail) {
             if ($stock_type == 'in') {
                 $stockDetail->increment('quantity', $quantity);
+                $stockDetail->increment('net_weight', $net_weight);
             } else {
                 $stockDetail->decrement('quantity', $quantity);
+                $stockDetail->decrement('net_weight', $net_weight);
             }
         } else {
             ServiceStockDetail::create([
@@ -347,9 +366,11 @@ class ManageStockTransfer extends Component
                 'user_id' => $user_id,
                 'user_model' => $user_model,
                 'quantity' => ($stock_type == 'in') ? $quantity : -$quantity,
+                'net_weight' => ($stock_type == 'in') ? $net_weight : -$net_weight,
             ]);
         }
     }
+
     public function checkAvailableStock($product_id, $warehouse_id, $user_id, $user_model)
     {
         $stockDetail = ServiceStockDetail::where('product_id', $product_id)
@@ -360,6 +381,19 @@ class ManageStockTransfer extends Component
 
         if ($stockDetail) {
             return $stockDetail->quantity;
+        }
+        return 0;
+    }
+    public function checkAvailableStockWeight($product_id, $warehouse_id, $user_id, $user_model)
+    {
+        $stockDetail = ServiceStockDetail::where('product_id', $product_id)
+            ->where('warehouse_id', $warehouse_id)
+            ->where('user_id', $user_id)
+            ->where('user_model', $user_model)
+            ->first();
+
+        if ($stockDetail) {
+            return $stockDetail->net_weight ?? 0;
         }
         return 0;
     }
@@ -426,7 +460,20 @@ class ManageStockTransfer extends Component
             });
     }
 
+    public function resetForm()
+    {
 
+        $this->selected_stock_id = null;
+        $this->title = '';
+        $this->from_user_id = '';
+        $this->to_user_id = null;
+        $this->from_warehouse_id = null;
+        $this->to_warehouse_id = '';
+
+        $this->stockItems = [
+            ['product_id' => null, 'quantity' => 1, 'unit_price' => 0, 'total_amount' => 0, 'net_weight' => 0, 'is_kg' => false]
+        ];
+    }
     public function render()
     {
         return view('livewire.admin.services.manage-stock-transfer');
