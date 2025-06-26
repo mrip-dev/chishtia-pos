@@ -377,7 +377,7 @@
                                     <label>@lang('Total Price')</label>
                                     <div class="input-group">
                                         <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                        <input class="form-control" type="number" wire:model="total_price" readonly>
+                                        <input class="form-control" type="number" value="{{number_format($total_price,2)}}" readonly>
                                     </div>
                                 </div>
 
@@ -393,7 +393,7 @@
                                     <label>@lang('Due Amount')</label>
                                     <div class="input-group">
                                         <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                        <input class="form-control" type="number" wire:model="due_amount" readonly>
+                                        <input class="form-control" type="number"  value="{{number_format($due_amount,2)}}" readonly>
                                     </div>
                                 </div>
                             </div>

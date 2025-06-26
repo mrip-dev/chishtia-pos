@@ -11,9 +11,9 @@ class Stock extends Model
     protected $guarded = [];
     protected static function booted()
     {
-        static::creating(function ($stock) {
-            $stock->tracking_id = self::generateTrackingId($stock->stock_type);
-        });
+        // static::creating(function ($stock) {
+        //     $stock->tracking_id = self::generateTrackingId($stock->stock_type);
+        // });
     }
 
     public static function generateTrackingId($type)

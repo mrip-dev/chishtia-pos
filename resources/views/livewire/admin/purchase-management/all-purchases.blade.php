@@ -51,7 +51,7 @@
                                         <!-- <th>@lang('Driver Name') | @lang('Contact')</th> -->
                                         <th>@lang('Vehicle No') | @lang('Fare')</th>
                                         <th>@lang('Loading') | @lang('Unloading')</th>
-                                        <th> @lang('Warehouse') | @lang('Unit Price')</th>
+                                        <th> @lang('Warehouse') </th>
                                         <th>@lang('Total Amount') </th>
                                         <!-- <th>@lang('Paid') | @lang('Due')</th> -->
                                         <th>@lang('Action')</th>
@@ -92,8 +92,8 @@
                                         </td>
                                         <td>
                                             {{ $purchase->warehouse->name }}
-                                            <br>
-                                            <span class="fw-bold">{{ showAmount($purchase->total_price) }}</span>
+                                            <!-- <br>
+                                            <span class="fw-bold">{{ showAmount($purchase->total_price) }}</span> -->
 
 
                                         </td>
@@ -377,7 +377,7 @@
                                         <label>@lang('Total Price')</label>
                                         <div class="input-group">
                                             <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                            <input class="form-control total_price" type="number" wire:model="total_price" readonly>
+                                            <input class="form-control total_price" type="number" value="{{number_format($total_price,2)}}" readonly>
                                         </div>
                                     </div>
 
@@ -393,7 +393,7 @@
                                         <label>@lang('Payable Amount')</label>
                                         <div class="input-group">
                                             <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                            <input class="form-control" type="number" wire:model="payable_amount" disabled>
+                                            <input class="form-control" type="number"  value="{{number_format($payable_amount,2)}}" disabled>
                                         </div>
                                     </div>
 

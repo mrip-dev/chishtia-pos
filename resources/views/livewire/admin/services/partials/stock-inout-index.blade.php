@@ -44,7 +44,11 @@
                                         {{ $item->stock_type ? $item->stock_type== 'in' ? 'Stock In' : 'Stock Out' : '' }}
                                     </td>
                                     <td>
-                                        {{ $item->created_at->format('d M, Y') }}
+                                        @if($item->date)
+                                        {{ $item->date }}
+                                        @else
+                                        {{ $item->created_at->format('Y-m-d') }}
+                                        @endif
 
                                     </td>
 

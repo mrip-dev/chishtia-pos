@@ -4,6 +4,13 @@
             <div class="card-body">
                 <form wire:submit.prevent="saveStock">
                     <div class="row">
+                         <div class="col-xl-3 col-sm-6">
+                                <div class="form-group">
+                                    <label>@lang('Invoice No:')</label>
+                                    <input class="form-control" name="tracking_id" readonly type="text" wire:model="tracking_id"
+                                        required>
+                                </div>
+                            </div>
                         <div class="col-xl-3 col-sm-6">
                             <div class="form-group">
                                 <label class="form-label">@lang('Title')</label>
@@ -53,6 +60,11 @@
                                 @endif
                             </div>
                         </div>
+                         <div class="col-xl-3 col-sm-6">
+                                <label>@lang('Date')</label>
+                                <input type="date" class="form-control" wire:model="date">
+                                @error('date') <small class="text-danger">{{ $message }}</small> @enderror
+                            </div>
 
                         <div class="col-xl-3 col-sm-6">
                             <div class="form-group">
@@ -81,7 +93,7 @@
                         <div class="col-xl-3 col-sm-6">
                             <div class="form-group">
                                 <label class="form-label">@lang('Fare')</label>
-                                <input type="text" class="form-control" wire:model="fare" placeholder="@lang('Fare')" required>
+                                <input type="text" class="form-control" wire:model="fare" placeholder="@lang('Fare')" >
                             </div>
                         </div>
 

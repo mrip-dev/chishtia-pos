@@ -41,6 +41,7 @@ class ManageStock extends Component
 
     public $stockItems = [];
     public $title;
+    public $date;
     public $stock_type;
 
     public $selectedStock = null;
@@ -68,6 +69,7 @@ class ManageStock extends Component
     public $modal_rec_bank;
     public $modal_receivable_amount;
     public $modal_title = '';
+    public $tracking_id;
 
 
 
@@ -133,7 +135,7 @@ class ManageStock extends Component
             ->when($this->startDate && $this->endDate, function ($query) {
                 $startDate = Carbon::parse($this->startDate)->startOfDay();
                 $endDate = Carbon::parse($this->endDate)->endOfDay();
-                $query->whereBetween('created_at', [$startDate, $endDate]);
+                $query->whereBetween('date', [$startDate, $endDate]);
             })
             ->get();
     }
@@ -143,7 +145,9 @@ class ManageStock extends Component
 
         $this->isCreating = !$this->isCreating;
         $this->showDetails = false;
+        $this->tracking_id = Stock::generateTrackingId($this->stock_type);
         $this->users = [];
+        $this->date = now()->format('Y-m-d');
         $this->getProducts();
         $this->stockItems = [
             ['product_id' => null, 'quantity' => 1, 'unit_price' => 0, 'total_amount' => 0, 'net_weight' => 0, 'is_kg' => false]
@@ -227,14 +231,15 @@ class ManageStock extends Component
                 $q->where('name', 'like', $searchTermDetails);
             })->with('product');
             if ($start && $end) {
-                $query->whereBetween('created_at', [$start, $end]);
+                $query->whereBetween('date', [$start, $end]);
             } elseif ($start) {
-                $query->where('created_at', '>=', $start);
+                $query->where('date', '>=', $start);
             } elseif ($end) {
-                $query->where('created_at', '<=', $end);
+                $query->where('date', '<=', $end);
             }
         }])->find($this->selected_stock_id);
         $this->title = $this->selectedStock->title;
+        $this->date = $this->selectedStock->date;
         $this->warehouse_id = $this->selectedStock->warehouse_id;
         $this->stock_type = $this->selectedStock->stock_type;
         $this->labour = $this->selectedStock->labour;
@@ -275,6 +280,7 @@ class ManageStock extends Component
 
         $this->validate([
             'title' => 'required|string',
+            'date' => 'required',
             'stock_type' => 'required|in:in,out',
             'warehouse_id' => 'required|integer',
             'user_id' => 'required',
@@ -316,6 +322,7 @@ class ManageStock extends Component
             $stock = Stock::findOrFail($this->selected_stock_id);
             $stock->update([
                 'title' => $this->title,
+                'date' => $this->date,
                 'stock_type' => $this->stock_type,
                 'warehouse_id' => $this->warehouse_id,
                 'user_id' => $selecteduserId,
@@ -332,22 +339,12 @@ class ManageStock extends Component
             }
             // Delete old items
             $stock->stockInOuts()->delete();
-            foreach ($this->stockItems as $item) {
-                StockInOut::create([
-                    'stock_id' => $stock->id,
-                    'product_id' => $item['product_id'],
-                    'quantity' => $item['quantity'],
-                    'net_weight' => $item['net_weight'],
-                    'unit_price' => $item['unit_price'],
-                    'total_amount' => $item['total_amount'],
-                ]);
 
-                // Update service stock
-
-            }
         } else {
             $stock = Stock::create([
                 'title' => $this->title,
+                'tracking_id' => $this->tracking_id,
+                'date' => $this->date,
                 'stock_type' => $this->stock_type,
                 'warehouse_id' => $this->warehouse_id,
                 'user_id' => $selecteduserId,
@@ -398,6 +395,7 @@ class ManageStock extends Component
 
         $this->selected_stock_id = null;
         $this->title = '';
+        $this->date = '';
         $this->warehouse_id = null;
         $this->user_id = null;
         $this->labour = '';
@@ -422,11 +420,11 @@ class ManageStock extends Component
                 $q->where('name', 'like', $searchTermDetails);
             })->with('product');
             if ($start && $end) {
-                $query->whereBetween('created_at', [$start, $end]);
+                $query->whereBetween('date', [$start, $end]);
             } elseif ($start) {
-                $query->where('created_at', '>=', $start);
+                $query->where('date', '>=', $start);
             } elseif ($end) {
-                $query->where('created_at', '<=', $end);
+                $query->where('date', '<=', $end);
             }
         }])->find($this->selected_stock_id);
 
