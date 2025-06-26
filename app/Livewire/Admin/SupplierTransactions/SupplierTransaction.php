@@ -49,7 +49,7 @@ class SupplierTransaction extends Component
     public function generateInvoice($supplierId, $startDate = null, $endDate = null, $search = null)
 {
     $directory = 'supplier_pdf';
-
+$supplier  = Supplier::find($supplierId);
     // Build query
     $query = ModalSupplierTransaction::query()
         ->where('supplier_id', $supplierId);
@@ -72,6 +72,7 @@ class SupplierTransaction extends Component
     $pdf = Pdf::loadView('pdf.supplier.supplier-transactions-pdf', [
         'pageTitle' => 'Supplier Invoice',
         'transactions' => $transactions,
+        'supplier' => $supplier,
     ])->setOption('defaultFont', 'Arial');
 
 

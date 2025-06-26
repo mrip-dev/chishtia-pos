@@ -41,7 +41,7 @@ class CustomerTransaction extends Component
     {
         $this->resetPage();
     }
-        public function clearFilters()
+    public function clearFilters()
     {
         $this->search = '';
         $this->startDate = null;
@@ -52,7 +52,7 @@ class CustomerTransaction extends Component
     public function generateInvoice($customerId, $startDate = null, $endDate = null, $search = null)
     {
         $directory = 'customer_pdf';
-
+        $customer  = Customer::find($customerId);
         // Build query
         $query = ModalCustomerTransaction::query()
             ->where('customer_id', $customerId);
@@ -75,6 +75,7 @@ class CustomerTransaction extends Component
         $pdf = Pdf::loadView('admin.partials.customer-pdf', [
             'pageTitle' => 'Customer Invoice',
             'transactions' => $transactions,
+            'customer' => $customer,
         ])->setOption('defaultFont', 'Arial');
 
         // Ensure the directory exists
@@ -105,7 +106,7 @@ class CustomerTransaction extends Component
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->whereHas('customer', fn($q) => $q->where('name', 'like', '%' . $this->search . '%'))
-                      ->orWhereHas('bank', fn($q) => $q->where('name', 'like', '%' . $this->search . '%'));
+                        ->orWhereHas('bank', fn($q) => $q->where('name', 'like', '%' . $this->search . '%'));
                 });
             })
             ->when($this->startDate, fn($q) => $q->whereDate('created_at', '>=', $this->startDate))
@@ -117,5 +118,4 @@ class CustomerTransaction extends Component
             'transactions' => $transactions,
         ]);
     }
-
 }

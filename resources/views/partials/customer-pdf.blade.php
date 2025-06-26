@@ -1,5 +1,5 @@
-@extends('admin.layouts.app')
-@section('panel')
+@extends('pdf.layouts.master2')
+@section('content')
 <div class="table-responsive">
     <table class="table table-bordered table-hover table-striped">
         <thead class="thead-dark">
