@@ -4,6 +4,7 @@ namespace App\Livewire\Admin\Services;
 
 use App\Models\Bank;
 use App\Models\Customer;
+use App\Models\ExpenseType;
 use App\Models\Product;
 use App\Models\ServiceStockDetail;
 use App\Models\Stock;
@@ -18,15 +19,19 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use App\Traits\HandlesBankPayments;
 use Livewire\Component;
+use App\Traits\ManagesExpenseTransactions;
 
 class ManageStock extends Component
 {
     use HandlesBankPayments;
     use DailyBookEntryTrait;
+    use ManagesExpenseTransactions;
 
     public $stocks = [];
     public $users = [];
-     public ?string $user_identifier = ''; // The wire:model property, e.g., "Supplier-15"
+       public $note = '';
+       public $selected_id;
+    public ?string $user_identifier = ''; // The wire:model property, e.g., "Supplier-15"
     public $products = [];
     public $suppliers = [];
     public $clients = [];
@@ -70,6 +75,11 @@ class ManageStock extends Component
     public $modal_receivable_amount;
     public $modal_title = '';
     public $tracking_id;
+
+    public $expense_type_id, $date_of_expense, $exp_amount, $bank_id, $expense_id;
+    public $categories = [];
+
+
 
 
 
@@ -191,6 +201,15 @@ class ManageStock extends Component
             }
             $this->recalculateTotalAmount();
         }
+        if ($name === 'expense_type_id') {
+            $this->expense_type_id = (int)$value;
+            $expenseType = ExpenseType::find($this->expense_type_id);
+            if ($expenseType && $expenseType->name == 'Fare') {
+                $this->exp_amount = $this->fare;
+            } elseif ($expenseType && $expenseType->name == 'Loading') {
+                $this->exp_amount = $this->labour;
+            }
+        }
     }
     public function getProducts()
     {
@@ -213,7 +232,7 @@ class ManageStock extends Component
         $this->users = [];
         $this->users = $this->loadUsers();
         $this->getProducts();
-       $this->warehouses =  Warehouse::active()->orderBy('name')->get();
+        $this->warehouses =  Warehouse::active()->orderBy('name')->get();
         $this->warehouses = $this->warehouses->map(function ($warehouse) {
             return [
                 'id' => $warehouse->id,
@@ -339,7 +358,6 @@ class ManageStock extends Component
             }
             // Delete old items
             $stock->stockInOuts()->delete();
-
         } else {
             $stock = Stock::create([
                 'title' => $this->title,
@@ -431,6 +449,61 @@ class ManageStock extends Component
         $this->showDetails = true;
         $this->isCreating = false;
     }
+    public function openExpenseModal($id)
+    {
+        $this->selected_stock_id = $id ?? null;
+        $selectedStock = Stock::find($id);
+        $this->fare = $selectedStock->fare ?? 0;
+        $this->labour = $selectedStock->labour ?? 0;
+        // Ensure these categories exist
+        $requiredCategories = ['Fare', 'Loading'];
+
+        foreach ($requiredCategories as $category) {
+            ExpenseType::firstOrCreate(['name' => $category]);
+        }
+
+        // Now fetch them
+        $this->categories = ExpenseType::orderBy('name')
+            ->whereIn('name', $requiredCategories)
+            ->get();
+
+        $this->banks = Bank::all();
+        $this->expense_type_id = null;
+        $this->date_of_expense = now()->format('Y-m-d');
+        $this->exp_amount = 0.00;
+
+        $this->dispatch('open-expense-modal');
+    }
+    public function storeExpense()
+    {
+        $this->validate([
+            'expense_type_id' => 'required|exists:expense_types,id',
+            'date_of_expense' => 'required|date',
+            'exp_amount'      => 'required|numeric|min:1',
+            'bank_id'         => 'nullable|exists:banks,id',
+        ]);
+        if ($this->exp_amount <= 0) {
+            $this->dispatch('notify', status: 'error', message: 'Expense amount must be greater than zero.');
+            return;
+        }
+
+
+        $this->createOrUpdateExpenseTransaction(
+            $this->expense_type_id,
+            $this->date_of_expense,
+            $this->exp_amount,
+            $this->bank_id,
+            $this->note,
+            $this->selected_id,
+            'App\Models\Stock',
+            $this->selected_stock_id
+        );
+        $notification = $this->selected_id ? 'Expense updated successfully' : 'Expense added successfully';
+        $this->dispatch('close-modal');
+        $this->dispatch('notify', status: 'success', message: $notification);
+
+        $this->reset(['expense_type_id', 'date_of_expense', 'exp_amount', 'note', 'bank_id', 'expense_id']);
+    }
 
     public function recalculateTotalAmount()
     {
@@ -467,7 +540,7 @@ class ManageStock extends Component
         foreach ($suppliers as $supplier) {
             // Key: "Supplier-12", Value: "Supplier Name (Vendor)"
 
-             $formattedUsers[] = [
+            $formattedUsers[] = [
                 'id'   => 'Supplier-' . $supplier->id,
                 'text' => $supplier->name . ' (Supplier)',
             ];
@@ -476,7 +549,7 @@ class ManageStock extends Component
         // Add Clients to the array with a unique identifier
         foreach ($clients as $client) {
             // Key: "Customer-8", Value: "Client Name (Client)"
-           $formattedUsers[] = [
+            $formattedUsers[] = [
                 'id'   => 'Customer-' . $client->id,
                 'text' => $client->name . ' (Customer)',
             ];

@@ -71,7 +71,7 @@
                                                 class="btn btn-sm btn-outline--primary ms-1">
                                                 <i class="la la-eye"></i>
                                             </a>
-                                             @permit(['admin.manage_stock_in.edit'])
+                                            @permit(['admin.manage_stock_in.edit'])
                                             <a wire:click.prevent="editDetails({{ $item->id }})"
                                                 class="btn btn-sm btn-outline--primary ms-1">
                                                 <i class="la la-pencil"></i>
@@ -86,10 +86,18 @@
                                             </button>
 
                                             <div class="dropdown-menu">
-                                                <a href="javascript:void(0)" wire:click="payMentModal({{$item->id}})" class="dropdown-item paymentModalBtn">
-                                                    <i class="la la-money-bill-wave"></i>
-                                                    @lang('Recieve Payment')
-                                                </a>
+                                                <li>
+                                                    <a wire:click="openExpenseModal({{$item->id}})" href="javascript:void(0)"
+                                                        class="dropdown-item">
+                                                        <i class="la la-money-bill-wave"></i> @lang('Pay Expense')
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="javascript:void(0)" wire:click="payMentModal({{$item->id}})" class="dropdown-item paymentModalBtn">
+                                                        <i class="la la-money-bill-wave"></i>
+                                                        @lang('Recieve Payment')
+                                                    </a>
+                                                </li>
                                             </div>
                                             @endif
                                             @endpermit
@@ -206,5 +214,75 @@
                 </div>
             </form>
         </div>
+    </div>
+</div>
+<div wire:ignore.self class="modal fade" id="cuModal" tabindex="-1" role="dialog" aria-labelledby="cuModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <form wire:submit.prevent="storeExpense">
+            <div class="modal-content">
+                <div class="modal-header bg--primary te">
+                    <h5 class="modal-title text-center w-100 text-white" id="cuModalLabel">Add New Expense</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    {{-- Expense Type --}}
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <label>@lang('Type')</label>
+                            <select class="form-control" wire:model.live.debounce.700ms="expense_type_id" required>
+                                <option value="">@lang('Select One')</option>
+                                @foreach ($categories as $item)
+                                <option value="{{ $item->id }}">{{ __($item->name) }}</option>
+                                @endforeach
+                            </select>
+                            @error('expense_type_id') <small class="text-danger">{{ $message }}</small> @enderror
+                        </div>
+
+                        {{-- Date --}}
+                        <div class="form-group col-md-6">
+                            <label>@lang('Date of Expense')</label>
+                            <input type="date" class="form-control" wire:model="date_of_expense">
+                            @error('date_of_expense') <small class="text-danger">{{ $message }}</small> @enderror
+                        </div>
+                    </div>
+
+                    {{-- Bank --}}
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <label>@lang('Bank Name')</label>
+                            <select class="form-control" wire:model="bank_id">
+                                <option value="">@lang('Select Bank')</option>
+                                @foreach($banks as $bank)
+                                <option value="{{ $bank->id }}">{{ $bank->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('bank_id') <small class="text-danger">{{ $message }}</small> @enderror
+                        </div>
+
+                        {{-- Amount --}}
+                        <div class="form-group col-md-6">
+                            <label>@lang('Amount')</label>
+                            <div class="input-group">
+                                <button class="input-group-text">{{ gs('cur_sym') }}</button>
+                                <input type="number" class="form-control" wire:model="exp_amount" readonly step="any" required>
+                            </div>
+                            @error('exp_amount') <small class="text-danger">{{ $message }}</small> @enderror
+                        </div>
+                    </div>
+
+                    {{-- Note --}}
+                    <div class="form-group col-md-12">
+                        <label>@lang('Note')</label>
+                        <textarea class="form-control" wire:model="note" rows="5"></textarea>
+                        @error('note') <small class="text-danger">{{ $message }}</small> @enderror
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn--primary h-45 w-100 permit" type="submit">@lang('Submit')</button>
+                </div>
+            </div>
+        </form>
     </div>
 </div>

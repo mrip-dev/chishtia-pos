@@ -18,6 +18,9 @@
             window.addEventListener('openPaymentModal', event => {
                 $('#paymentModal').modal('show');
             })
+            window.addEventListener('open-expense-modal', () => {
+                $('#cuModal').modal('show'); // Open the modal
+            });
 
             window.addEventListener('closePaymentModal', event => {
                 $('#paymentModal').modal('hide');

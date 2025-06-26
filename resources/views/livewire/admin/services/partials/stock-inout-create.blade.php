@@ -66,12 +66,7 @@
                                 @error('date') <small class="text-danger">{{ $message }}</small> @enderror
                             </div>
 
-                        <div class="col-xl-3 col-sm-6">
-                            <div class="form-group">
-                                <label class="form-label">@lang('Labour')</label>
-                                <input type="text" class="form-control" wire:model="labour" placeholder="@lang('Labour')" required>
-                            </div>
-                        </div>
+
                         <div class="col-xl-3 col-sm-6">
                             <div class="form-group">
                                 <label class="form-label">@lang('Vehicle Number')</label>
@@ -90,10 +85,16 @@
                                 <input type="text" class="form-control" wire:model="driver_contact" placeholder="@lang('Driver Contact')" required>
                             </div>
                         </div>
+                         <div class="col-xl-3 col-sm-6">
+                            <div class="form-group">
+                                <label class="form-label">@lang('Labour / Loading')</label>
+                                <input type="number" class="form-control" wire:model="labour" placeholder="@lang('Labour')" required>
+                            </div>
+                        </div>
                         <div class="col-xl-3 col-sm-6">
                             <div class="form-group">
                                 <label class="form-label">@lang('Fare')</label>
-                                <input type="text" class="form-control" wire:model="fare" placeholder="@lang('Fare')" >
+                                <input type="number" class="form-control" wire:model="fare" placeholder="@lang('Fare')" >
                             </div>
                         </div>
 

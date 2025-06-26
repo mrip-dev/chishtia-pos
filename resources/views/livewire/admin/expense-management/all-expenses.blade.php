@@ -31,6 +31,7 @@
                                     <td>{{ strLimit($expense->note, 35) }}</td>
                                     <td>
                                         <span class="fw-bold"> {{ $expense->dataModel ? $expense->dataModel->invoice_no : '' }}</span>
+                                        <span class="fw-bold"> {{ $expense->dataModel ? $expense->dataModel->tracking_id : '' }}</span>
                                         <br>
                                         <small>{{ $expense->getDataModelNameAttribute() }}</small>
 
