@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use App\Traits\DailyBookEntryTrait;
 use App\Traits\ManagesExpenseTransactions;
+use Illuminate\Validation\Rules\Can;
 use Livewire\Component;
 
 class AllPurchases extends Component
@@ -138,7 +139,11 @@ class AllPurchases extends Component
         $this->selectedPurchase = null;
         $this->purchaseDetails = [];
         $this->supplier_id = null;
-        $this->purchase_date = now()->format('Y-m-d');
+
+
+        $this->purchase_date = Carbon::parse(now())->format('d-m-Y'); // e.g., 30-06-2025
+
+
         $this->suppliers = Supplier::select('id', 'name', 'mobile')->get();
         $this->suppliers = $this->suppliers->map(function ($supplier) {
             return [
@@ -192,7 +197,8 @@ class AllPurchases extends Component
         $this->invoice_no = $purchase->invoice_no;
         $this->supplier_id = $purchase->supplier_id;
         $this->warehouse_id = $purchase->warehouse_id;
-        $this->purchase_date = $purchase->purchase_date;
+
+        $this->purchase_date = Carbon::createFromFormat('Y-m-d', $purchase->purchase_date)->format('d-m-Y') ; // e.g., 30-06-2025
         $this->note = $purchase->note;
         $this->discount = $purchase->discount_amount;
         $this->total_price = $purchase->total_price;
@@ -451,7 +457,7 @@ class AllPurchases extends Component
             $purchase->invoice_no = $this->invoice_no;
             $purchase->supplier_id = $this->supplier_id;
             $purchase->warehouse_id = $this->warehouse_id;
-            $purchase->purchase_date = $this->purchase_date;
+            $purchase->purchase_date = Carbon::createFromFormat('d-m-Y', $this->purchase_date)->format('Y-m-d');
             $purchase->note = $this->note ?? null;
             $purchase->total_price = $totalPrice;
             $purchase->discount_amount = $this->discount ?? 0;

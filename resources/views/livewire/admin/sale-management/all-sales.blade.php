@@ -231,7 +231,7 @@
 
                             <div class="col-xl-3 col-sm-6">
                                 <label>@lang('Date')</label>
-                                <input type="date" class="form-control" wire:model="sale_date">
+                                <x-date-picker wire-model="sale_date" placeholder="Sale Date" />
                                 @error('sale_date') <small class="text-danger">{{ $message }}</small> @enderror
                             </div>
 
@@ -374,10 +374,10 @@
                             </div>
                             <div class="col-md-5 col-sm-6">
                                 <div class="form-group">
-                                    <label>@lang('Total Price')</label>
+                                    <label>@lang('Total Price') ( {{number_format($total_price,2)}} )</label>
                                     <div class="input-group">
                                         <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                        <input class="form-control" type="number" value="{{number_format($total_price,2)}}" readonly>
+                                        <input class="form-control" type="number" wire:model.live.debounce.700ms="total_price" readonly>
                                     </div>
                                 </div>
 
@@ -390,10 +390,10 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label>@lang('Due Amount')</label>
+                                    <label>@lang('Due Amount') ( {{number_format($due_amount,2)}} )</label>
                                     <div class="input-group">
                                         <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                        <input class="form-control" type="number"  value="{{number_format($due_amount,2)}}" readonly>
+                                        <input class="form-control" type="number" wire:model.live.debounce.700ms="due_amount" readonly>
                                     </div>
                                 </div>
                             </div>

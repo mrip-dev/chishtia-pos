@@ -159,7 +159,7 @@ class AllSales extends Component
         $this->selectedSale = null;
         $this->saleDetails = [];
 
-        $this->sale_date = now()->format('Y-m-d');
+        $this->sale_date = now()->format('d-m-Y');
         $this->customers = Customer::select('id', 'name', 'mobile')->get();
         $this->customers = $this->customers->map(function ($customer) {
             return [
@@ -212,7 +212,7 @@ class AllSales extends Component
         $this->invoice_no = $sale->invoice_no;
         $this->customer_id = $sale->customer_id;
         $this->warehouse_id = $sale->warehouse_id;
-        $this->sale_date = $sale->sale_date;
+        $this->sale_date =Carbon::createFromFormat('Y-m-d', $sale->sale_date)->format('d-m-Y') ;
         $this->note = $sale->note;
         $this->discount = $sale->discount_amount;
         $this->total_price = $sale->total_price;
@@ -421,6 +421,7 @@ class AllSales extends Component
     }
     public function saveSale()
     {
+
         $this->validate([
             'invoice_no'    => 'required',
             'customer_id'   => 'required',
@@ -490,7 +491,7 @@ class AllSales extends Component
             $sale->invoice_no = $this->invoice_no;
             $sale->customer_id = $this->customer_id;
             $sale->warehouse_id = $this->warehouse_id;
-            $sale->sale_date = $this->sale_date;
+            $sale->sale_date = Carbon::createFromFormat('d-m-Y', $this->sale_date)->format('Y-m-d');
             $sale->note = $this->note ?? null;
             $sale->total_price = $totalPrice;
             $sale->discount_amount = $this->discount ?? 0;

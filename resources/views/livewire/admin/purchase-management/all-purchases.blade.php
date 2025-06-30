@@ -236,7 +236,8 @@
                             <div class="col-xl-3 col-sm-6">
                                 <div class="form-group">
                                     <label>@lang('Date')</label>
-                                    <input class="form-control timepicker" wire:model="purchase_date" type="text" required>
+                                     <x-date-picker wire-model="purchase_date" placeholder="Purchase Date" />
+
                                 </div>
                             </div>
                             <div class="col-xl-3 col-sm-6">
@@ -373,12 +374,10 @@
                                 </div>
 
                                 <div class="col-md-5 col-sm-6">
-                                    <div class="form-group">
-                                        <label>@lang('Total Price')</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                            <input class="form-control total_price" type="number" value="{{number_format($total_price,2)}}" readonly>
-                                        </div>
+                                    <label>@lang('Total Price') ( {{number_format($total_price,2)}} )</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">{{ gs('cur_sym') }}</span>
+                                        <input class="form-control" type="number" wire:model.live.debounce.700ms="total_price" readonly>
                                     </div>
 
                                     <div class="form-group">
@@ -390,10 +389,10 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label>@lang('Payable Amount')</label>
+                                        <label>@lang('Payable Amount') ( {{number_format($payable_amount,2)}} )</label>
                                         <div class="input-group">
                                             <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                            <input class="form-control" type="number"  value="{{number_format($payable_amount,2)}}" disabled>
+                                            <input class="form-control" type="number" wire:model.live.debounce.700ms="payable_amount" disabled>
                                         </div>
                                     </div>
 
@@ -407,10 +406,10 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label>@lang('Due Amount')</label>
+                                        <label>@lang('Due Amount') ( {{number_format($due_amount,2)}} )</label>
                                         <div class="input-group">
                                             <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                            <input class="form-control" wire:model="due_amount" type="number" disabled>
+                                            <input class="form-control" type="number" wire:model.live.debounce.700ms="due_amount" readonly>
                                         </div>
                                     </div>
                                     @endisset
