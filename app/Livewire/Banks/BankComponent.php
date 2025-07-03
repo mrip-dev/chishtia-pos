@@ -33,17 +33,9 @@ class BankComponent extends Component
 
     public function mount(Request $req)
     {
-         $this->bank = [
-                'name' => '',
-                'account_number' => '',
-                'account_holder' => '',
-                'iban' => '',
-                'raast_id' => '',
-                'opening_balance' => '',
-            ];
+        $this->resetForm();
         $this->pageTitle = 'All Banks';
     }
-
 
     public function editEntry($id)
     {
@@ -53,14 +45,20 @@ class BankComponent extends Component
 
     public function newEntry()
     {
-        dd('adsf');
+        $this->resetForm();
+        $this->dispatch('open-modal', ['modalId' => 'bankModal']);
+
+    }
+    public function resetForm()
+    {
         $this->bank = [
             'name' => '',
             'account_number' => '',
             'account_holder' => '',
             'iban' => '',
             'raast_id' => '',
-            'opening_balance' => '',
+            'opening_balance' => 0,
+            'current_balance' => 0,
         ];
     }
 
@@ -74,14 +72,7 @@ class BankComponent extends Component
             ['account_number' => $this->bank['account_number']], // Condition to check for existing entry
             $this->bank // Data to update or create
         );
-        $this->bank = [
-            'name' => '',
-            'account_number' => '',
-            'account_holder' => '',
-            'iban' => '',
-            'raast_id' => '',
-            'opening_balance' => '',
-        ];
+        $this->resetForm();
         $this->dispatch('notify', status: 'success', message: 'Bank created successfully');
         $this->dispatch('close-modal');
 

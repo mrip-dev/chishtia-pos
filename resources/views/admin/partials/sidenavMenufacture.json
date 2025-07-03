@@ -423,7 +423,28 @@
             }
         ]
     },
-
+    "manufacturing": {
+        "title": "Manufacturing Unit",
+        "header": "Manufacturing",
+        "icon": "la la-cogs",
+        "menu_active": [
+            "admin.production.*"
+        ],
+        "submenu": [
+            {
+                "keyword": [
+                    "All Services",
+                    "Manage Service",
+                    "Service Configuration",
+                    "Add service",
+                    "Edit service"
+                ],
+                "title": "Production FLows",
+                "route_name": "admin.production_flow",
+                "menu_active": "admin.production_flow"
+            }
+        ]
+    },
     "payment_report": {
         "title": "Payment Report",
         "header": "Report",

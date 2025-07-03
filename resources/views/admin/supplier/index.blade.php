@@ -131,7 +131,7 @@
                         </div>
                         <div class="form-group col-lg-12">
                             <label for="opening_balance">Opening Balance</label>
-                            <input type="number" step="0.01" name="opening_balance" class="form-control" value="{{ old('opening_balance', $supplier->opening_balance ?? 0) }}">
+                            <input type="number" step="0.01" name="opening_balance" class="form-control" value="{{ old('opening_balance') }}">
                         </div>
 
                         <div class="col-lg-12">
