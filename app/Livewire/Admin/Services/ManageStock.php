@@ -12,12 +12,13 @@ use App\Models\StockInOut;
 use App\Models\Supplier;
 use App\Models\Warehouse;
 use App\Traits\DailyBookEntryTrait;
+use App\Traits\HandlesBankPayments;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
-use App\Traits\HandlesBankPayments;
+
 use Livewire\Component;
 use App\Traits\ManagesExpenseTransactions;
 

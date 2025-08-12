@@ -85,6 +85,8 @@ class CustomerController extends Controller
         $customer->address = $request->address;
         $customer->opening_balance = $request->opening_balance;
         $customer->booklet_no = $request->booklet_no;
+        $customer->advance = $request->advance ?? 0.00; // Ensure advance is set, default to 0.00
+
         $customer->save();
 
         Action::newEntry($customer, $id ? 'UPDATED' : 'CREATED');

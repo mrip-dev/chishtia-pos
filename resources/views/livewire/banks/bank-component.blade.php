@@ -7,8 +7,10 @@
             <button type="button" wire:click="newEntry" class="btn btn-sm btn-outline--primary cuModalBtn" data-modal_title="@lang('Add New Bank')">
                 <i class="las la-plus"></i>@lang('Add New')
             </button>
+
             @endpermit
         </div>
+
     </div>
 
     <div class="row">

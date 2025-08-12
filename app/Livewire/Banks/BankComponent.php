@@ -49,6 +49,7 @@ class BankComponent extends Component
         $this->dispatch('open-modal', ['modalId' => 'bankModal']);
 
     }
+
     public function resetForm()
     {
         $this->bank = [

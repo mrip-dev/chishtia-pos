@@ -107,6 +107,8 @@ class SupplierController extends Controller
         $supplier->address      = $request->address;
         $supplier->opening_balance = $request->opening_balance ?? 0.00;
         $supplier->booklet_no = $request->booklet_no;
+        $supplier->advance = $request->advance ?? 0.00; // Ensure advance is set, default to 0.00
+
         $supplier->save();
         Action::newEntry($supplier, $id ? 'UPDATED' : 'CREATED');
     }
