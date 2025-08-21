@@ -16,7 +16,7 @@
 <div class="row">
     <div class="col-md-12">
         <h6 class="p-3">Stock In/Out</h6>
-        <table class="table table--light table-bordered style--two bg--white">
+        <table class="table table--dark table-bordered style--two bg--white">
             <thead>
                 <tr>
                     <th>@lang('Title') | @lang('CTN NO') | @lang('Warehouse')</th>
@@ -74,7 +74,7 @@
     <div class="col-md-12">
         <h6 class="p-3">Stock Transfered</h6>
         <div class="table-responsive--md table-responsive">
-            <table class="table table--light table-bordered style--two bg--white">
+            <table class="table table--dark table-bordered style--two bg--white">
                 <thead>
                     <tr>
                         <th>@lang('User') | @lang('Warehouse')</th>
@@ -114,7 +114,7 @@
     <div class="col-md-12">
         <h6 class="p-3">Stock Received</h6>
         <div class="table-responsive--md table-responsive">
-            <table class="table table--light table-bordered style--two bg--white">
+            <table class="table table--dark table-bordered style--two bg--white">
                 <thead>
                     <tr>
                         <th>@lang('User') | @lang('Warehouse')</th>
@@ -153,7 +153,7 @@
 </div>
 
 <h6 class="p-3">Available Stock</h6>
-<table class="table table--light table-bordered style--two bg--white">
+<table class="table table--dark table-bordered style--two bg--white">
     <thead>
         <tr>
             <th>Product</th>

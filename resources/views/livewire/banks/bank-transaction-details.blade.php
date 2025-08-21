@@ -44,7 +44,7 @@
 
 
     <div class="table-responsive table-responsive--lg">
-        <table class="table table--light style--two bg-white">
+        <table class="table table--dark style--two bg-white">
             <thead>
                 <tr>
                     <th>S.No.</th>

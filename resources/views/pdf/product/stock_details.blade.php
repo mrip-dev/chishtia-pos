@@ -1,7 +1,7 @@
 @extends('pdf.layouts.master2')
 
 @section('content')
-<table class="table table--light style--two">
+<table class="table table--dark style--two">
     <thead>
         <tr>
             <th>@lang('S.N.')</th>

@@ -5,7 +5,7 @@
             <div class="card bg--transparent">
                 <div class="card-body p-0 ">
                     <div class="table-responsive--md table-responsive">
-                        <table class="table table--light style--two bg--white">
+                        <table class="table table--dark style--two bg--white">
                             <thead>
                                 <tr>
                                     <th>@lang('Invoice No.') | @lang('Date')</th>

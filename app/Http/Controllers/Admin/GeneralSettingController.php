@@ -94,7 +94,7 @@ class GeneralSettingController extends Controller
         $path = getFilePath('logoIcon');
         if ($request->hasFile('logo_dark')) {
             try {
-                fileUploader($request->logo_dark, $path, filename: 'logo_dark.png');
+                fileUploader($request->logo_dark, $path, filename: 'moeen-trader.svg');
             } catch (\Exception $exp) {
                 $notify[] = ['error', 'Couldn\'t upload the dark logo'];
                 return back()->withNotify($notify);
@@ -103,7 +103,7 @@ class GeneralSettingController extends Controller
 
         if ($request->hasFile('favicon')) {
             try {
-                fileUploader($request->favicon, $path, filename: 'favicon.png');
+                fileUploader($request->favicon, $path, filename: 'favicon.ico');
             } catch (\Exception $exp) {
                 $notify[] = ['error', 'Couldn\'t upload the favicon'];
                 return back()->withNotify($notify);

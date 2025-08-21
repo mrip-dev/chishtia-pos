@@ -39,7 +39,7 @@
 
             <div class="card-body p-0">
                 <div class="table-responsive--md table-responsive">
-                    <table class="table table--light style--two">
+                    <table class="table table--dark style--two">
                         <thead>
                             <tr>
                                 <th>@lang('S.N.')</th>

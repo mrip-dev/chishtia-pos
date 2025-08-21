@@ -8,7 +8,7 @@
         <div class="card">
             <div class="card-body px-0">
                 <div class="table-responsive--md table-responsive">
-                    <table class="table table--light style--two custom-data-table">
+                    <table class="table table--dark style--two custom-data-table">
                         <thead>
                             <tr>
                                 <th>@lang('Name')</th>

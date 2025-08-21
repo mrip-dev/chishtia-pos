@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{ gs()->siteName($pageTitle ?? '') }}</title>
     <!-- favicon -->
-    <link rel="shortcut icon" type="image/png" href="{{ getImage(getFilePath('logoIcon') . '/favicon.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ getImage(getFilePath('logoIcon') . '/favicon.ico') }}">
 
     <link rel="stylesheet" href="{{ asset('assets/admin/css/pdf.css') }}">
 </head>

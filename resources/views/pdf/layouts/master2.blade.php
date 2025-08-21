@@ -598,13 +598,13 @@
 
     <!-- Watermark -->
     <div class="watermark-logo">
-        <img src="{{ siteLogo('dark') }}" alt="Dewan Chemicals Logo" style="width: 100%;">
+        <img src="{{ siteLogo('dark') }}" alt="Moeeen Traders Logo" style="width: 100%;">
     </div>
 
     <!-- Company Header -->
     <div class="header-bar">
-        <img src="{{ siteLogo('dark') }}" alt="Dewan Chemicals" class="company-logo">
-        <div class="company-title">Dewan Chemicals - {{$pageTitle}}</div>
+        <img src="{{ siteLogo('dark') }}" alt="Moeeen Traders" class="company-logo">
+        <div class="company-title">Moeeen Traders - {{$pageTitle}}</div>
     </div>
 
     @yield('content')
@@ -626,7 +626,7 @@
 
     <!-- Footer -->
     <div class="footer">
-        <div>Dewan Chemicals © {{ date('Y') }}</div>
+        <div>Moeeen Traders © {{ date('Y') }}</div>
         <div>Page {PAGE_NUM} of {PAGE_COUNT}</div>
         <div>Created By : {{ auth()->guard('admin')->user()->username }} </div>
     </div>

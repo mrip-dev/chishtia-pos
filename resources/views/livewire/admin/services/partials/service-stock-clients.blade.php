@@ -75,7 +75,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <h4 class="p-3">Stock In/Out</h4>
-                    <table class="table table--light table-bordered style--two bg--white">
+                    <table class="table table--dark table-bordered style--two bg--white">
                         <thead>
                             <tr>
                                 <th>@lang('Title') | @lang('CTN NO') | @lang('Warehouse')</th>
@@ -133,7 +133,7 @@
                 <div class="col-md-12">
                     <h4 class="p-3">Stock Transfered</h4>
                     <div class="table-responsive--md table-responsive">
-                        <table class="table table--light table-bordered style--two bg--white">
+                        <table class="table table--dark table-bordered style--two bg--white">
                             <thead>
                                 <tr>
                                     <th>@lang('User') | @lang('Warehouse')</th>
@@ -173,7 +173,7 @@
                 <div class="col-md-12">
                     <h4 class="p-3">Stock Received</h4>
                     <div class="table-responsive--md table-responsive">
-                        <table class="table table--light table-bordered style--two bg--white">
+                        <table class="table table--dark table-bordered style--two bg--white">
                             <thead>
                                 <tr>
                                     <th>@lang('User') | @lang('Warehouse')</th>
@@ -212,7 +212,7 @@
             </div>
 
             <h4 class="p-3">Available Stock</h4>
-            <table class="table table--light table-bordered style--two bg--white">
+            <table class="table table--dark table-bordered style--two bg--white">
                 <thead>
                     <tr>
                         <th>Product</th>
@@ -239,7 +239,7 @@
                 <div class="card bg--transparent">
                     <div class="card-body p-0 ">
                         <div class="table-responsive--md table-responsive">
-                            <table class="table table--light style--two bg--white">
+                            <table class="table table--dark style--two bg--white">
                                 <thead>
                                     <tr>
                                         <th>@lang('User')</th>

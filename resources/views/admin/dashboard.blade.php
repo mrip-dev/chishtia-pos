@@ -3,20 +3,16 @@
 @section('panel')
     <div class="row gy-4">
         <div class="col-xxl-3 col-sm-6">
-            <x-widget value="{{ $widget['total_product'] }}" title="Total Products" style="6" link="{{ route('admin.product.index') }}" icon="las la-box"
-                bg="primary" outline=false />
+            <x-widget value="{{ $widget['total_product'] }}" title="Total Products" style="6" link="{{ route('admin.product.index') }}" icon="las la-box" bg="primary" />
         </div>
         <div class="col-xxl-3 col-sm-6">
-            <x-widget value="{{ $widget['total_customer'] }}" title="Total Customers" style="6" link="{{ route('admin.customer.index') }}"
-                icon="las la-users" bg="success" outline=false />
+            <x-widget value="{{ $widget['total_customer'] }}" title="Total Customers" style="6" link="{{ route('admin.customer.index') }}" icon="las la-users" bg="success" />
         </div>
         <div class="col-xxl-3 col-sm-6">
-            <x-widget value="{{ $widget['total_supplier'] }}" title="Total Suppliers" style="6" link="{{ route('admin.supplier.index') }}"
-                icon="las la-user-friends" bg="purple" outline=false />
+            <x-widget value="{{ $widget['total_supplier'] }}" title="Total Suppliers" style="6" link="{{ route('admin.supplier.index') }}" icon="las la-user-friends" bg="purple" />
         </div>
         <div class="col-xxl-3 col-sm-6">
-            <x-widget value="{{ $widget['total_category'] }}" title="Total Categories" style="6" link="{{ route('admin.product.category.index') }}"
-                icon="lab la-buffer" bg="warning" outline=false />
+            <x-widget value="{{ $widget['total_category'] }}" title="Total Categories" style="6" link="{{ route('admin.product.category.index') }}" icon="lab la-buffer" bg="warning" />
         </div>
     </div>
 
@@ -172,9 +168,9 @@
         <div class="col-xl-6 mb-30">
             <div class="card">
                 <div class="card-body">
-                    <div class="d-flex flex-wrap justify-content-between">
-                        <h5 class="card-title">@lang('Purchases & Sales Report')</h5>
-                        <div class="border p-1 cursor-pointer rounded" id="psDatePicker">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">@lang('Purchases & Sales Report')</h5>
+                        <div class="border p-1 cursor-pointer rounded date-select" id="psDatePicker">
                             <i class="la la-calendar"></i>&nbsp;
                             <span></span> <i class="la la-caret-down"></i>
                         </div>
@@ -186,9 +182,9 @@
         <div class="col-xl-6 mb-30">
             <div class="card">
                 <div class="card-body">
-                    <div class="d-flex flex-wrap justify-content-between">
-                        <h5 class="card-title">@lang('Sales & Sales Return Report')</h5>
-                        <div class="border p-1 cursor-pointer rounded" id="saleSaleReturnDatePicker">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">@lang('Sales & Sales Return Report')</h5>
+                        <div class="border p-1 cursor-pointer rounded date-select" id="saleSaleReturnDatePicker">
                             <i class="la la-calendar"></i>&nbsp;
                             <span></span> <i class="la la-caret-down"></i>
                         </div>
@@ -198,12 +194,12 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-6 mb-30">
+        <div class="col-xl-12 mb-30">
             <div class="card">
                 <div class="card-body">
-                    <div class="d-flex flex-wrap justify-content-between">
-                        <h5 class="card-title">@lang('Purchase & Purchase Return Report')</h5>
-                        <div class="border p-1 cursor-pointer rounded" id="purchasePurchaseReturnDatePicker">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">@lang('Purchase & Purchase Return Report')</h5>
+                        <div class="border p-1 cursor-pointer rounded date-select" id="purchasePurchaseReturnDatePicker">
                             <i class="la la-calendar"></i>&nbsp;
                             <span></span> <i class="la la-caret-down"></i>
                         </div>
@@ -213,11 +209,11 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-6 mb-30">
+        <div class="col-xl-12 mb-30">
             <h5 class="mb-3">@lang('Top Selling Products') </h5>
             <div class="card">
                 <div class="table-responsive--md table-responsive">
-                    <table class="table table--light style--two">
+                    <table class="table table--dark style--two">
                         <thead>
                             <tr>
                                 <th>@lang('Product')</th>
@@ -250,7 +246,7 @@
             <h5 class="mb-3">@lang('Stock Level Alert') </h5>
             <div class="card">
                 <div class="table-responsive--md table-responsive">
-                    <table class="table table--light style--two">
+                    <table class="table table--dark style--two">
                         <thead>
                             <tr>
                                 <th>@lang('Product')</th>
@@ -293,7 +289,7 @@
             <h5 class="mb-3">@lang('Latest Sales Return') </h5>
             <div class="card">
                 <div class="table-responsive--md table-responsive">
-                    <table class="table table--light style--two">
+                    <table class="table table--dark style--two">
                         <thead>
                             <tr>
                                 <th>@lang('Date')</th>

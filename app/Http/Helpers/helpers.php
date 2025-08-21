@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Cache;
 
 function systemDetails()
 {
-    $system['name']          = 'Dewan';
+    $system['name']          = 'Moeeen Traders';
     $system['version']       = '2.0';
     $system['build_version'] = '5.0.9';
     return $system;
@@ -63,12 +63,12 @@ function activeTemplateName()
 
 function siteLogo($type = null)
 {
-    $name = $type ? "/logo_$type.png" : '/logo.png';
+    $name = $type ? "/logo_$type.svg" : '/logo.png';
     return getImage(getFilePath('logoIcon') . $name);
 }
 function siteFavicon()
 {
-    return getImage(getFilePath('logoIcon') . '/favicon.png');
+    return getImage(getFilePath('logoIcon') . '/favicon.ico');
 }
 
 

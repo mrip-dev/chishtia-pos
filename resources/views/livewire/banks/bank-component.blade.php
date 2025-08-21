@@ -19,7 +19,7 @@
             <div class="card">
                 <div class="card-body p-0">
                     <div class="table-responsive--md table-responsive">
-                        <table class="table table--light">
+                        <table class="table table--dark">
                             <thead>
                                 <tr>
                                     <th>S.N</th>

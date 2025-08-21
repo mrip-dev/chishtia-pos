@@ -91,8 +91,8 @@
         </ul>
     </div>
     <div class="version-info text-center text-uppercase">
-        <span class="text--primary">Dewan</span>
-        <span class="text--success">Chemicals </span>
+        <span class="text-white">Moeeen</span>
+        <span class="text--dark">Traders </span>
     </div>
 </div>
 </div>
