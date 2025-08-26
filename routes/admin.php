@@ -74,6 +74,7 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         Route::post('switch-status/{id}', 'status')->name('status');
         Route::get('login/{id}', 'login')->name('login');
         Route::get('{user}/salary', 'salary')->name('salary');
+        Route::get('/admin/attendance', 'attendance')->name('attendance');
     });
 
     Route::controller('RolesController')->prefix('roles')->name('roles.')->group(function () {

@@ -24,6 +24,11 @@ class StaffController extends Controller
         $pageTitle = '';
         return view('admin.staff.salary', ['staff' => $user,'pageTitle' =>$pageTitle]);
     }
+    public function attendance()
+    {
+        $pageTitle = '';
+        return view('admin.staff.attendance', ['pageTitle' =>$pageTitle]);
+    }
     public function status($id)
     {
         return Admin::changeStatus($id);

@@ -282,6 +282,19 @@
             },
             {
                 "keyword": [
+                    "Attendance",
+                    "Manage staff",
+                    "Staff management",
+                    "Staff control",
+                    "Staff activity",
+                    "Staff analytics"
+                ],
+                "title": "Attendance",
+                "route_name": "admin.staff.attendance",
+                "menu_active": "admin.staff.attendance"
+            },
+            {
+                "keyword": [
                     "All Roles",
                     "Manage Role",
                     "Role management",
