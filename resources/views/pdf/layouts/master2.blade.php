@@ -624,10 +624,13 @@
     </table>
 
 
-    <!-- Footer -->
-    <div class="footer">
+
+     <div class="footer">
         <div>Moeeen Traders © {{ date('Y') }}</div>
-        <div>Page {PAGE_NUM} of {PAGE_COUNT}</div>
+        <!-- <div footer-center page-number>Page {PAGE_NUM} of {PAGE_COUNT}</div> -->
+         <div class="footer-center page-number">
+            {{-- This div is intentionally empty. The page number is added by CSS. --}}
+        </div>
         <div>Created By : {{ auth()->guard('admin')->user()->username }} </div>
     </div>
 
