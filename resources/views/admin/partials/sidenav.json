@@ -295,6 +295,19 @@
             },
             {
                 "keyword": [
+                    "Attendance",
+                    "Manage staff",
+                    "Staff management",
+                    "Staff control",
+                    "Staff activity",
+                    "Staff analytics"
+                ],
+                "title": "Clock In",
+                "route_name": "admin.staff.clock-in",
+                "menu_active": "admin.staff.clock-in"
+            },
+            {
+                "keyword": [
                     "All Roles",
                     "Manage Role",
                     "Role management",

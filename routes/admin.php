@@ -75,6 +75,7 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         Route::get('login/{id}', 'login')->name('login');
         Route::get('{user}/salary', 'salary')->name('salary');
         Route::get('/admin/attendance', 'attendance')->name('attendance');
+        Route::get('/clock-in','clockIn')->name('clock-in');
     });
 
     Route::controller('RolesController')->prefix('roles')->name('roles.')->group(function () {

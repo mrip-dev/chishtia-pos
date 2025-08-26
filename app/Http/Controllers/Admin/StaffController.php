@@ -29,6 +29,11 @@ class StaffController extends Controller
         $pageTitle = '';
         return view('admin.staff.attendance', ['pageTitle' =>$pageTitle]);
     }
+    public function clockIn()
+    {
+        $pageTitle = '';
+        return view('admin.staff.clock-in', ['pageTitle' =>$pageTitle]);
+    }
     public function status($id)
     {
         return Admin::changeStatus($id);
