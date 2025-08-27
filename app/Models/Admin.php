@@ -7,11 +7,13 @@ use App\Traits\GlobalStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laragear\WebAuthn\Contracts\WebAuthnAuthenticatable; // <-- Import this
+use Laragear\WebAuthn\WebAuthnAuthentication;
 use Laravel\Sanctum\HasApiTokens;
 
-class Admin extends Authenticatable
+class Admin extends Authenticatable implements WebAuthnAuthenticatable
 {
-    use HasFactory, HasApiTokens;
+    use HasFactory, WebAuthnAuthentication;
     use GlobalStatus;
     /**
      * The attributes that should be hidden for arrays.

@@ -4,8 +4,11 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\AdminController;
+use App\Http\Controllers\Api\AttendanceController;
 
-
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/clock-in', [AttendanceController::class, 'clockIn']);
+});
 Route::post('/login', [LoginController::class, 'login'])->name('api.login');
 
 // Route::middleware('auth:sanctum')->controller('DataEntryReportController')->prefix('reports/data-entry')->name('report.data.entry.')->group(function () {
