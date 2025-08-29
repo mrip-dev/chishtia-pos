@@ -43,7 +43,7 @@
                     <div class="table-responsive--md table-responsive">
                         <table class="table table--dark style--two bg-white">
                             <thead>
-                                <tr>
+                                <tr class="text-dark">
                                     <th>@lang('Invoice No.') | @lang('Date')</th>
                                     <th>@lang('Customer') | @lang('Mobile')</th>
                                     <!-- <th>@lang('Driver Name') | @lang('Mobile')</th> -->

@@ -174,10 +174,11 @@ class AllSales extends Component
                 'text' => $warehouse->name,
             ];
         })->toArray();
+        $this->warehouse_id =  Warehouse::active()->orderBy('name')->first()->id ?? 1;
         $lastSale      = Sale::orderBy('invoice_no', 'DESC')->first();
         $lastInvoiceNo = $lastSale->invoice_no ?? 0;
         $this->invoice_no = generateInvoiceNumber($lastInvoiceNo);
-
+        $this->getProductsSearchable();
     }
     public function editSale($id)
     {
@@ -212,7 +213,7 @@ class AllSales extends Component
         $this->invoice_no = $sale->invoice_no;
         $this->customer_id = $sale->customer_id;
         $this->warehouse_id = $sale->warehouse_id;
-        $this->sale_date =Carbon::createFromFormat('Y-m-d', $sale->sale_date)->format('d-m-Y') ;
+        $this->sale_date = Carbon::createFromFormat('Y-m-d', $sale->sale_date)->format('d-m-Y');
         $this->note = $sale->note;
         $this->discount = $sale->discount_amount;
         $this->total_price = $sale->total_price;
@@ -328,12 +329,12 @@ class AllSales extends Component
             $this->getTotalPrice();
             $this->checkWeightStockAvailability();
         }
-        if($name === 'expense_type_id'){
+        if ($name === 'expense_type_id') {
             $this->expense_type_id = (int)$value;
             $expenseType = ExpenseType::find($this->expense_type_id);
-            if($expenseType && $expenseType->name == 'Fare'){
-                $this->exp_amount= $this->fare;
-            } elseif($expenseType && $expenseType->name == 'Loading'){
+            if ($expenseType && $expenseType->name == 'Fare') {
+                $this->exp_amount = $this->fare;
+            } elseif ($expenseType && $expenseType->name == 'Loading') {
                 $this->exp_amount = $this->loading;
             }
         }
@@ -587,7 +588,7 @@ class AllSales extends Component
             'exp_amount'      => 'required|numeric|min:1',
             'bank_id'         => 'nullable|exists:banks,id',
         ]);
-        if($this->exp_amount <= 0){
+        if ($this->exp_amount <= 0) {
             $this->dispatch('notify', status: 'error', message: 'Expense amount must be greater than zero.');
             return;
         }

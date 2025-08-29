@@ -7,7 +7,7 @@
     <button class="res-sidebar-close-btn"><i class="las la-times"></i></button>
     <div class="sidebar__inner">
         <div class="sidebar__logo">
-            <a  class="sidebar__main-logo" href="{{ route('admin.dashboard') }}"><img src="{{ siteLogo('dark') }}" alt="image"></a>
+            <a  class="sidebar__main-logo" href="{{ route('admin.dashboard') }}"><img src="{{ siteLogo('light') }}" alt="image"></a>
         </div>
         <div class="sidebar__menu-wrapper">
             <ul class="sidebar__menu">

@@ -37,7 +37,7 @@
         }
 
         .primary-text {
-            color: #219ebc;
+            color: #ff8f3c;
         }
 
         h1,
@@ -191,7 +191,7 @@
 
         .table>thead {
             vertical-align: bottom;
-            background: #97CA9C;
+            background: #ff8f3c;
             color: white;
         }
 
@@ -390,7 +390,7 @@
         }
 
         .text--success {
-            color: #28c76f !important;
+            color: #ff8f3c !important;
         }
 
         .text--danger {
@@ -488,7 +488,7 @@
 
 
         .header {
-            background-color: #97ca9c;
+            background-color: #ff8f3c;
             color: white;
             text-align: center;
             padding: 10px;
@@ -585,7 +585,7 @@
         }
 
         th {
-            background-color: #97ca9c;
+            background-color: #ff8f3c;
         }
 
         tr {

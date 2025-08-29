@@ -158,12 +158,14 @@ class AllPurchases extends Component
                 'text' => $warehouse->name,
             ];
         })->toArray();
+        $this->warehouse_id =  Warehouse::active()->orderBy('name')->first()->id ?? 1;
         $lastPurchase      = Purchase::orderBy('invoice_no', 'DESC')->first();
         $lastInvoiceNo = $lastPurchase->invoice_no ?? 0;
 
 
         $this->invoice_no = generateInvoiceNumberP($lastInvoiceNo);
         $this->dispatch('re-init-select-2-component');
+         $this->getProductsSearchable();
     }
     public function editPurchase($id)
     {
