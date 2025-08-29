@@ -20,4 +20,8 @@ class Attendance extends Model
     {
         return $this->belongsTo(Admin::class);
     }
+     public function employee()
+    {
+        return $this->belongsTo(Admin::class);
+    }
 }

@@ -5,10 +5,16 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AttendanceController;
+use App\Http\Controllers\Api\EmployeeController;
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/clock-in', [AttendanceController::class, 'clockIn']);
-});
+// For enrollment (typically done by an admin from a secure machine, or via a special enrollment kiosk)
+Route::post('/enroll-fingerprint', [EmployeeController::class, 'enrollFingerprint']);
+
+// For clock-in/clock-out from the kiosk
+Route::post('/clock-action', [AttendanceController::class, 'clockAction']);
+
+// Optional: To check if a fingerprint ID is already taken during enrollment
+Route::post('/fingerprint-id-exists', [EmployeeController::class, 'getEmployeeByFingerprintId']);
 Route::post('/login', [LoginController::class, 'login'])->name('api.login');
 
 // Route::middleware('auth:sanctum')->controller('DataEntryReportController')->prefix('reports/data-entry')->name('report.data.entry.')->group(function () {

@@ -40,9 +40,13 @@ class Admin extends Authenticatable implements WebAuthnAuthenticatable
         }
         return $html;
     }
-     public function salaries(): HasMany
+    public function salaries(): HasMany
     {
 
         return $this->hasMany(Salary::class, 'staff_id')->orderBy('pay_period_start', 'desc');
+    }
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class);
     }
 }
