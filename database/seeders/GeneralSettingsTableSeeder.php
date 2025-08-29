@@ -13,7 +13,7 @@ class GeneralSettingsTableSeeder extends Seeder
         DB::table('general_settings')->updateOrInsert(
             ['id' => 1],
             [
-                'site_name' => 'Dewan',
+                'site_name' => 'Moeen',
                 'cur_text' => 'PKR',
                 'cur_sym' => 'PKR',
                 'email_from' => 'info@viserlab.com',
@@ -93,10 +93,10 @@ img[class="img1"] { width: 100% !important; height: auto !important; }
                         </td>
                       </tr>
                       <!--end logo-->
-                      
+
                       <!--headline-->
                       <tr>
-                        
+
                       </tr>
                       <!--end headline-->
                       <tr>
@@ -117,7 +117,7 @@ img[class="img1"] { width: 100% !important; height: auto !important; }
                       <tr>
                         <td height="40"></td>
                       </tr>
-              
+
                     </tbody></table>
                   </td>
                 </tr>
@@ -130,7 +130,7 @@ img[class="img1"] { width: 100% !important; height: auto !important; }
                       <!--preference-->
                       <tr>
                         <td class="preference-link" align="center" style="font-family: \'Open sans\', Arial, sans-serif; color:#95a5a6; font-size:14px;">
-                          Â© 2024 <a href="#">{{site_name}}</a>&nbsp;. All Rights Reserved. 
+                          Â© 2024 <a href="#">{{site_name}}</a>&nbsp;. All Rights Reserved.
                         </td>
                       </tr>
                       <!--end preference-->
