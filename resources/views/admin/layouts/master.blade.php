@@ -19,7 +19,7 @@
     @stack('style-lib')
 
     <link rel="stylesheet" href="{{asset('assets/global/css/select2.min.css')}}">
-    <link rel="stylesheet" href="{{asset('assets/admin/css/app.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/admin/css/app.css?v=1')}}">
 
     <style>
         .bank-history {

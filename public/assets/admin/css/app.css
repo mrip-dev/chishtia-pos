@@ -8365,8 +8365,8 @@ li.products__item:hover {
   border-radius: 16px;
   margin-bottom: 40px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, .5);
-  height: 380px;
-  object-fit: cover;
+  /* height: 380px; */
+  object-fit: fill;
   border: 10px solid #283142;
 }
 .left-side h2 {

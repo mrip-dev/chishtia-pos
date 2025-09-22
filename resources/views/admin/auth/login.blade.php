@@ -39,11 +39,11 @@
   <div class="row h-100">
     <div class="col-lg-6 left-side">
       <div class="logo">
-        <img src="{{asset('assets/admin/images/moeen-traders-white.svg')}}" alt="">
+        <img src="{{asset('assets/images/logo_icon/logo_light.png')}}" width="140px" alt="">
       </div>
-      <img src="{{asset('assets/admin/images/dashboard-1.png')}}" class="dashboard" alt="Dashboard Mockup">
-      <h2>Easy to use Dashboard</h2>
-      <p>Choose the best of product/services and get a bare metal server at the lowest prices.</p>
+      <img src="{{asset('assets/images/logo_icon/dashboard.png')}}" class="dashboard" alt="Dashboard Mockup">
+      <!-- <h2>Easy to use Dashboard</h2>
+      <p>Choose the best of product/services and get a bare metal server at the lowest prices.</p> -->
     </div>
     <div class="col-md-6 right-side">
       <div class="form-box">
