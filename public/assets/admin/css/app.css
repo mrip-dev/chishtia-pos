@@ -6570,7 +6570,7 @@ th.w-85 {
 .login-form .form-control {
   height: 50px;
   border: 1px solid rgba(255, 255, 255, 0.3);
-  color: #fff;
+  /* color: #fff; */
   font-size: 16px;
   padding: 20px;
   background-color: #f4f4f4;

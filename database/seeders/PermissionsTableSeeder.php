@@ -178,6 +178,8 @@ class PermissionsTableSeeder extends Seeder
             ['id' => 230, 'name' => 'Manage Expenses', 'group' => 'ExpenseTypeController', 'code' => 'admin.manage_expense'],
             ['id' => 231, 'name' => 'Banks Management', 'group' => 'BanksManagementController', 'code' => 'admin.bank.index'],
             ['id' => 232, 'name' => 'Service Stock Edit', 'group' => 'ServiceStockController', 'code' => 'admin.manage_stock_in.edit'],
+            ['id' => 233, 'name' => 'Mark Attendance', 'group' => 'AttendanceController', 'code' => 'admin.staff.clock-in'],
+            ['id' => 234, 'name' => 'All Attendance', 'group' => 'AttendanceController', 'code' => 'admin.staff.attendance'],
 
 
         ];

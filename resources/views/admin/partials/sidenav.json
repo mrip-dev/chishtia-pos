@@ -247,6 +247,28 @@
             "admin.supplier*"
         ]
     },
+     "attendance": {
+        "keyword": [
+            "Attendance"
+        ],
+        "title": "Attendance",
+        "icon": "la la-user-friends",
+        "route_name": "admin.staff.attendance",
+        "menu_active": [
+            "admin.staff.attednace"
+        ]
+    },
+         "clock-in": {
+        "keyword": [
+            "Clock In"
+        ],
+        "title": "Clock In",
+        "icon": "la la-user-friends",
+        "route_name": "admin.staff.clock-in",
+        "menu_active": [
+            "admin.staff.clock-in"
+        ]
+    },
     "manage_staff": {
         "title": "Manage Staff",
         "icon": "las la-user",
@@ -268,6 +290,7 @@
                 "route_name": "admin.staff.index",
                 "menu_active": "admin.staff.index"
             },
+
             {
                 "keyword": [
                     "All Roles",
@@ -286,6 +309,7 @@
             }
         ]
     },
+
     "product_adjustments": {
         "keyword": [
             "adjustment",
