@@ -273,8 +273,9 @@
         "title": "Manage Staff",
         "icon": "las la-user",
         "menu_active": [
-            "admin.staff*",
-            "admin.roles*"
+            "admin.staff.index",
+            "admin.roles.index",
+            "admin.roles.edit"
         ],
         "submenu": [
             {
