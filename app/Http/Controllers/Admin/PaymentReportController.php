@@ -101,7 +101,7 @@ class PaymentReportController extends Controller
                 $invoice = @$payment->saleReturn->sale->invoice_no;
             }
             $date     = showDateTime(@$payment->created_at, 'd-m-Y');
-            $customer = $payment->customer->name;
+            $customer = $payment->customer?->name;
             $reason   = ucwords(strtolower(keyToTitle($payment->remark)));
             $amount   = gs('cur_sym') . getAmount($payment->amount);
 

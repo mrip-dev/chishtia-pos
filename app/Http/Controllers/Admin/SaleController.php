@@ -72,8 +72,8 @@ class SaleController extends Controller
         foreach ($data as $sale) {
             $invoice        = $sale->invoice_no;
             $date           = showDateTime(@$sale->sale_date, 'd-m-Y');
-            $customer       = $sale->customer->name;
-            $customerMobile = $sale->customer->mobile;
+            $customer       = $sale->customer?->name;
+            $customerMobile = $sale->customer?->mobile;
             $warehouse      = $sale->warehouse->name;
             $totalAmount    = $curSym . getAmount($sale->total_price);
             $discount       = $curSym . getAmount($sale->discount_amount);

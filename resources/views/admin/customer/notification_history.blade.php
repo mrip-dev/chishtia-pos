@@ -20,7 +20,7 @@
                                     <tr>
                                         <td>
                                             @if ($log->customer)
-                                            <span class="fw-bold">{{ $log->customer->name }}</span>
+                                            <span class="fw-bold">{{ $log->customer?->name }}</span>
                                             @else
                                                 <span class="fw-bold">@lang('System')</span>
                                             @endif

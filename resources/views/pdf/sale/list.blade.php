@@ -24,7 +24,7 @@
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $sale->invoice_no }}</td>
                     <td>{{ showDateTime($sale->sale_date, 'm/d/Y') }}</td>
-                    <td>{{ $sale->customer->name }}</td>
+                    <td>{{ $sale->customer?->name }}</td>
                     <td>{{ $sale->warehouse->name }}</td>
                     <td>
                         <strong>{{ $sale->driver_name }}</strong><br>

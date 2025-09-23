@@ -17,7 +17,7 @@
                             <div class="col-xl-3 col-sm-6">
                                 <div class="form-group">
                                     <label class="form-label">@lang('Customer')</label>
-                                    <input class="form-control" type="text" value="{{ $sale->customer->name }}" required disabled>
+                                    <input class="form-control" type="text" value="{{ $sale->customer?->name }}" required disabled>
                                 </div>
                             </div>
                             <div class="col-xl-3 col-sm-6">

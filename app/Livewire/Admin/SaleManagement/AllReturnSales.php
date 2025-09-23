@@ -73,7 +73,7 @@ class AllReturnSales extends Component
         ])->findOrFail($saleId);
 
         $this->invoice_no = $this->sale->invoice_no;
-        $this->customer_name = $this->sale->customer->name;
+        $this->customer_name = $this->sale->customer?->name;
         $this->warehouse_name = $this->sale->warehouse->name;
         $this->return_date = Carbon::now()->format('Y-m-d');
 

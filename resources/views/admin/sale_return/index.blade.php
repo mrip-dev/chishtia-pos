@@ -28,9 +28,9 @@
                                             <small>{{ showDateTime($return->return_date, 'd M, Y') }}</small>
                                         </td>
                                         <td>
-                                            <span class="fw-bold text--primary">{{ $return->customer->name }}</span>
+                                            <span class="fw-bold text--primary">{{ $return->customer?->name }}</span>
                                             <br>
-                                            {{ $return->customer->mobile }}
+                                            {{ $return->customer?->?mobile }}
                                         </td>
                                         <td>
                                             {{ $return->sale->warehouse->name }}
@@ -73,7 +73,7 @@
                                                     @permit('admin.customer.payment.payable.store')
                                                         @if ($return->due_amount)
                                                             <li>
-                                                                <a class="dropdown-item paymentModalBtn" data-customer_id="{{ $return->customer_id }}" data-customer="{{ $return->customer->name }}" data-invoice="{{ $return->sale->invoice_no }}" data-id="{{ $return->id }}" data-due_amount="{{ $return->due_amount }}" href="javascript:void(0)">
+                                                                <a class="dropdown-item paymentModalBtn" data-customer_id="{{ $return->customer_id }}" data-customer="{{ $return->customer?->name }}" data-invoice="{{ $return->sale->invoice_no }}" data-id="{{ $return->id }}" data-due_amount="{{ $return->due_amount }}" href="javascript:void(0)">
                                                                     @if ($return->due_amount > 0)
                                                                         <i class="la la-money-bill-wave"></i>
                                                                         @lang('Give Payment')

@@ -22,7 +22,7 @@
                                         </td>
 
                                         <td>
-                                            <a href="{{ route('admin.customer.index') }}?search={{ $entry->actionable->customer->mobile }}">{{ $entry->actionable->customer->name }}</a>
+                                            <a href="{{ route('admin.customer.index') }}?search={{ $entry->actionable->customer?->mobile }}">{{ $entry->actionable->customer?->name }}</a>
                                         </td>
 
                                         <td>

@@ -60,8 +60,8 @@ class SaleReturnController extends Controller
         foreach ($data as $return) {
             $invoice        = $return->sale->invoice_no;
             $date           = showDateTime(@$return->return_date, 'd-m-Y');
-            $customer       = $return->customer->name;
-            $customerMobile = $return->customer->mobile;
+            $customer       = $return->customer?->name;
+            $customerMobile = $return->customer?->mobile;
             $warehouse      = $return->sale->warehouse->name;
             $totalAmount    = $curSym . getAmount($return->total_price);
             $discount       = $curSym . getAmount($return->discount_amount);

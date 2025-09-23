@@ -77,7 +77,7 @@
                     @forelse($transactions as $index => $transaction)
                     <tr>
                         <td>{{ $index + 1 }}</td>
-                        <td>{{ $transaction->customer->name ?? 'N/A' }}</td>
+                        <td>{{ $transaction->customer?->name ?? 'N/A' }}</td>
                         <td>{{ number_format($transaction->opening_balance, 2) }}</td>
                         <td class="text-success">{{ number_format($transaction->credit_amount, 2) }}</td>
                         <td class="text-danger">{{ number_format($transaction->debit_amount, 2) }}</td>

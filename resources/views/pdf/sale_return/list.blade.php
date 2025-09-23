@@ -19,7 +19,7 @@
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $return->sale->invoice_no }}</td>
                     <td>{{ showDateTime($return->return_date, 'm/d/Y') }}</td>
-                    <td>{{ $return->customer->name }}</td>
+                    <td>{{ $return->customer?->name }}</td>
                     <td>{{ $return->sale->warehouse->name }} </td>
                     <td>{{ showAmount($return->payable_amount) }}</td>
                     <td>

@@ -65,7 +65,7 @@
                     <td>{{ $detail->wareHouse->name ?? 'N/A' }}</td>
                     <td>{{ $detail->product->name ?? 'N/A' }}</td>
                     <td>{!! $detail->supplier->name ?? '<span class="badge bg-warning text-dark">No Supplier</span>' !!}</td>
-                    <td>{!! $detail->customer->name ?? '<span class="badge bg-success text-white">No Customer</span>' !!}</td>
+                    <td>{!! $detail->customer?->name ?? '<span class="badge bg-success text-white">No Customer</span>' !!}</td>
                     <td>{{ $detail->date }}</td>
                     <td>{{ $detail->stock_in }}</td>
                     <td>{{ $detail->stock_out }}</td>

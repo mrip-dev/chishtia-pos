@@ -81,7 +81,7 @@ class Customer extends Model
             Storage::disk('public')->makeDirectory($directory);
         }
 
-        $filename = 'customer'. $this->customer->name . '.pdf';
+        $filename = 'customer'. $this->customer?->name . '.pdf';
         $filepath = $directory . '/' . $filename;
 
         Storage::disk('public')->put($filepath, $pdf->output());

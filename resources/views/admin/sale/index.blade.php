@@ -30,9 +30,9 @@
                                         </td>
 
                                         <td>
-                                            <span class="text--primary fw-bold"> {{ $sale->customer->name }}</span>
+                                            <span class="text--primary fw-bold"> {{ $sale->customer?->name }}</span>
                                             <br>
-                                            +{{ $sale->customer->mobile }}
+                                            +{{ $sale->customer?->mobile }}
                                         </td>
 
                                         <td>
@@ -76,7 +76,7 @@
                                                    @permit('admin.customer.payment.store')
                                                         <a href="javascript:void(0)" class="dropdown-item paymentModalBtn"
                                                             data-customer_id="{{ $sale->customer_id }}"
-                                                            data-customer="{{ $sale->customer->name }}"
+                                                            data-customer="{{ $sale->customer?->name }}"
                                                             data-invoice="{{ $sale->invoice_no }}"
                                                             data-id="{{ $sale->id }}"
                                                             data-due_amount="{{ $sale->due_amount }}">
