@@ -30,7 +30,7 @@
                                         <td>
                                             <span class="fw-bold text--primary">{{ $return->customer?->name }}</span>
                                             <br>
-                                            {{ $return->customer?->?mobile }}
+                                            {{ $return->customer?->mobile }}
                                         </td>
                                         <td>
                                             {{ $return->sale->warehouse->name }}
