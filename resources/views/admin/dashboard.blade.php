@@ -311,7 +311,7 @@
                                     </td>
 
                                     <td>
-                                        {{ $return->customer->name }}
+                                        {{ $return->customer?->name }}
                                     </td>
 
                                     <td>
