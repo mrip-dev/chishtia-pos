@@ -83,7 +83,7 @@ class CustomerController extends Controller
         $customer->email   = strtolower(trim($request->email));
         $customer->mobile  = $request->mobile;
         $customer->address = $request->address;
-        $customer->opening_balance = $request->opening_balance;
+        $customer->opening_balance = $request->opening_balance ?? 0.00;
         $customer->booklet_no = $request->booklet_no;
         $customer->advance = $request->advance ?? 0.00; // Ensure advance is set, default to 0.00
 
@@ -120,7 +120,7 @@ class CustomerController extends Controller
             'email'   => 'nullable',
             'mobile'  => 'nullable',
             'address' => 'string|max:500',
-           'opening_balance' => 'nullable|numeric|min:0',
+            'opening_balance' => 'nullable|numeric|min:0',
         ]);
     }
 
@@ -315,7 +315,7 @@ class CustomerController extends Controller
     public function import(Request $request)
     {
         $reqHeader    = ['name', 'email', 'mobile', 'address'];
-        $importResult = importCSV($request, Customer::class, $reqHeader,'name');
+        $importResult = importCSV($request, Customer::class, $reqHeader, 'name');
 
         if ($importResult['data']) {
             $notify[] = ['success', $importResult['notify']];
