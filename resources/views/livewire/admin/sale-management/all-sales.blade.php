@@ -277,8 +277,8 @@
 
                         {{-- Product Table --}}
 
-                        <table class="table table--dark style--two bg-white">
-                            <thead>
+                        <table class="table table--dark style--two">
+                            <thead class="border bg--dark">
                                 <tr>
                                     <th>@lang('Product')</th>
                                     <th>@lang('Stock')</th>

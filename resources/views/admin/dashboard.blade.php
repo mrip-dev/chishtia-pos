@@ -23,7 +23,7 @@
                     <h5 class="card-title">@lang('Sales')</h5>
                     <div class="widget-card-wrapper">
                         <div class="widget-card bg--success">
-                            <a class="widget-card-link" href="{{ route('admin.sale.index') }}"></a>
+                            <a class="widget-card-link" href="{{ route('admin.manage_sale') }}"></a>
                             <div class="widget-card-left">
                                 <div class="widget-card-icon">
                                     <i class="las la-shopping-cart"></i>
@@ -96,7 +96,7 @@
                     <h5 class="card-title">@lang('Purchases')</h5>
                     <div class="widget-card-wrapper">
                         <div class="widget-card bg--success">
-                            <a class="widget-card-link" href="{{ route('admin.purchase.index') }}"></a>
+                            <a class="widget-card-link" href="{{ route('admin.manage_purchase') }}"></a>
                             <div class="widget-card-left">
                                 <div class="widget-card-icon">
                                     <i class="las la-shopping-bag"></i>
