@@ -16,14 +16,23 @@
                         <div class="col-md-8 col-sm-12">
                             <div class="row">
                                 <div class="col-sm-6">
-                                    <div class="form-group ">
+                                    <div class="form-group">
                                         <label>@lang('Name')</label>
-                                        <input class="form-control" name="name" type="text" value="{{ old('name', @$product->name) }}" required>
+                                        <select class="form-control select2" name="name" required>
+                                            <option value="">@lang('Select Product')</option>
+                                            @foreach(gourmet_cola_products() as $name)
+                                            <option value="{{ $name }}" {{ old('name', @$product->name) == $name ? 'selected' : '' }}>
+                                                {{ $name }}
+                                            </option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
+
+
                                 <div class="col-sm-6">
                                     <div class="form-group ">
-                                        <label>@lang('Category')</label>
+                                        <label>@lang('Variant')</label>
                                         <select class="form-control select2" name="category_id" required>
                                             <option value="" selected disabled>@lang('Select One')</option>
                                             @foreach ($categories as $category)
@@ -39,7 +48,7 @@
                                     <div class="form-group">
                                         <label>@lang('Brand')</label>
                                         <select class="form-control select2" name="brand_id">
-                                            <option value="" selected disabled>@lang('Select One')</option>
+                                            <!-- <option value="" selected disabled>@lang('Select One')</option> -->
                                             @foreach ($brands as $brand)
                                             <option value="{{ $brand->id }}" @selected($brand->id == @$product->brand_id)>
                                                 {{ __($brand->name) }}
@@ -49,12 +58,12 @@
                                     </div>
                                 </div>
 
-                                <div class="col-sm-6">
+                                <!-- <div class="col-sm-6">
                                     <div class="form-group ">
                                         <label>@lang('SKU')</label>
                                         <input class="form-control " name="sku" type="text" value="{{ old('sku', @$product->sku) }}">
                                     </div>
-                                </div>
+                                </div> -->
 
                                 <div class="col-sm-6">
                                     <div class="form-group">
@@ -98,7 +107,7 @@
                                         <div class="col-md-5">
                                             <div class="form-group">
                                                 <label class="form-label">@lang('Warehouse')</label>
-                                                <select class="form-control select2" name="warehouse_id" data-minimum-results-for-search="-1" >
+                                                <select class="form-control select2" name="warehouse_id" data-minimum-results-for-search="-1">
                                                     <option value="" selected disabled>@lang('Select One')</option>
                                                     @foreach ($warehouses as $warehouse)
                                                     <option value="{{ $warehouse->id }}" @selected($warehouse->id == @$purchase->warehouse_id)>

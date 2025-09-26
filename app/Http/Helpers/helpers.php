@@ -195,6 +195,44 @@ function getPageSections($arr = false)
     return $sections;
 }
 
+if (!function_exists('gourmet_cola_products')) {
+    /**
+     * Get Gourmet Cola product names
+     *
+     * @param string|null $filter Optional filter (e.g., "Zero", "Vanilla")
+     * @return array
+     */
+    function gourmet_cola_products($filter = null)
+    {
+        $products = [
+            'Zeera Cola',
+            'Cola',
+            'Lemon',
+            'Malta',
+            'Twister',
+            'Red Anar',
+            'Soda IceCream',
+            'Diet Cola',
+            'Diet Lemon Up',
+            'Mouj',
+            'Phal Rus',
+            'Phalpy',
+            'Spark',
+            'Water',
+            'Sparkling Water',
+        ];
+
+        // Apply filter if provided
+        if ($filter) {
+            return array_values(array_filter($products, function ($product) use ($filter) {
+                return stripos($product, $filter) !== false;
+            }));
+        }
+
+        return $products;
+    }
+}
+
 
 function getImage($image, $size = null)
 {

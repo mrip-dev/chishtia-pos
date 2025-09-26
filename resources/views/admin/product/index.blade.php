@@ -9,8 +9,8 @@
                         <thead>
                             <tr>
                                 <th>@lang('Image')</th>
-                                <th>@lang('Name') | @lang('SKU') </th>
-                                <th>@lang('Category') | @lang('Brand')</th>
+                                <th>@lang('Name')</th>
+                                <th>@lang('Variant') | @lang('Brand')</th>
                                 <th>@lang('Stock') </th>
                                 <th>@lang('Total Sale') | @lang('Alert Qty')</th>
                                 <th>@lang('Unit')</th>
@@ -33,7 +33,7 @@
                                 <td class="long-text">
                                     <span class="fw-bold text--primary">{{ __($product->name) }}</span>
                                     <br>
-                                    <span class="text--small ">{{ $product->sku }} </span>
+                                    <!-- <span class="text--small ">{{ $product->sku }} </span> -->
                                 </td>
 
                                 <td>

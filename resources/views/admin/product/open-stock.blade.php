@@ -20,7 +20,7 @@
                                             <option value="{{ $product->id }}"
                                                 data-unit="{{ strtolower($product->unit->name) }}"
                                                 @selected($product->id == @$product->product_id)>
-                                                {{ __($product->name) }}
+                                                {{ __($product->name) }} ({{ __($product->category?->name) }})
                                             </option>
 
                                             @endforeach
@@ -34,7 +34,7 @@
                                             <div class="form-group">
                                                 <label class="form-label">@lang('Warehouse')</label>
                                                 <select class="form-control select2" name="warehouse_id" data-minimum-results-for-search="-1" required>
-                                                    <option value="" selected disabled>@lang('Select One')</option>
+                                                    <!-- <option value="" selected disabled>@lang('Select One')</option> -->
                                                     @foreach ($warehouses as $warehouse)
                                                     <option value="{{ $warehouse->id }}" @selected($warehouse->id == @$purchase->warehouse_id)>
                                                         {{ __($warehouse->name) }}

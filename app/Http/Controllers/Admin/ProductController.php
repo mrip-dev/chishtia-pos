@@ -12,6 +12,7 @@ use App\Models\Unit;
 use App\Models\Warehouse;
 use App\Rules\FileTypeValidate;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ProductController extends Controller
 {
@@ -109,7 +110,7 @@ class ProductController extends Controller
             }
         }
         $product->name           = $request->name;
-        $product->sku            = $request->sku;
+        $product->sku            = $request->sku ?? 'Null';
         $product->category_id    = $request->category_id;
         $product->brand_id       = $request->brand_id;
         $product->unit_id        = $request->unit_id;
@@ -175,9 +176,18 @@ class ProductController extends Controller
     {
         $request->validate(
             [
-                'name'           => 'required|string|unique:products,name,' . $id,
+                'name' => [
+                    'required',
+                    'string',
+                    'min:3',
+                    'max:100',
+                    Rule::unique('products')->where(function ($query) use ($request) {
+                        return $query->where('category_id', $request->category_id);
+                    })->ignore($id),
+                ],
                 'category_id'    => 'required|exists:categories,id',
-                'sku'            => 'required|string|max:40|unique:products,sku,' . $id,
+                // 'sku'            => 'required|string|max:40|unique:products,sku,' . $id,
+                'sku'            => 'nullable',
                 'brand_id'       => 'nullable|exists:brands,id',
                 'unit_id'        => 'nullable|exists:units,id',
                 'alert_quantity' => 'nullable|numeric',
@@ -185,7 +195,7 @@ class ProductController extends Controller
                 'image'          => ['nullable', 'image', new FileTypeValidate(['jpg', 'jpeg', 'png'])]
             ],
             [
-                'category_id.required' => 'The category field is required',
+                'category_id.required' => 'The Variant field is required',
                 'brand_id.required'    => 'The brand field is required',
                 'unit_id.required'     => 'The unit field is required'
             ]
