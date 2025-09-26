@@ -180,14 +180,14 @@
             },
             {
                 "keyword": [
-                    "All Categories",
-                    "Manage Category",
-                    "Category management",
-                    "Category control",
-                    "Category activity",
-                    "Category analytics"
+                    "All Variants",
+                    "Manage Variant",
+                    "Variant management",
+                    "Variant control",
+                    "Variant activity",
+                    "Variant analytics"
                 ],
-                "title": "Categories",
+                "title": "Variants",
                 "route_name": "admin.product.category.index",
                 "menu_active": "admin.product.category.index"
             },

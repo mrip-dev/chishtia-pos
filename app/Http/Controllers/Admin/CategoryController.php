@@ -10,7 +10,7 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $pageTitle  = 'Categories';
+        $pageTitle  = 'Variants';
         $categories = Category::searchable(['name'])->withCount('products')->latest()->paginate(getPaginate());
         return view('admin.category.index', compact('pageTitle', 'categories'));
     }
@@ -23,10 +23,10 @@ class CategoryController extends Controller
 
         if ($id) {
             $category     = Category::findOrFail($id);
-            $notification = 'Category updated successfully';
+            $notification = 'Variant updated successfully';
         } else {
             $category     = new Category();
-            $notification = 'Category added successfully';
+            $notification = 'Variant added successfully';
         }
 
         $category->name = $request->name;
@@ -40,11 +40,11 @@ class CategoryController extends Controller
         $category = Category::withCount('products')->findOrFail($id);
 
         if ($category->products_count) {
-            $notify[] = ['error', 'You can\'t delete this category because, it has some products'];
+            $notify[] = ['error', 'You can\'t delete this Variant because, it has some products'];
             return back()->withNotify($notify);
         }
         $category->delete();
-        $notify[] = ['success', 'Category deleted successfully'];
+        $notify[] = ['success', 'Variant deleted successfully'];
         return back()->withNotify($notify);
     }
 

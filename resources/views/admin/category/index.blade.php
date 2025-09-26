@@ -24,7 +24,7 @@
                                             <div class="button--group">
 
                                                 <button type="button" class="btn btn-sm btn-outline--primary cuModalBtn" data-resource="{{ $category }}"
-                                                    data-modal_title="@lang('Edit Category')">
+                                                    data-modal_title="@lang('Edit Variant')">
                                                     <i class="la la-pencil"></i>@lang('Edit')
                                                 </button>
 
@@ -62,7 +62,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title"><span class="type"></span> <span>@lang('Add Category')</span></h5>
+                    <h5 class="modal-title"><span class="type"></span> <span>@lang('Add Variant')</span></h5>
                     <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <i class="las la-times"></i>
                     </button>
@@ -137,7 +137,7 @@
 @push('breadcrumb-plugins')
     <x-search-form />
     @permit('admin.product.category.store')
-        <button type="button" class="btn btn-sm btn-outline--primary cuModalBtn" data-modal_title="@lang('Add New Category')">
+        <button type="button" class="btn btn-sm btn-outline--primary cuModalBtn" data-modal_title="@lang('Add New Variant')">
             <i class="las la-plus"></i>@lang('Add New')
         </button>
     @endpermit
