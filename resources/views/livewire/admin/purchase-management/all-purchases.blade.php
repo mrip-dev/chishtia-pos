@@ -268,7 +268,7 @@
                                             <ul class="list-group">
                                                 @foreach ($searchResults as $product)
                                                 <li class="list-group-item list-group-item-action" wire:click="addProduct({{ $product->id }})" style="cursor: pointer;">
-                                                    {{ $product->name }} ({{ $product->sku }})
+                                                    {{ $product->name }} ({{ $product->category?->name }})
                                                 </li>
                                                 @endforeach
                                             </ul>
@@ -296,7 +296,7 @@
 
                                             @foreach ($products as $index => $product)
                                             <tr>
-                                                <td>{{ $product['name'] }}</td>
+                                                <td>{{ getProductTitle($product['id']) }}</td>
                                                 {{-- <td>{{ $product['stock'] }}</td> --}}
                                                 <td>
                                                     <input type="number" wire:model.live.debounce.500ms="products.{{ $index }}.quantity" class="form-control">

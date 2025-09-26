@@ -293,7 +293,7 @@
                             <tbody>
                                 @foreach ($products as $index => $product)
                                 <tr>
-                                    <td>{{ $product['name'] }}</td>
+                                    <td>{{ getProductTitle($product['id']) }}</td>
                                     <td>
                                         {{ $product['stock'] }}
                                     </td>

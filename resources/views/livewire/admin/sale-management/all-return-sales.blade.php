@@ -54,7 +54,7 @@
                                     <tbody>
                                         @forelse ($products as $index => $product)
                                         <tr>
-                                            <td>{{ $product['name'] }}</td>
+                                            <td>{{ getProductTitle($product['product_id']) }}</td>
                                             <td>
                                                 <span class="fw-bold">Sale: {{ $product['sale_quantity'] }}</span>
                                                 <br>

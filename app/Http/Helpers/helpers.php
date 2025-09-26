@@ -10,6 +10,7 @@ use App\Lib\Captcha;
 use App\Lib\CurlRequest;
 use App\Lib\FileManager;
 use App\Lib\PDFManager;
+use App\Models\Product;
 use App\Notify\Notify;
 use App\Rules\FileTypeValidate;
 use Illuminate\Support\Str;
@@ -232,7 +233,28 @@ if (!function_exists('gourmet_cola_products')) {
         return $products;
     }
 }
+if (!function_exists('getProductTitle')) {
+    /**
+     * Get product title by product ID
+     * Format: BrandName - ProductName (CategoryName)
+     *
+     * @param int $productId
+     * @return string
+     */
+    function getProductTitle($productId)
+    {
+        $product = Product::with(['brand', 'category'])->find($productId);
 
+        if (!$product) {
+            return 'Unknown Product';
+        }
+
+        $brand    = $product->brand->name ?? 'No Brand';
+        $category = $product->category->name ?? 'No Category';
+
+        return "{$product->name} ({$category})";
+    }
+}
 
 function getImage($image, $size = null)
 {

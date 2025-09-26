@@ -53,7 +53,7 @@
                                         @forelse ($products as $index => $product)
                                             @php $isKg = (strtolower($product['unit_name'] ?? 'pcs') === 'kg' || strtolower($product['unit_name'] ?? 'pcs') === 'kilogram'); @endphp
                                             <tr>
-                                                <td>{{ $product['name'] }}</td>
+                                                <td>{{ getProductTitle($product['product_id']) }}</td>
                                                 <td>
                                                      <span class="fw-bold">Purchase: {{ $product['purchase_quantity'] }}</span>
                                                 <br>

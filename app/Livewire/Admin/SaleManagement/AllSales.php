@@ -282,7 +282,7 @@ class AllSales extends Component
             })->get()->map(function ($product) {
                 return [
                     'id' => $product->id,
-                    'text' => $product->name . ' (' . $product->sku . ')',
+                    'text' => $product->name . ' (' . $product->category?->name . ')',
                 ];
             });
         }
