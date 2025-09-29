@@ -9,8 +9,8 @@
                             <tr>
                                 <th>@lang('S.N.')</th>
                                 <th>@lang('Name')</th>
-                                <th>@lang('SKU')</th>
-                                <th>@lang('Category')</th>
+                                <!-- <th>@lang('SKU')</th> -->
+                                <th>@lang('Variant')</th>
                                 <th>@lang('Brand')</th>
                                 <th>@lang('Stock')</th>
                             </tr>
@@ -19,8 +19,8 @@
                             @forelse($stocksByWarehouse as $stock)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $stock->product->name }}</td>
-                                <td>{{ $stock->product->sku }}</td>
+                                <td>{{ getProductTitle($stock->product->id) }}</td>
+                                <!-- <td>{{ $stock->product->sku }}</td> -->
                                 <td>{{ $stock->product->category->name }} </td>
                                 <td>{{ $stock->product?->brand?->name }} </td>
                                 <td>

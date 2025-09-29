@@ -234,6 +234,10 @@ class ProductController extends Controller
     public function allProducts()
     {
         $products = Product::select('id', 'name', 'sku')->searchable(['name', 'sku'])->paginate(request()->rows ?? 5);
+        $products->getCollection()->transform(function ($product) {
+            $product->title = getProductTitle($product->id);
+            return $product;
+        });
         return response()->json([
             'success'  => true,
             'products' => $products,

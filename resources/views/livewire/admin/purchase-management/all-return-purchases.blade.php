@@ -23,7 +23,7 @@
                                 <div class="form-group">
                                     <label>@lang('Date')</label>
                                     <input class="form-control timepicker" name="return_date_picker_input" id="return_date_picker_input"
-                                           type="text" value="{{ $return_date }}" autocomplete="off"  @if ($editMode) disabled @endif>
+                                        type="text" value="{{ $return_date }}" autocomplete="off" @if ($editMode) disabled @endif>
                                     @error('return_date') <span class="text-danger">{{ $message }}</span> @enderror
                                 </div>
                             </div>
@@ -43,73 +43,77 @@
                                             <th>@lang('Name')</th>
                                             <th>@lang('QTY')</th>
                                             <th>@lang('Return Qty')<span class="text--danger">*</span></th>
-                                             <th>@lang('Weight')</th>
+                                            @if(!isWeightOff())
+                                            <th>@lang('Weight')</th>
                                             <th>@lang('Return Weight (kg)')</th>
+                                            @endif
                                             <th>@lang('Price')</th>
                                             <th>@lang('Total')</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @forelse ($products as $index => $product)
-                                            @php $isKg = (strtolower($product['unit_name'] ?? 'pcs') === 'kg' || strtolower($product['unit_name'] ?? 'pcs') === 'kilogram'); @endphp
-                                            <tr>
-                                                <td>{{ getProductTitle($product['product_id']) }}</td>
-                                                <td>
-                                                     <span class="fw-bold">Purchase: {{ $product['purchase_quantity'] }}</span>
+                                        @php $isKg = (strtolower($product['unit_name'] ?? 'pcs') === 'kg' || strtolower($product['unit_name'] ?? 'pcs') === 'kilogram'); @endphp
+                                        <tr>
+                                            <td>{{ getProductTitle($product['product_id']) }}</td>
+                                            <td>
+                                                <span class="fw-bold">Purchase: {{ $product['purchase_quantity'] }}</span>
                                                 <br>
                                                 <small>Stock: {{ $product['stock_quantity'] }}</small>
 
-                                                </td>
+                                            </td>
 
-                                                <td class="text-start" width="18%">
-                                                    <div class="input-group">
-                                                        <input class="form-control quantity"
-                                                               wire:model.live.debounce.500ms="products.{{ $index }}.quantity"
-                                                               type="number" min="0"
-                                                               title="{{ $isKg ? 'For KG items, use Return Weight field. Quantity here might represent units like bags.' : '' }}">
-                                                        <span class="input-group-text">{{ $product['unit_name'] }}</span>
-                                                    </div>
-                                                    @error('products.'.$index.'.quantity') <span class="text-danger d-block">{{ $message }}</span> @enderror
-                                                </td>
-                                                <td>
-                                                    @if(strtolower($product['unit_name']) == 'kg')
+                                            <td class="text-start" width="18%">
+                                                <div class="input-group">
+                                                    <input class="form-control quantity"
+                                                        wire:model.live.debounce.500ms="products.{{ $index }}.quantity"
+                                                        type="number" min="0"
+                                                        title="{{ $isKg ? 'For KG items, use Return Weight field. Quantity here might represent units like bags.' : '' }}">
+                                                    <span class="input-group-text">{{ $product['unit_name'] }}</span>
+                                                </div>
+                                                @error('products.'.$index.'.quantity') <span class="text-danger d-block">{{ $message }}</span> @enderror
+                                            </td>
+                                            @if(!isWeightOff())
+                                            <td>
+                                                @if(strtolower($product['unit_name']) == 'kg')
                                                 <span class="fw-bold">Purchase: {{ $product['purchase_weight'] }}</span>
                                                 <br>
                                                 <small>Stock: {{ $product['stock_weight'] }}</small>
                                                 @endif
-                                                </td>
-                                                <td class="text-start" width="18%">
-                                                    @if($isKg)
-                                                        <div class="input-group">
-                                                            <input class="form-control net_weight"
-                                                                   wire:model.live.debounce.500ms="products.{{ $index }}.net_weight"
-                                                                   type="number" step="any" min="0">
-                                                            <span class="input-group-text">@lang('kg')</span>
-                                                        </div>
-                                                        @error('products.'.$index.'.net_weight') <span class="text-danger d-block">{{ $message }}</span> @enderror
-                                                    @else
-                                                        N/A
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    {{ showAmount($product['price']) }}
-                                                </td>
-                                                <td>
-                                                    {{ showAmount($product['total'] ?? 0) }}
-                                                </td>
-                                            </tr>
+                                            </td>
+                                            <td class="text-start" width="18%">
+                                                @if($isKg)
+                                                <div class="input-group">
+                                                    <input class="form-control net_weight"
+                                                        wire:model.live.debounce.500ms="products.{{ $index }}.net_weight"
+                                                        type="number" step="any" min="0">
+                                                    <span class="input-group-text">@lang('kg')</span>
+                                                </div>
+                                                @error('products.'.$index.'.net_weight') <span class="text-danger d-block">{{ $message }}</span> @enderror
+                                                @else
+                                                N/A
+                                                @endif
+                                            </td>
+                                            @endif
+                                            <td>
+                                                {{ showAmount($product['price']) }}
+                                            </td>
+                                            <td>
+                                                {{ showAmount($product['total'] ?? 0) }}
+                                            </td>
+                                        </tr>
                                         @empty
-                                            <tr>
-                                                <td colspan="7" class="text-center">@lang('No products in this purchase to return.')</td>
-                                            </tr>
+                                        <tr>
+                                            <td colspan="7" class="text-center">@lang('No products in this purchase to return.')</td>
+                                        </tr>
                                         @endforelse
 
                                         @if (!blank($products))
-                                            <tr>
-                                                <td class="text-end fw-bold" colspan="100%">
-                                                    @lang('Total Price'): {{ showAmount($grandTotal) }}
-                                                </td>
-                                            </tr>
+                                        <tr>
+                                            <td class="text-end fw-bold" colspan="100%">
+                                                @lang('Total Price'): {{ showAmount($grandTotal) }}
+                                            </td>
+                                        </tr>
                                         @endif
                                     </tbody>
                                 </table>
@@ -151,25 +155,25 @@
                                     </div>
 
                                     @if ($editMode)
-                                        <div class="col-sm-12">
-                                            <div class="form-group">
-                                                <label>@lang('Received Amount')</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                                    <input class="form-control" type="number" value="{{ getAmount($receivedAmount) }}" disabled>
-                                                </div>
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label>@lang('Received Amount')</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">{{ gs('cur_sym') }}</span>
+                                                <input class="form-control" type="number" value="{{ getAmount($receivedAmount) }}" disabled>
                                             </div>
                                         </div>
+                                    </div>
 
-                                        <div class="col-sm-12">
-                                            <div class="form-group">
-                                                <label>@lang('Due Amount')</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text">{{ gs('cur_sym') }}</span>
-                                                    <input class="form-control due_amount" type="number" value="{{ getAmount($dueAmount) }}" disabled>
-                                                </div>
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label>@lang('Due Amount')</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">{{ gs('cur_sym') }}</span>
+                                                <input class="form-control due_amount" type="number" value="{{ getAmount($dueAmount) }}" disabled>
                                             </div>
                                         </div>
+                                    </div>
                                     @endif
                                 </div>
                             </div>
@@ -235,7 +239,10 @@
                 }
             }
             initDatePickerForPurchaseReturn();
-            Livewire.hook('morph.updated', ({ el, component }) => {
+            Livewire.hook('morph.updated', ({
+                el,
+                component
+            }) => {
                 if ($(el).find('#return_date_picker_input').length && !$(el).find('#return_date_picker_input').data('daterangepicker')) {
                     initDatePickerForPurchaseReturn();
                 }

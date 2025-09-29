@@ -23,7 +23,7 @@
                                 <div class="form-group">
                                     <label>@lang('Date')</label>
                                     <input class="form-control timepicker" name="return_date" id="return_date_picker"
-                                        type="text" value="{{ $return_date }}" autocomplete="off"  @if ($editMode) disabled @endif>
+                                        type="text" value="{{ $return_date }}" autocomplete="off" @if ($editMode) disabled @endif>
                                     @error('return_date') <span class="text-danger">{{ $message }}</span> @enderror
                                 </div>
                             </div>
@@ -44,8 +44,10 @@
                                             <th>@lang('Name')</th>
                                             <th>@lang('Qty')</th>
                                             <th class="qty-field">@lang('Return Qty')<span class="text--danger">*</span></th>
+                                            @if(!isWeightOff())
                                             <th>@lang('Weight')</th>
                                             <th class="qty-field">@lang('Return Weight')<span class="text--danger">*</span></th>
+                                            @endif
                                             <th>@lang('Price')</th>
                                             <th>@lang('Total')</th>
                                         </tr>
@@ -75,7 +77,7 @@
                                                 </div>
                                                 @error('products.'.$index.'.quantity') <span class="text-danger d-block">{{ $message }}</span> @enderror
                                             </td>
-
+                                            @if(!isWeightOff())
                                             <td>
                                                 @if(strtolower($product['unit_name']) == 'kg')
                                                 <span class="fw-bold">Sale: {{ $product['sale_weight'] }}</span>
@@ -96,7 +98,7 @@
                                                 @error('products.'.$index.'.net_weight') <span class="text-danger d-block">{{ $message }}</span> @enderror
                                                 @endif
                                             </td>
-
+                                            @endif
                                             <td>
                                                 {{ showAmount($product['price']) }}
                                             </td>

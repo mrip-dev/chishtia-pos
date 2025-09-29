@@ -283,8 +283,10 @@
                                     <th>@lang('Product')</th>
                                     <th>@lang('Stock')</th>
                                     <th>@lang('Quantity')</th>
+                                    @if(!isWeightOff())
                                     <th>@lang('Weight Stock')</th>
                                     <th>@lang('Weight')</th>
+                                    @endif
                                     <th>@lang('Price')</th>
                                     <th>@lang('Total')</th>
                                     <th>@lang('Action')</th>
@@ -301,6 +303,7 @@
                                         <input type="number" wire:model.live.debounce.700ms="products.{{ $index }}.quantity" class="form-control">
                                         @error("products.$index.quantity") <small class="text-danger">{{ $message }}</small> @enderror
                                     </td>
+                                    @if(!isWeightOff())
                                     <td>
                                         {{ $product['stock_weight'] }}
                                     </td>
@@ -311,6 +314,7 @@
                                         @error("products.$index.net_weight") <small class="text-danger">{{ $message }}</small> @enderror
                                         @endif
                                     </td>
+                                    @endif
                                     <td>
                                         <input type="text" wire:model.live.debounce.700ms="products.{{ $index }}.price" class="form-control">
                                         @error("products.$index.price") <small class="text-danger">{{ $message }}</small> @enderror

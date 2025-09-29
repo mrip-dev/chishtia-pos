@@ -236,7 +236,7 @@
                             <div class="col-xl-3 col-sm-6">
                                 <div class="form-group">
                                     <label>@lang('Date')</label>
-                                     <x-date-picker wire-model="purchase_date" placeholder="Purchase Date" />
+                                    <x-date-picker wire-model="purchase_date" placeholder="Purchase Date" />
 
                                 </div>
                             </div>
@@ -285,7 +285,9 @@
                                             <tr>
                                                 <th>@lang('Name')</th>
                                                 <th>@lang('Quantity')<span class="text--danger">*</span></th>
+                                                @if(!isWeightOff())
                                                 <th>@lang('Weight')</th>
+                                                @endif
                                                 <th>@lang('Price')<span class="text--danger">*</span></th>
                                                 <th>@lang('Total')</th>
                                                 <th>@lang('Action')</th>
@@ -302,6 +304,7 @@
                                                     <input type="number" wire:model.live.debounce.500ms="products.{{ $index }}.quantity" class="form-control">
                                                     @error("products.$index.quantity") <small class="text-danger">{{ $message }}</small> @enderror
                                                 </td>
+                                                @if(!isWeightOff())
                                                 <td>
                                                     @if($product['unit'] == 'KG' || $product['unit'] == 'Kg' || $product['unit'] == 'kg')
                                                     <input type="number" wire:model.live.debounce.500ms="products.{{ $index }}.net_weight" class="form-control">
@@ -309,6 +312,7 @@
                                                     @error("products.$index.net_weight") <small class="text-danger">{{ $message }}</small> @enderror
                                                     @endif
                                                 </td>
+                                                @endif
                                                 <td>
                                                     <input type="text" wire:model.live.debounce.500ms="products.{{ $index }}.price" class="form-control">
                                                     @error("products.$index.price") <small class="text-danger">{{ $message }}</small> @enderror

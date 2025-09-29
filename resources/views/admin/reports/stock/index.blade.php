@@ -29,7 +29,7 @@
                                     <label class="required">@lang('Product')</label>
                                     <select class="form-control " id="product" name="product">
                                         @if (request()->product)
-                                            <option value="{{ request()->product }}"> {{ $productName }}</option>
+                                            <option value="{{ request()->product }}">{{ getProductTitle(request()->product) }}</option>
                                         @endif
                                     </select>
                                 </div>
@@ -112,7 +112,7 @@
                             return {
                                 results: $.map(data, function(item) {
                                     return {
-                                        text: `${item.name} (${item.sku})`,
+                                        text: `${item.title}`,
                                         id: item.id
                                     }
                                 }),
