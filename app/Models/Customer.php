@@ -7,12 +7,13 @@ use App\Traits\UserNotify;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 
 class Customer extends Model
 {
     use ActionTakenBy, UserNotify;
-
+    use SoftDeletes;
     public function sale()
     {
         return $this->hasMany(Sale::class);
@@ -61,27 +62,27 @@ class Customer extends Model
     public function fullname(): Attribute
     {
         return new Attribute(
-            get: fn () => $this->name,
+            get: fn() => $this->name,
         );
     }
 
     public function mobileNumber(): Attribute
     {
         return new Attribute(
-            get: fn () =>  $this->mobile,
+            get: fn() =>  $this->mobile,
         );
     }
-    public function generateInvoice($startDate,$endDate,$search)
+    public function generateInvoice($startDate, $endDate, $search)
     {
 
         $directory = 'customer_pdf';
-        $pdf = Pdf::loadView('partials.customer-pdf', ['customer' => $this, 'startDate' => $startDate, 'endDate'=>$endDate, 'search'=>$search]);
+        $pdf = Pdf::loadView('partials.customer-pdf', ['customer' => $this, 'startDate' => $startDate, 'endDate' => $endDate, 'search' => $search]);
 
         if (!Storage::disk('public')->exists($directory)) {
             Storage::disk('public')->makeDirectory($directory);
         }
 
-        $filename = 'customer'. $this->customer?->name . '.pdf';
+        $filename = 'customer' . $this->customer?->name . '.pdf';
         $filepath = $directory . '/' . $filename;
 
         Storage::disk('public')->put($filepath, $pdf->output());
