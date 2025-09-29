@@ -255,6 +255,14 @@ if (!function_exists('getProductTitle')) {
         return "{$product->name} ({$category})";
     }
 }
+if (!function_exists('isWeightOpen')) {
+
+    function isWeightOff()
+    {
+
+        return true;
+    }
+}
 
 function getImage($image, $size = null)
 {

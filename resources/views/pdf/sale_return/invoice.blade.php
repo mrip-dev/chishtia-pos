@@ -24,7 +24,7 @@
             <tr>
                 <th>@lang('S.N.')</th>
                 <th>@lang('Name')</th>
-                <th>@lang('SKU')</th>
+                <!-- <th>@lang('SKU')</th> -->
                 <th>@lang('Quantity')</th>
                 <th>@lang('Unit Price')</th>
                 <th>@lang('Total')</th>
@@ -34,8 +34,8 @@
             @foreach ($saleReturn->details as $return)
                 <tr>
                     <td>{{ $loop->iteration }} </td>
-                    <td class="fw-bold">{{ $return->product->name }}</td>
-                    <td>{{ $return->product->sku }} </td>
+                    <td class="fw-bold">{{ getProductTitle($return->product->id) }}</td>
+                    <!-- <td>{{ $return->product->sku }} </td> -->
                     <td>{{ $return->quantity . ' ' . $return->product->unit->name }} </td>
                     <td>{{ showAmount($return->price) }}</td>
                     <td>{{ showAmount($return->total) }}</td>

@@ -22,9 +22,11 @@
             <tr>
                 <th>@lang('S.N.')</th>
                 <th>@lang('Name')</th>
-                <th>@lang('SKU')</th>
+                <!-- <th>@lang('SKU')</th> -->
                 <th>@lang('Quantity')</th>
+                @if(!isWeightOff())
                 <th>@lang('Weight')</th>
+                @endif
                 <th>@lang('Unit Price')</th>
                 <th>@lang('Total')</th>
             </tr>
@@ -33,10 +35,12 @@
             @foreach ($purchase->purchaseDetails as $value)
                 <tr>
                     <td>{{ $loop->iteration }} </td>
-                    <td>{{ $value->product->name }}</td>
-                    <td>{{ $value->product->sku }} </td>
+                    <td>{{ getProductTitle($value->product->id) }}</td>
+                    <!-- <td>{{ $value->product->sku }} </td> -->
                     <td>{{ $value->quantity }} </td>
+                    @if(!isWeightOff())
                     <td>{{ $value->net_weight . ' ' . $value->product->unit->name }} </td>
+                    @endif
                     <td>{{ showAmount($value->price) }}</td>
                     <td>{{ showAmount($value->total) }}</td>
                 </tr>

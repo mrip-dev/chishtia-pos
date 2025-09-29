@@ -87,7 +87,7 @@
                                                     @endpermit
                                                     @permit('admin.sale.return.pdf')
                                                         <li>
-                                                            <a class="dropdown-item" href="{{ route('admin.sale.return.pdf', $return->id) }}"><i
+                                                            <a class="dropdown-item" href="{{ route('admin.sale.return.invoice.pdf', $return->id) }}"><i
                                                                    class="la la-download"></i>
                                                                 @lang('Download Invoice')
                                                             </a>

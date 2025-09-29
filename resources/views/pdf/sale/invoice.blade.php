@@ -55,7 +55,7 @@
             <tr>
                 <th>@lang('S.N.')</th>
                 <th>@lang('Name')</th>
-                <th>@lang('SKU')</th>
+                <!-- <th>@lang('SKU')</th> -->
                 <th>@lang('Quantity')</th>
                 <th>@lang('Unit Price')</th>
                 <th>@lang('Total')</th>
@@ -65,8 +65,8 @@
             @forelse($sale->saleDetails as $item)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
-                    <td class="fw-bold">{{ $item->product->name }}</td>
-                    <td>{{ $item->product->sku }}</td>
+                    <td class="fw-bold">{{ getProductTitle($item->product->id) }}</td>
+                    <!-- <td>{{ $item->product->sku }}</td> -->
                     <td>{{ $item->quantity . ' ' . $item->product->unit->name }}</td>
                     <td>{{ showAmount($item->price) }}</td>
                     <td>{{ showAmount($item->total) }}</td>
