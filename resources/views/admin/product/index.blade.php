@@ -59,7 +59,7 @@
                                     <span class="badge badge--warning">{{ $product->alert_quantity }}</span>
                                 </td>
 
-                                <td> {{ $product->unit->name }}</td>
+                                <td> {{ $product->unit?->name }}</td>
                                 <!-- <td> {{ $product->net_weight ?? '' }}</td> -->
 
                                 <td>
