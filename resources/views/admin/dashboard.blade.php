@@ -217,7 +217,7 @@
                         <thead>
                             <tr>
                                 <th>@lang('Product')</th>
-                                <th>@lang('SKU')</th>
+                                <!-- <th>@lang('SKU')</th> -->
                                 <th>@lang('Quantity')</th>
                             </tr>
                         </thead>
@@ -227,10 +227,10 @@
                                     <td>
                                         {{ $loop->iteration }}. &nbsp;
                                         <a class="text--dark"
-                                            href="{{ route('admin.product.edit', $product->id) }}">{{ strLimit(__($product->name), 20) }}</a>
+                                            href="{{ route('admin.product.edit', $product->id) }}">{{ strLimit(__(getProductTitle($product->id)), 20) }}</a>
                                     </td>
-                                    <td>{{ $product->sku }} </td>
-                                    <td>{{ $product->total_sale }} {{ $product->unit->name }} </td>
+                                    <!-- <td>{{ $product->sku }} </td> -->
+                                    <td>{{ $product->total_sale }} {{ $product->unit?->name }} </td>
                                 </tr>
                             @empty
                                 <tr>
@@ -250,7 +250,7 @@
                         <thead>
                             <tr>
                                 <th>@lang('Product')</th>
-                                <th>@lang('Warehouse')</th>
+                                <!-- <th>@lang('Warehouse')</th> -->
                                 <th>@lang('Alert')</th>
                                 <th>@lang('Stock')</th>
                                 <th>@lang('Unit')</th>
@@ -259,8 +259,8 @@
                         <tbody>
                             @forelse ($alertProductsQty as $product)
                                 <tr>
-                                    <td class="fw-bold"> {{ $product->name }} </td>
-                                    <td> {{ $product->warehouse_name }} </td>
+                                    <td class="fw-bold"> {{ getProductTitle($product->id) }} </td>
+                                    <!-- <td> {{ $product->warehouse_name }} </td> -->
                                     <td>
                                         <span class="bg--warning px-2 rounded">
                                             {{ $product->alert_quantity }}
