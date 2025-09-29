@@ -10,6 +10,7 @@ use App\Models\ProductStock;
 use App\Models\Sale;
 use App\Models\SaleReturn;
 use App\Models\SaleReturnDetails;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 
 use Illuminate\Http\Request;
@@ -87,8 +88,14 @@ class SaleReturnController extends Controller
 
         $customer = $saleReturn->customer;
         $sale     = $saleReturn->sale;
-        return downloadPDF('pdf.sale_return.invoice', compact('pageTitle', 'saleReturn', 'customer', 'sale'));
+        $pdf = PDF::loadView('pdf.sale_return.invoice', compact('pageTitle', 'saleReturn', 'customer', 'sale'));
+        $customerName = preg_replace('/[^A-Za-z0-9\-]/', '_', $customer?->name);
+        $invoiceNo    = $sale->invoice_no ?? 'INV-00';
+        $date         = now()->format('Y-m-d');
+        return $pdf->download("Return_Sale_{$invoiceNo}_{$customerName}_{$date}.pdf");
     }
+
+
 
     public function newReturn($id)
     {
@@ -184,7 +191,7 @@ class SaleReturnController extends Controller
         $this->sale          = Sale::where('id', $this->saleReturn->sale_id)->first();
         $this->productStocks = ProductStock::where('warehouse_id',  $this->sale->warehouse_id)->whereIn('product_id', $this->productIds)->get();
 
-          // If reduce the quantity then we need to check the current stock.
+        // If reduce the quantity then we need to check the current stock.
         $checkStock = $this->checkStockAvailability();
         if (!empty($checkStock)) {
             return $checkStock;

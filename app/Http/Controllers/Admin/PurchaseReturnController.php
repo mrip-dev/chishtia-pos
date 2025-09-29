@@ -11,6 +11,7 @@ use App\Models\PurchaseDetails;
 use App\Models\PurchaseReturn;
 use App\Models\PurchaseReturnDetails;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 
@@ -84,8 +85,12 @@ class PurchaseReturnController extends Controller
         $pageTitle      = "Purchase Return Details";
         $purchaseReturn = PurchaseReturn::where('id', $id)->with('purchase.supplier', 'details', 'details.product', 'details.product.unit')->whereHas('details')->firstOrFail();
         $supplier       = $purchaseReturn->purchase->supplier;
-        $supplier       = $purchaseReturn->purchase->supplier;
-        return downloadPDF('pdf.purchase_return.details', compact('pageTitle', 'purchaseReturn', 'supplier'));
+        $purchase     = $purchaseReturn->purchase;
+        $pdf = PDF::loadView('pdf.purchase_return.details', compact('pageTitle', 'purchaseReturn', 'supplier'));
+        $suppName = preg_replace('/[^A-Za-z0-9\-]/', '_', $supplier?->name);
+        $invoiceNo    = $purchase->invoice_no ?? 'INV-00';
+        $date         = now()->format('Y-m-d');
+        return $pdf->download("Purchase_Return_{$invoiceNo}_{$suppName}_{$date}.pdf");
     }
 
     public function newReturn($id)

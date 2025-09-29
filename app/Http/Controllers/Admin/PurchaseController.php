@@ -13,6 +13,7 @@ use App\Models\Supplier;
 use App\Models\Warehouse;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 
 class PurchaseController extends Controller
@@ -34,7 +35,7 @@ class PurchaseController extends Controller
         $pageTitle = $this->pageTitle;
         $purchases = $this->getPurchases()->paginate(getPaginate());
         $banks = Bank::all();
-        return view('admin.purchase.index', compact('pageTitle', 'purchases' , 'banks'));
+        return view('admin.purchase.index', compact('pageTitle', 'purchases', 'banks'));
     }
 
     public function purchasePDF()
@@ -92,7 +93,12 @@ class PurchaseController extends Controller
         $pageTitle = "Purchase Details";
         $purchase  = Purchase::where('id', $id)->with('supplier', 'purchaseDetails', 'purchaseDetails.product', 'purchaseDetails.product.unit')->whereHas('purchaseDetails')->firstOrFail();
         $supplier  = $purchase->supplier;
-        return downloadPDF('pdf.purchase.details', compact('pageTitle', 'purchase', 'supplier'));
+
+        $pdf = PDF::loadView('pdf.purchase.details', compact('pageTitle', 'purchase', 'supplier'));
+        $suppName = preg_replace('/[^A-Za-z0-9\-]/', '_', $supplier?->name);
+        $invoiceNo    = $purchase->invoice_no ?? 'INV-00';
+        $date         = now()->format('Y-m-d');
+        return $pdf->download("Purchase_INV_{$invoiceNo}_{$suppName}_{$date}.pdf");
     }
 
     public function edit($id)
@@ -158,7 +164,7 @@ class PurchaseController extends Controller
         $this->purchaseDetails = $purchase->purchaseDetails;
         $this->oldWarehouseId  = $purchase->warehouse_id;
 
-            // If reduce the quantity then we need to check the current stock.
+        // If reduce the quantity then we need to check the current stock.
         $checkStock = $this->checkStockAvailability();
 
         if (!empty($checkStock)) {

@@ -13,6 +13,7 @@ use App\Models\ProductStock;
 use App\Models\Warehouse;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class SaleController extends Controller
 {
@@ -46,7 +47,7 @@ class SaleController extends Controller
             $routePDF .= "date=" . request()->date;
             $routeCSV .= "date=" . request()->date;
         }
-        return view('admin.sale.index', compact('pageTitle', 'sales', 'pdfButton', 'routePDF', 'routeCSV' , 'banks'));
+        return view('admin.sale.index', compact('pageTitle', 'sales', 'pdfButton', 'routePDF', 'routeCSV', 'banks'));
     }
 
     public function salePDF()
@@ -95,11 +96,21 @@ class SaleController extends Controller
     public function downloadInvoice($id)
     {
         $pageTitle = "INVOICE";
-        $sale      = Sale::where('id', $id)->with('customer', 'saleDetails', 'saleDetails.product', 'saleDetails.product.unit')->whereHas('saleDetails')->firstOrFail();
+        $sale      = Sale::where('id', $id)
+            ->with('customer', 'saleDetails', 'saleDetails.product', 'saleDetails.product.unit')
+            ->whereHas('saleDetails')
+            ->firstOrFail();
+
         $customer  = $sale->customer;
 
-        return downloadPDF('pdf.sale.invoice', compact('pageTitle', 'sale', 'customer'));
+        $pdf = PDF::loadView('pdf.sale.invoice', compact('pageTitle', 'sale', 'customer'));
+
+        $customerName = preg_replace('/[^A-Za-z0-9\-]/', '_', $customer?->name);
+        $invoiceNo    = $sale->invoice_no ?? 'INV-00';
+        $date         = now()->format('Y-m-d');
+        return $pdf->download("Sale_Inv_{$invoiceNo}_{$customerName}_{$date}.pdf");
     }
+
 
     public function create()
     {
@@ -139,7 +150,7 @@ class SaleController extends Controller
             $notify[] = ['error', 'Discount amount mustn\'t be greater than total price'];
             return back()->withNotify($notify)->withInput();
         }
-          //warehouse product qty checked
+        //warehouse product qty checked
         $this->productStocks = ProductStock::where('warehouse_id', $request->warehouse_id)->whereIn('product_id', $this->productIds)->get();
 
         foreach ($this->productStocks as $stock) {
@@ -204,7 +215,7 @@ class SaleController extends Controller
         $this->saleDetails    = $sale->saleDetails;
         $this->oldWarehouseId = $sale->warehouse_id;
 
-          // If increase the quantity then we need to check the current stock.
+        // If increase the quantity then we need to check the current stock.
         $checkStock = $this->checkStockAvailability();
 
         if (!empty($checkStock)) {
@@ -245,7 +256,7 @@ class SaleController extends Controller
             $newStock->quantity -= $quantity;
             $newStock->save();
 
-              //total_sale product update
+            //total_sale product update
             $product              = Product::find($product->product_id);
             $product->total_sale += $quantity;
             $product->save();
