@@ -16,11 +16,11 @@ return new class extends Migration
             $table->string('invoice_no', 255);
             $table->unsignedBigInteger('warehouse_id');
             $table->date('sale_date');
-            $table->decimal('total_price', 28, 8)->default(0.00000000);
-            $table->decimal('discount_amount', 28, 8)->default(0.00000000);
-            $table->decimal('receivable_amount', 28, 8)->default(0.00000000);
-            $table->decimal('received_amount', 28, 8)->default(0.00000000);
-            $table->decimal('due_amount', 28, 8)->default(0.00000000);
+            $table->decimal('total_price', 28, 8)->default(0.00);
+            $table->decimal('discount_amount', 28, 8)->default(0.00);
+            $table->decimal('receivable_amount', 28, 8)->default(0.00);
+            $table->decimal('received_amount', 28, 8)->default(0.00);
+            $table->decimal('due_amount', 28, 8)->default(0.00);
             $table->text('note')->nullable();
             $table->boolean('return_status')->default(0);
             $table->timestamps();

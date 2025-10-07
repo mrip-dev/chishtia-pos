@@ -47,7 +47,7 @@
     </div>
     <div class="col-md-6 right-side">
       <div class="form-box">
-        <h2 class="mb-4">Welcome To Moeen Traders</h2>
+        <h2 class="mb-4">Welcome To Chishtia Balochi Saggi</h2>
         <form class="cmn-form mt-30 verify-gcaptcha login-form" action="{{ route('admin.login') }}" method="POST">
             @csrf
             <div class="form-group">

@@ -14,7 +14,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('expense_type_id');
             $table->date('date_of_expense')->nullable()->comment('Expense date');
-            $table->double('amount', 28, 8)->default(0.00000000);
+            $table->double('amount', 28, 8)->default(0.00);
             $table->string('note', 255)->nullable();
             $table->timestamps();
         });

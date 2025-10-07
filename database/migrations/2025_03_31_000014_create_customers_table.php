@@ -13,7 +13,7 @@ return new class extends Migration
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
             $table->string('name', 40)->nullable();
-            $table->string('email', 40)->unique();
+            $table->string('email', 40)->unique()->nullable();;
             $table->string('mobile', 40)->unique()->nullable();
             $table->text('address')->nullable()->comment('contains full address');
             $table->timestamps();

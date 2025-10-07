@@ -1,0 +1,534 @@
+{
+    "dashboard": {
+        "keyword": [
+            "Dashboard",
+            "Home",
+            "Panel",
+            "Admin",
+            "Control center",
+            "Overview",
+            "Main hub",
+            "Management hub",
+            "Administrative hub",
+            "Central hub",
+            "Command center",
+            "Administrator portal",
+            "Centralized interface",
+            "Admin console",
+            "Management dashboard",
+            "Main screen",
+            "Administrative dashboard",
+            "Command dashboard",
+            "Main control panel"
+        ],
+        "title": "Dashboard",
+        "icon": "las la-home",
+        "route_name": "admin.dashboard",
+        "menu_active": "admin.dashboard"
+    },
+    "day_book": {
+        "title": "Day Book",
+        "icon": "la la-book",
+        "menu_active": [
+            "admin.daybook*"
+        ],
+        "submenu": [
+            {
+                "keyword": [
+                    "Day Book",
+                    "Bookkeeping",
+                    "Transactions",
+                    "Main Day Book"
+                ],
+                "title": "Day Book",
+                "route_name": "admin.daybook.index",
+                "menu_active": [
+                    "admin.daybook.index"
+                ]
+            }
+        ]
+    },
+    "manage_sale": {
+        "title": "Manage Sales",
+        "icon": "la la-shopping-cart",
+        "menu_active": [
+            "admin.manage_sale",
+            "admin.sale.return*"
+        ],
+        "submenu": [
+            {
+                "keyword": [
+                    "Sales",
+                    "Manage sales",
+                    "Sale Configuration",
+                    "Add sale",
+                    "Edit sale"
+                ],
+                "title": "All Sales",
+                "route_name": "admin.manage_sale",
+                "menu_active": [
+                    "admin.manage_sale",
+                    "admin.sale.create",
+                    "admin.sale.edit"
+                ]
+            },
+            {
+                "keyword": [
+                    "All sales return",
+                    "Manage sales return",
+                    "Sale return Configuration",
+                    "Add sale return",
+                    "Edit sale return"
+                ],
+                "title": "Sales Return",
+                "route_name": "admin.sale.return.index",
+                "menu_active": [
+                    "admin.sale.return.index",
+                    "admin.sale.return.items",
+                    "admin.sale.return.edit"
+                ]
+            }
+        ]
+    },
+    "manage_purchase": {
+        "title": "Manage Purchases",
+        "icon": "la la-shopping-bag",
+        "menu_active": [
+            "admin.manage_purchase*",
+            "admin.purchase.return*"
+        ],
+        "submenu": [
+            {
+                "keyword": [
+                    "purchases",
+                    "Manage purchase",
+                    "Purchase Configuration",
+                    "Add purchase",
+                    "Edit purchase"
+                ],
+                "title": "All Purchases",
+                "route_name": "admin.manage_purchase",
+                "menu_active": [
+                    "admin.purchase.index",
+                    "admin.purchase.new",
+                    "admin.purchase.edit"
+                ]
+            },
+            {
+                "keyword": [
+                    "All purchase return",
+                    "Manage purchase return",
+                    "Purchase return Configuration",
+                    "Add purchase return",
+                    "Edit purchase return"
+                ],
+                "title": "Purchases Return",
+                "route_name": "admin.purchase.return.index",
+                "menu_active": [
+                    "admin.purchase.return.index",
+                    "admin.purchase.return.items",
+                    "admin.purchase.return.edit"
+                ]
+            }
+        ]
+    },
+    "manage_banks": {
+        "keyword": [
+            "Banks",
+            "Home",
+            "Panel",
+            "Admin",
+            "Control center",
+            "Overview",
+            "Main hub",
+            "Management hub",
+            "Administrative hub",
+            "Central hub",
+            "Command center",
+            "Administrator portal",
+            "Centralized interface",
+            "Admin console",
+            "Management dashboard",
+            "Main screen",
+            "Administrative dashboard",
+            "Command dashboard",
+            "Main control panel"
+        ],
+        "title": "Banks Management",
+        "icon": "las la-university",
+        "route_name": "admin.bank.index",
+        "menu_active": "admin.bank*"
+    },
+    "manage_products": {
+        "title": "Manage Products",
+        "icon": "las la-box",
+        "menu_active": [
+            "admin.product*"
+        ],
+        "submenu": [
+            {
+                "keyword": [
+                    "All Products",
+                    "Manage Product",
+                    "Product Configuration",
+                    "Add product",
+                    "Edit Products"
+                ],
+                "title": "Products",
+                "route_name": "admin.product.index",
+                "menu_active": "admin.product.index"
+            },
+            {
+                "keyword": [
+                    "All Variants",
+                    "Manage Variant",
+                    "Variant management",
+                    "Variant control",
+                    "Variant activity",
+                    "Variant analytics"
+                ],
+                "title": "Variants",
+                "route_name": "admin.product.category.index",
+                "menu_active": "admin.product.category.index"
+            },
+            {
+                "keyword": [
+                    "All Brands",
+                    "Manage Brands",
+                    "Brand management"
+                ],
+                "title": "Brands",
+                "route_name": "admin.product.brand.index",
+                "menu_active": [
+                    "admin.product.brand.index"
+                ]
+            },
+            {
+                "keyword": [
+                    "All Units",
+                    "Manage Units",
+                    "Product Units"
+                ],
+                "title": "Units",
+                "route_name": "admin.product.unit.index",
+                "menu_active": "admin.product.unit.index"
+            }
+        ]
+    },
+    "customers": {
+        "keyword": [
+            "Customer",
+            "Product Customer",
+            "Users",
+            "Product Buyers"
+        ],
+        "title": "Manage Customers",
+        "icon": "la la-users",
+        "route_name": "admin.customer.index",
+        "menu_active": [
+            "admin.customer.index",
+            "admin.customer.payment.*",
+            "admin.customer.notification.*",
+            "admin.customer*"
+        ]
+    },
+    "suppliers": {
+        "keyword": [
+            "Suppliers",
+            "Product Suppliers",
+            "Producer",
+            "Product Seller"
+        ],
+        "title": "Manage Suppliers",
+        "icon": "la la-user-friends",
+        "route_name": "admin.supplier.index",
+        "menu_active": [
+            "admin.supplier.index",
+            "admin.supplier*"
+        ]
+    },
+     "attendance": {
+        "keyword": [
+            "Attendance"
+        ],
+        "title": "Attendance",
+        "icon": "la la-user-friends",
+        "route_name": "admin.staff.attendance",
+        "menu_active": [
+            "admin.staff.attednace"
+        ]
+    },
+         "clock-in": {
+        "keyword": [
+            "Clock In"
+        ],
+        "title": "Clock In",
+        "icon": "la la-user-friends",
+        "route_name": "admin.staff.clock-in",
+        "menu_active": [
+            "admin.staff.clock-in"
+        ]
+    },
+    "manage_staff": {
+        "title": "Manage Staff",
+        "icon": "las la-user",
+        "menu_active": [
+            "admin.staff.index",
+            "admin.roles.index",
+            "admin.roles.edit"
+        ],
+        "submenu": [
+            {
+                "keyword": [
+                    "All Staff",
+                    "Manage staff",
+                    "Staff management",
+                    "Staff control",
+                    "Staff activity",
+                    "Staff analytics"
+                ],
+                "title": "All Staff",
+                "route_name": "admin.staff.index",
+                "menu_active": "admin.staff.index"
+            },
+
+            {
+                "keyword": [
+                    "All Roles",
+                    "Manage Role",
+                    "Role management",
+                    "Role control",
+                    "Role activity",
+                    "Role analytics"
+                ],
+                "title": "Roles",
+                "route_name": "admin.roles.index",
+                "menu_active": [
+                    "admin.roles.index",
+                    "admin.roles.edit"
+                ]
+            }
+        ]
+    },
+
+    "product_adjustments": {
+        "keyword": [
+            "adjustment",
+            "Product adjustment",
+            "Good adjustment"
+        ],
+        "title": "Adjustments",
+        "icon": "la la-balance-scale",
+        "route_name": "admin.adjustment.index",
+        "menu_active": "admin.adjustment.*"
+    },
+    "institute_expense": {
+        "title": "Manage Expenses",
+        "icon": "la la-wallet",
+        "menu_active": [
+            "admin.manage_expense_type*",
+            "admin.manage_expense"
+        ],
+        "submenu": [
+            {
+                "keyword": [
+                    "All expense",
+                    "Manage expense",
+                    "expense Configuration",
+                    "Add expense",
+                    "Edit expense"
+                ],
+                "title": "Expenses",
+                "route_name": "admin.manage_expense",
+                "menu_active": "admin.manage_expense"
+            },
+            {
+                "keyword": [
+                    "All expense type",
+                    "Manage expense type",
+                    "expense type Configuration",
+                    "Add expense type",
+                    "Edit expense type"
+                ],
+                "title": "Expense Types",
+                "route_name": "admin.manage_expense_type",
+                "menu_active": "admin.manage_expense_type"
+            }
+        ]
+    },
+    "payment_report": {
+        "title": "Payment Report",
+        "header": "Report",
+        "icon": "la la-money-check-alt",
+        "menu_active": [
+            "admin.report.payment.*"
+        ],
+        "submenu": [
+            {
+                "keyword": [
+                    "All Supplier Payment Report",
+                    "Manage Supplier Payment Report",
+                    "Supplier Payment Report Configuration"
+                ],
+                "title": "Supplier Payments",
+                "route_name": "admin.report.payment.supplier",
+                "menu_active": "admin.report.payment.supplier"
+            },
+            {
+                "keyword": [
+                    "All customer payment report",
+                    "Manage customer payment report",
+                    "customer payment report Configuration"
+                ],
+                "title": "Customer Payments",
+                "route_name": "admin.report.payment.customer",
+                "menu_active": "admin.report.payment.customer"
+            }
+        ]
+    },
+    "stock_report": {
+        "keyword": [
+            "Stock Count",
+            "Stock report",
+            "Goods stock"
+        ],
+        "title": "Stock Report",
+        "icon": "la la-list",
+        "route_name": "admin.report.stock.index",
+        "menu_active": "admin.report.stock.index"
+    },
+    "data_entry_report": {
+        "title": "Data Entry Report",
+        "icon": "la la-database",
+        "menu_active": [
+            "admin.report.data.entry.*"
+        ],
+        "submenu": [
+            {
+                "keyword": [
+                    "Purchase Data Entry",
+                    "Purchase Add Data",
+                    "Purchase Edit Data"
+                ],
+                "title": "Purchases",
+                "route_name": "admin.report.data.entry.purchase",
+                "menu_active": "admin.report.data.entry.purchase"
+            },
+            {
+                "keyword": [
+                    "Purchase Return Data Entry",
+                    "Purchase Return Add Data",
+                    "Purchase Return Edit Data"
+                ],
+                "title": "Purchase Return",
+                "route_name": "admin.report.data.entry.purchase.return",
+                "menu_active": "admin.report.data.entry.purchase.return"
+            },
+            {
+                "keyword": [
+                    "Sales Data Entry",
+                    "Sales Add Data",
+                    "Sales Edit Data"
+                ],
+                "title": "Sales",
+                "route_name": "admin.report.data.entry.sale",
+                "menu_active": "admin.report.data.entry.sale"
+            },
+            {
+                "keyword": [
+                    "Sales Return Data Entry",
+                    "Sales Return Add Data",
+                    "Sales Return Edit Data"
+                ],
+                "title": "Sale Return",
+                "route_name": "admin.report.data.entry.sale.return",
+                "menu_active": "admin.report.data.entry.sale.return"
+            },
+            {
+                "keyword": [
+                    "Product Data Entry",
+                    "Product Add Data",
+                    "Product Edit Data"
+                ],
+                "title": "Products",
+                "route_name": "admin.report.data.entry.product",
+                "menu_active": "admin.report.data.entry.product"
+            },
+            {
+                "keyword": [
+                    "Customer Data Entry",
+                    "Customer Add Data",
+                    "Customer Edit Data"
+                ],
+                "title": "Customers",
+                "route_name": "admin.report.data.entry.customer",
+                "menu_active": "admin.report.data.entry.customer"
+            },
+            {
+                "keyword": [
+                    "Customer Payment Data Entry",
+                    "Customer Payment Add Data",
+                    "Customer Payment Edit Data",
+                    "Customer Payment Received Data",
+                    "Customer Payment Payable Data"
+                ],
+                "title": "Customer Payments",
+                "route_name": "admin.report.data.entry.customer.payment",
+                "menu_active": "admin.report.data.entry.customer.payment"
+            },
+            {
+                "keyword": [
+                    "Supplier Data Entry",
+                    "Supplier Add Data",
+                    "Supplier Edit Data"
+                ],
+                "title": "Suppliers",
+                "route_name": "admin.report.data.entry.supplier",
+                "menu_active": "admin.report.data.entry.supplier"
+            },
+            {
+                "keyword": [
+                    "Supplier Payment Data Entry",
+                    "Supplier Payment Add Data",
+                    "Supplier Payment Edit Data",
+                    "Supplier Payment Received Data",
+                    "Supplier Payment Payable Data"
+                ],
+                "title": "Supplier Payments",
+                "route_name": "admin.report.data.entry.supplier.payment",
+                "menu_active": "admin.report.data.entry.supplier.payment"
+            },
+            {
+                "keyword": [
+                    "Adjustments Data Entry",
+                    "Product Adjustment Add Data",
+                    "Product Adjustment Edit Data"
+                ],
+                "title": "Adjustments",
+                "route_name": "admin.report.data.entry.adjustment",
+                "menu_active": "admin.report.data.entry.adjustment"
+            },
+            {
+                "keyword": [
+                    "Transfers Data Entry",
+                    "Product Transfer Add Data",
+                    "Product Transfer Edit Data"
+                ],
+                "title": "Transfers",
+                "route_name": "admin.report.data.entry.transfer",
+                "menu_active": "admin.report.data.entry.transfer"
+            },
+            {
+                "keyword": [
+                    "Expenses Data Entry",
+                    "Institute Expense Add Data",
+                    "Institute Expense Edit Data",
+                    "Basic Expense Data Entry"
+                ],
+                "title": "Expenses",
+                "route_name": "admin.report.data.entry.expense",
+                "menu_active": "admin.report.data.entry.expense"
+            }
+        ]
+    }
+}

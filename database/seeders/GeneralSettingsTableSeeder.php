@@ -13,11 +13,11 @@ class GeneralSettingsTableSeeder extends Seeder
         DB::table('general_settings')->updateOrInsert(
             ['id' => 1],
             [
-                'site_name' => 'Moeen',
+                'site_name' => 'Chishtia',
                 'cur_text' => 'PKR',
                 'cur_sym' => 'PKR',
-                'email_from' => 'info@viserlab.com',
-                'email_from_name' => 'viserlab',
+                'email_from' => 'info@dev.com',
+                'email_from_name' => 'dev',
                 'email_template' => '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <!--[if !mso]><!-->
   <meta http-equiv="X-UA-Compatible" content="IE=edge">

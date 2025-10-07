@@ -15,8 +15,8 @@ return new class extends Migration
             $table->unsignedBigInteger('customer_id');
             $table->unsignedBigInteger('sale_id')->nullable();
             $table->unsignedBigInteger('sale_return_id')->nullable();
-            $table->decimal('amount', 28, 8)->unsigned()->default(0.00000000);
-            $table->string('trx', 40);
+            $table->decimal('amount', 28, 8)->unsigned()->default(0.00);
+            $table->string('trx', 40)->default(0.00);
             $table->string('remark', 255)->nullable();
             $table->timestamps();
         });

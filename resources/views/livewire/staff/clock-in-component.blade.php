@@ -1,7 +1,7 @@
 <div class="container text-center" style="max-width: 500px; margin-top: 2vh;">
     <div class="card">
         <div class="card-header">
-            <h3>Moeen Traders - Staff Attendance</h3>
+            <h3>Chishtia - Staff Attendance</h3>
         </div>
         <div class="card-body">
             <h4>Welcome, {{ $staff->name }}</h4>

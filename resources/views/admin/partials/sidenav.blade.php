@@ -2,8 +2,15 @@
     $sideBarLinks = json_decode($sidenav);
 @endphp
 
-
-<div class="sidebar bg--dark">
+<style>
+    .rgbg {
+  /* A subtle linear gradient from a light cream to a soft tan */
+  background: linear-gradient(135deg, #fdf8e1 0%, #e8d8b1 100%);
+  /* Fallback color for older browsers */
+  background-color: #fdf8e1;
+}
+</style>
+<div class="sidebar rgbg">
     <button class="res-sidebar-close-btn"><i class="las la-times"></i></button>
     <div class="sidebar__inner">
         <div class="sidebar__logo">
@@ -90,10 +97,7 @@
             @endforeach
         </ul>
     </div>
-    <div class="version-info text-center text-uppercase">
-        <span class="text-white">Moeeen</span>
-        <span class="text--dark">Traders </span>
-    </div>
+
 </div>
 </div>
 <!-- sidebar end -->

@@ -15,8 +15,8 @@ return new class extends Migration
             $table->unsignedBigInteger('sale_return_id');
             $table->unsignedBigInteger('product_id');
             $table->unsignedInteger('quantity');
-            $table->double('price', 28, 8)->default(0.00000000);
-            $table->double('total', 28, 8)->default(0.00000000);
+            $table->double('price', 28, 8)->default(0.00);
+            $table->double('total', 28, 8)->default(0.00);
         });
     }
 
