@@ -26,7 +26,62 @@
         "route_name": "admin.dashboard",
         "menu_active": "admin.dashboard"
     },
-
+ "manage_products": {
+        "title": "Products",
+        "icon": "las la-box",
+        "menu_active": [
+            "admin.product*"
+        ],
+        "submenu": [
+            {
+                "keyword": [
+                    "All Products",
+                    "Manage Product",
+                    "Product Configuration",
+                    "Add product",
+                    "Edit Products"
+                ],
+                "title": "Products",
+                "route_name": "admin.product.index",
+                "menu_active": "admin.product.index"
+            },
+            {
+                "keyword": [
+                    "All Variants",
+                    "Manage Variant",
+                    "Variant management",
+                    "Variant control",
+                    "Variant activity",
+                    "Variant analytics"
+                ],
+                "title": "Variants",
+                "route_name": "admin.product.category.index",
+                "menu_active": "admin.product.category.index"
+            },
+            {
+                "keyword": [
+                    "All Brands",
+                    "Manage Brands",
+                    "Brand management"
+                ],
+                "title": "Brands",
+                "route_name": "admin.product.brand.index",
+                "menu_active": [
+                    "admin.product.brand.index"
+                ]
+            },
+            {
+                "keyword": [
+                    "All Units",
+                    "Manage Units",
+                    "Product Units"
+                ],
+                "title": "Units",
+                "route_name": "admin.product.unit.index",
+                "menu_active": "admin.product.unit.index"
+            }
+        ]
+    },
     "manage_sale": {
         "title": "Sales",
         "icon": "la la-shopping-cart",
@@ -49,6 +104,21 @@
                     "admin.manage_sale",
                     "admin.sale.create",
                     "admin.sale.edit"
+                ]
+            },
+             {
+                "keyword": [
+                    "Sales",
+                    "Manage sales",
+                    "Sale Configuration",
+                    "Add sale",
+                    "Edit sale"
+                ],
+                "title": "POS",
+                "route_name": "admin.pos",
+                "menu_active": [
+                    "admin.pos"
+                  
                 ]
             }
         ]

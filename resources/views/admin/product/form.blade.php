@@ -92,7 +92,14 @@
                                             value="{{ old('net_weight', @$product->net_weight) }}">
                                     </div>
                                 </div>
-                                <div class="col-sm-12">
+                               <div class="col-sm-6" id="price">
+                                    <div class="form-group">
+                                        <label>@lang('Price')</label>
+                                        <input class="form-control" name="price" type="number"
+                                            value="{{ old('price', @$product->price) }}">
+                                    </div>
+                                </div>
+                                 <div class="col-sm-12">
                                     <div class="form-group">
                                         <label>@lang('Note')</label>
                                         <textarea class="form-control" name="note">{{ old('note', @$product->note) }}</textarea>

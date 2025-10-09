@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Sale extends Model
 {
-
+    protected $guarded = [];
     use ActionTakenBy;
 
     public function customer()

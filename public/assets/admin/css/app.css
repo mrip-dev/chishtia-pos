@@ -6503,17 +6503,7 @@ th.w-85 {
   }
 }
 
-.login-wrapper__top::after {
-  position: absolute;
-  content: '';
-  bottom: -25px;
-  left: 5px;
-  right: 5px;
-  z-index: -1;
-  border-width: 25px 256px 0px 256px;
-  border-style: solid;
-  border-color: #00ff6f   transparent transparent transparent;
-}
+
 
 @media (max-width: 1399px) {
   .login-wrapper__top::after {

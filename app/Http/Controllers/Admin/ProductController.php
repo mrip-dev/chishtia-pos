@@ -22,7 +22,7 @@ class ProductController extends Controller
     {
         $this->pageTitle = 'Products';
     }
-
+ 
     protected function getProducts()
     {
         return Product::searchable(['name', 'sku', 'alert_quantity'])->with('category:id,name', 'brand:id,name', 'unit:id,name', 'productStock:id,product_id,quantity,net_weight', 'saleDetails')->orderByDesc('id');
@@ -76,6 +76,7 @@ class ProductController extends Controller
     {
         $pageTitle  = 'Add Product';
         $categories = Category::orderBy('name')->get();
+        
         $brands     = Brand::orderBy('name')->get();
         $units      = Unit::orderBy('name')->get();
         $warehouses = Warehouse::active()->orderBy('name')->get();

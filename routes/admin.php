@@ -76,8 +76,6 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         Route::get('{user}/salary', 'salary')->name('salary');
         Route::get('/admin/attendance', 'attendance')->name('attendance');
         Route::get('/clock-in', 'clockIn')->name('clock-in');
-
-
     });
 
     Route::controller('RolesController')->prefix('roles')->name('roles.')->group(function () {
@@ -189,6 +187,23 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
 
         Route::get('pdf-stock-detail', 'stockDetailPDF')->name('stock-detail');
     });
+
+
+
+    /////////////////////////   Kamaran 
+
+    Route::get('/pos', function () {
+        $pageTitle = 'Point Of Sale';
+        return view('admin.sale.pos', compact('pageTitle'));
+    })->name('pos');
+
+
+
+
+
+
+
+
 
 
     // Manage Purchase

@@ -6,6 +6,8 @@ use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\EmployeeController;
+use App\Http\Controllers\Api\ProductController;
+use App\Models\Product;
 
 // For enrollment (typically done by an admin from a secure machine, or via a special enrollment kiosk)
 Route::post('/enroll-fingerprint', [EmployeeController::class, 'enrollFingerprint']);
@@ -36,3 +38,12 @@ Route::controller('DataEntryReportController')->prefix('reports/data-entry')->na
 Route::controller(AdminController::class)->group(function () {
     Route::get('dashboard', 'dashboard')->name('dashboard');
 });
+
+Route::controller(ProductController::class)->group(function () {
+    Route::get('products', 'getAllProducts')->name('products');
+    Route::get('categories', 'getAllCategories')->name('categories');
+    Route::get('brands', 'getAllBrands')->name('brands');
+    Route::get('units', 'getAllUnits')->name('units');
+    Route::post('save-order', 'saveOrder')->name('save-order');
+});
+

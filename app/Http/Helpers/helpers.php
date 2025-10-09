@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Cache;
 
 function systemDetails()
 {
-    $system['name']          = 'Moeeen Traders';
+    $system['name']          = 'Chistia Sajji';
     $system['version']       = '2.0';
     $system['build_version'] = '5.0.9';
     return $system;
@@ -206,22 +206,18 @@ if (!function_exists('gourmet_cola_products')) {
     function gourmet_cola_products($filter = null)
     {
         $products = [
-            'Zeera Cola',
-            'Cola',
-            'Lemon',
-            'Malta',
-            'Twister',
-            'Red Anar',
-            'Soda IceCream',
-            'Diet Cola',
-            'Diet Lemon Up',
-            'Mouj',
-            'Phal Rus',
-            'Phalpy',
-            'Spark',
-            'Water',
-            'Sparkling Water',
+            'Saggi',
+            'Roti',
+            'Naan',
+            'Raita',
+            'Salad',
+            'Cold Drink',
+            'Mineral Water',
+            'Karahi',
+            'Tikka Piece',
+            'Seekh Kabab',
         ];
+
 
         // Apply filter if provided
         if ($filter) {
