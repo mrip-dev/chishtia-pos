@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\EmployeeController;
+use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
 use App\Models\Product;
 
@@ -44,10 +45,10 @@ Route::controller(ProductController::class)->group(function () {
     Route::get('categories', 'getAllCategories')->name('categories');
     Route::get('brands', 'getAllBrands')->name('brands');
     Route::get('units', 'getAllUnits')->name('units');
+});
+Route::controller(OrderController::class)->group(function () {
     Route::post('save-order', 'saveOrder')->name('save-order');
     Route::get('orders', 'getAllOrders')->name('orders');
-
     Route::post('update-order/{id}','updateOrder')->name('update-order');
 
 });
-
