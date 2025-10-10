@@ -26,13 +26,16 @@ use Illuminate\Validation\Rule;
 use App\Traits\DailyBookEntryTrait;
 use App\Traits\ManagesExpenseTransactions;
 use Illuminate\Notifications\Action as NotificationsAction;
+use Livewire\WithPagination;
 
 class AllSales extends Component
 {
+    use WithPagination;
+    protected $paginationTheme = 'bootstrap';
     use DailyBookEntryTrait;
     use ManagesExpenseTransactions;
 
-    public $sales = [];
+
     public $banks = [];
     public $selectedSale = null;
     public $saleDetails = [];
@@ -122,33 +125,18 @@ class AllSales extends Component
         ];
     }
 
-    public function mount()
+    public function mount() {}
+    public function updatingSearchTerm()
     {
-
-        $this->loadSales();
+        $this->resetPage(); // resets to page 1 when typing new search
     }
-    public function loadSales()
+
+    public function updatingSearchByDate()
     {
-        $this->sales = Sale::with(['customer', 'warehouse'])
-            ->where(function ($query) {
-                $query->where('invoice_no', 'like', '%' . $this->searchTerm . '%')
-                    ->orWhereHas('customer', function ($q) {
-                        $q->where('name', 'like', '%' . $this->searchTerm . '%');
-                    })
-                    ->orWhereHas('warehouse', function ($q) {
-                        $q->where('name', 'like', '%' . $this->searchTerm . '%');
-                    });
-            })
-            ->when($this->searchByDate, function ($query) {
-                // Parse the date range
-                [$start, $end] = explode(' - ', $this->searchByDate);
-                $startDate = Carbon::parse($start)->startOfDay();
-                $endDate = Carbon::parse($end)->endOfDay();
-
-                $query->whereBetween('created_at', [$startDate, $endDate]);
-            })
-            ->get();
+        $this->resetPage();
     }
+
+
 
 
     public function createSale()
@@ -983,7 +971,28 @@ class AllSales extends Component
 
     public function render()
     {
+        $sales = Sale::with(['customer', 'warehouse'])
+            ->where(function ($query) {
+                $query->where('invoice_no', 'like', '%' . $this->searchTerm . '%')
+                    ->orWhereHas('customer', function ($q) {
+                        $q->where('name', 'like', '%' . $this->searchTerm . '%');
+                    })
+                    ->orWhereHas('warehouse', function ($q) {
+                        $q->where('name', 'like', '%' . $this->searchTerm . '%');
+                    });
+            })
+            ->when($this->searchByDate, function ($query) {
+                [$start, $end] = explode(' - ', $this->searchByDate);
+                $startDate = Carbon::parse($start)->startOfDay();
+                $endDate = Carbon::parse($end)->endOfDay();
+
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            })
+            ->orderBy('id', 'desc')
+            ->paginate(5);
         $this->dispatch('re-init-select-2-component');
-        return view('livewire.admin.sale-management.all-sales');
+        return view('livewire.admin.sale-management.all-sales', [
+            'sales' => $sales
+        ]);
     }
 }

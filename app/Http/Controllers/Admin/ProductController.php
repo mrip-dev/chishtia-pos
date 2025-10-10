@@ -117,6 +117,7 @@ class ProductController extends Controller
         $product->unit_id        = $request->unit_id;
         $product->alert_quantity = $request->alert_quantity;
         $product->net_weight           = $request->net_weight;
+        $product->price           = $request->price;
         $product->note           = $request->note;
         $product->save();
         if ($request->warehouse_id && $request->stock_quantity) {

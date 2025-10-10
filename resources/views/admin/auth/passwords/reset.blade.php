@@ -1,5 +1,7 @@
 @extends('admin.layouts.master')
 @section('content')
+
+   <link rel="stylesheet" href="{{asset('assets/admin/css/login.css?v=1')}}">
     <div class="login-main" style="background-image: url('{{ asset('assets/admin/images/login.jpg') }}')">
         <div class="container custom-container">
             <div class="row justify-content-center">

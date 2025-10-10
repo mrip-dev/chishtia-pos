@@ -46,11 +46,10 @@
                                 <tr class="text-dark">
                                     <th>@lang('Invoice No.') | @lang('Date')</th>
                                     <th>@lang('Customer') | @lang('Mobile')</th>
-                                    <!-- <th>@lang('Driver Name') | @lang('Mobile')</th> -->
-                                    <th>@lang('Vehicle No') | @lang('Fare')</th>
-                                    <th>@lang('Loading') | @lang('Unloading')</th>
-                                    <th>@lang('Warehouse') </th>
+
+
                                     <th>@lang('Total Amount')</th>
+                                    <th>@lang('Status')</th>
                                     <!-- <th>@lang('Received') | @lang('Due')</th> -->
                                     <th>@lang('Action')</th>
                             </thead>
@@ -69,37 +68,24 @@
                                     </td>
 
                                     <td>
-                                        <span class="text--primary fw-bold"> {{ $sale->customer?->name }}</span>
+                                        <span class="text--primary fw-bold"> {{ $sale->customer_name }}</span>
                                         <br>
-                                        {{ $sale->customer?->mobile }}
-                                    </td>
-                                    <!-- <td>
-                                        <span class="text--success fw-bold"> {{ $sale->driver_name }}</span>
-                                        <br>
-                                        {{ $sale->driver_contact }}
-                                    </td> -->
-                                    <td>
-                                        {{ $sale->vehicle_number }}
-                                        <br>
-                                        {{ $sale->fare }}
-                                    </td>
-                                    <td>
-                                        {{ $sale->loading }}
-
+                                        {{ $sale->customer_phone }}
                                     </td>
 
-                                    <td>
-                                        {{ $sale->warehouse->name }}
-                                        <br>
-                                        <!-- <span
-                                            class="fw-bold">{{ showAmount($sale->total_price) }}</span> -->
-                                    </td>
+
 
                                     <td>
                                         <!-- {{ showAmount($sale->discount_amount) }} -->
                                         <br>
                                         <span class="fw-bold">
-                                            {{ showAmount($sale->receivable_amount) }}</span>
+                                            {{ showAmount($sale->total_price) }}</span>
+                                    </td>
+
+                                    <td>
+
+                                        <span class="fw-bold">
+                                            {{ $sale->status}}</span>
                                     </td>
 
                                     <!-- <td>
@@ -115,6 +101,9 @@
                                     <td>
                                         <div class="button--group">
 
+                                            <a href="{{ route('admin.sale.view', $sale->id) }}" class="btn btn-sm btn-outline--primary">
+                                                <i class="la la-eye"></i> @lang('View')
+                                            </a>
                                             @if ($sale->return_status !== 1)
                                             <a wire:click.prevent="editSale({{ $sale->id }})"
                                                 class="btn btn-sm btn-outline--primary ms-1">
@@ -197,11 +186,11 @@
 
                     </div>
                 </div>
-                {{-- @if ($sales->hasPages())
-                    <div class="card-footer py-4">
-                        @php echo paginateLinks($sales) @endphp
-                    </div>
-                @endif --}}
+                @if ($sales->hasPages())
+                <div class="card-footer py-4">
+                    {{ $sales->links() }}
+                </div>
+                @endif
             </div><!-- card end -->
         </div>
     </div>

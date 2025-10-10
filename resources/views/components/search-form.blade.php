@@ -9,9 +9,6 @@
     @if ($keySearch == 'yes')
         <x-search-key-field placeholder="{{ $placeholder }}" btn="{{ $btn }}" />
     @endif
-    @if ($dateSearch == 'yes')
-        <x-search-date-field  />
-    @endif
-
+ 
 </form>
 

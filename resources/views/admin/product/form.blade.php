@@ -85,6 +85,7 @@
                                             value="{{ old('alert_quantity', @$product->alert_quantity) }}">
                                     </div>
                                 </div>
+                                
                                 <div class="col-sm-6" id="net_weight" style="display: none;">
                                     <div class="form-group">
                                         <label>@lang('Net Weight')</label>

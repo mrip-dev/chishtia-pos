@@ -1,40 +1,33 @@
 @extends('admin.layouts.master')
 @section('content')
-    <div class="login-main" style="background-image: url('{{ asset('assets/admin/images/login.jpg') }}')">
-        <div class="container custom-container d-flex justify-content-center">
-            <div class="login-area">
-                <div class="text-center mb-3">
-                    <h2 class="text-white mb-2">@lang('Verify Code')</h2>
-                    <p class="text-white mb-2">@lang('Please check your email and enter the verification code you got in your email.')</p>
-                </div>
-                <form action="{{ route('admin.password.verify.code') }}" method="POST" class="login-form w-100">
-                    @csrf
-
-                    <div class="code-box-wrapper d-flex w-100">
-                        <div class="form-group mb-3 flex-fill">
-                            <span class="text-white">@lang('Verification Code')</span>
-                            <div class="verification-code">
-                                <input type="text" name="code" class="overflow-hidden" autocomplete="off">
-                                <div class="boxes">
-                                    <span>-</span>
-                                    <span>-</span>
-                                    <span>-</span>
-                                    <span>-</span>
-                                    <span>-</span>
-                                    <span>-</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn cmn-btn w-100">@lang('Submit')</button>
-                    <div class="d-flex flex-wrap justify-content-between mt-3">
-                        <a href="{{ route('admin.password.reset') }}" class="forget-text">@lang('Try to send again')</a>
-                        <a href="{{ route('admin.login') }}" class="text-white"><i class="las la-sign-in-alt"></i>@lang('Back to Login')</a>
-                    </div>
-                </form>
-            </div>
-        </div>
+   <link rel="stylesheet" href="{{asset('assets/admin/css/login.css?v=1')}}">
+ <div class="wrapper">
+    <div class="logo">
+        <img src="{{ siteLogo('light') }}" alt="Logo">
     </div>
+
+    <div class="name">@lang('Verify Code')</div>
+    <p class="text-muted small">@lang('Please check your email and enter the verification code you got in your email.')</p>
+
+    <form class="p-3 mt-3 login-form" action="{{ route('admin.password.verify.code') }}" method="POST">
+        @csrf
+
+        <div class="form-field">
+            <i class="fas fa-key"></i>
+            <input type="text" name="code" maxlength="6" placeholder="@lang('Enter Verification Code')" required>
+        </div>
+
+        <button class="btn mt-4" type="submit">@lang('Submit')</button>
+    </form>
+
+    <div class="text-center links mt-3">
+        <a href="{{ route('admin.password.reset') }}">@lang('Try to send again')</a>
+        <br>
+        <a href="{{ route('admin.login') }}">
+            <i class="las la-sign-in-alt"></i> @lang('Back to Login')
+        </a>
+    </div>
+</div>
 @endsection
 
 @push('style')

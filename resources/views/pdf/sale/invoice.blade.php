@@ -46,7 +46,7 @@
             <p class="strong">{{ __(gs('site_name')) }}</p>
             <p class="mb-5px">@lang('Invoice No.'): #<b>{{ $sale->invoice_no }}</b></p>
             <p class="mb-5px">@lang('Date'): {{ showDateTime($sale->sale_date, 'd F Y') }}</p>
-            <p class="mb-5px">@lang('Warehouse'): {{ $sale->warehouse->name }}</p>
+           
         </div>
     </div>
 

@@ -11,7 +11,7 @@
                                 <th>@lang('Image')</th>
                                 <th>@lang('Name')</th>
                                 <th>@lang('Variant') | @lang('Brand')</th>
-                                <th>@lang('Stock') </th>
+                                <th>@lang('Price') </th>
                                 <th>@lang('Total Sale') | @lang('Alert Qty')</th>
                                 <th>@lang('Unit')</th>
                                 <!-- <th>@lang('Net Weight')</th> -->
@@ -43,7 +43,7 @@
                                 </td>
 
                                 <td>
-                                    <span class="fw-bold text--primary">QTY : {{ $product->totalInStock() }}</span>
+                                    <span class="fw-bold text--primary">Rs : {{ $product->price }}</span>
 
                                     @if($product->unit && ($product->unit->name == 'kg' || $product->unit->name == 'KG' || $product->unit->name == 'Kg'))
                                     <br>

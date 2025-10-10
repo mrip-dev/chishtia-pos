@@ -26,7 +26,7 @@
         "route_name": "admin.dashboard",
         "menu_active": "admin.dashboard"
     },
- "manage_products": {
+    "manage_products": {
         "title": "Products",
         "icon": "las la-box",
         "menu_active": [
@@ -106,7 +106,7 @@
                     "admin.sale.edit"
                 ]
             },
-             {
+            {
                 "keyword": [
                     "Sales",
                     "Manage sales",
@@ -118,12 +118,10 @@
                 "route_name": "admin.pos",
                 "menu_active": [
                     "admin.pos"
-                  
                 ]
             }
         ]
     },
-
     "manage_staff": {
         "title": "All Staff",
         "icon": "las la-user",
@@ -146,7 +144,6 @@
                 "route_name": "admin.staff.index",
                 "menu_active": "admin.staff.index"
             },
-
             {
                 "keyword": [
                     "All Roles",

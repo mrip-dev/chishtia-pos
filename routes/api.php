@@ -45,5 +45,9 @@ Route::controller(ProductController::class)->group(function () {
     Route::get('brands', 'getAllBrands')->name('brands');
     Route::get('units', 'getAllUnits')->name('units');
     Route::post('save-order', 'saveOrder')->name('save-order');
+    Route::get('orders', 'getAllOrders')->name('orders');
+
+    Route::post('update-order/{id}','updateOrder')->name('update-order');
+
 });
 

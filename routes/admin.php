@@ -158,6 +158,10 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
         $pageTitle = 'Manage Sale';
         return view('admin.sale.manage', compact('pageTitle'));
     })->name('manage_sale');
+    Route::get('/manage/sale/view/{saleId}', function ($saleId) {
+        $pageTitle = 'View Sale';
+        return view('admin.sale.view', compact('pageTitle', 'saleId'));
+    })->name('sale.view');
     Route::get('/services/stock-in', function () {
         $pageTitle = 'Manage Stock In';
         return view('admin.services.stock-in', compact('pageTitle'));
