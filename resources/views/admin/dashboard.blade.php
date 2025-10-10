@@ -69,7 +69,7 @@
     </div>
 
     <div class="col-xxl-3 col-sm-4">
-        <a href="{{ route('admin.supplier.index') }}" class="app-card border-0 rounded-3 shadow-sm d-block">
+        <a href="{{ route('admin.manage_sale') }}" class="app-card border-0 rounded-3 shadow-sm d-block">
             <div class="card-body p-4">
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
@@ -100,7 +100,7 @@
         </a>
     </div>
     <div class="col-xxl-3 col-sm-4">
-        <a href="{{ route('admin.supplier.index') }}" class="app-card border-0 rounded-3 shadow-sm d-block">
+        <a href="{{ route('admin.manage_sale') }}" class="app-card border-0 rounded-3 shadow-sm d-block">
             <div class="card-body p-4">
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
@@ -116,7 +116,7 @@
     </div>
 
     <div class="col-xxl-3 col-sm-4">
-        <a href="{{ route('admin.supplier.index') }}" class="app-card border-0 rounded-3 shadow-sm d-block">
+        <a href="{{ route('admin.manage_sale') }}" class="app-card border-0 rounded-3 shadow-sm d-block">
             <div class="card-body p-4">
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
