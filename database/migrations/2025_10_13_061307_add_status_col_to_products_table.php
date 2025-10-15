@@ -11,20 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pos_products', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->decimal('price')->nullable();
-            $table->string('image')->nullable();
-            $table->string('category')->nullable();
-            $table->timestamps();
+        Schema::table('products', function (Blueprint $table) {
+            $table->double('selling_price')->default(0.00)->nullable();
         });
     }
+
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('pos_products');
+        Schema::table('products', function (Blueprint $table) {
+            $table->dropColumn('selling_price');
+        });
     }
 };

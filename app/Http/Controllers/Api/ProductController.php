@@ -22,28 +22,81 @@ use Illuminate\Support\Str;
 class ProductController extends Controller
 {
     public $warehouse_id = 1;
-    public function getAllProducts()
+    public function create()
     {
-        $products = Product::with(['brand:id,name', 'category:id,name', 'unit:id,name'])
-            ->select('id', 'name', 'sku', 'price', 'image', 'brand_id', 'category_id', 'unit_id')
+        $pageTitle = 'Create Order';
+        $invoiceNumber = $this->generateInvoiceNumber(); // Your invoice generation logic
+
+        // Get products with category relationship
+        $products = Product::with(['category', 'unit', 'brand'])
+            ->active()
+            ->orderBy('name')
             ->get()
             ->map(function ($product) {
                 return [
                     'id' => $product->id,
-                    'name' => $product->name . " (" . $product->category->name . ")",
-                    'icon' => $product->image,
-                    'price' => $product->price,
-                    'category' => $product->category->name ?? null,
-
+                    'name' => $product->name,
+                    'display_title' => $product->name, // Or your custom title logic
+                    'category_name' => $product->category->name ?? 'Uncategorized',
+                    'brand_name' => $product->brand->name ?? '',
+                    'unit' => [
+                        'id' => $product->unit->id,
+                        'name' => $product->unit->name
+                    ],
+                    'selling_price' => $product->selling_price,
+                    'image_url' => $product->image ? getImage(imagePath()['product']['path'] . '/' . $product->image) : getImage('assets/images/default.png')
                 ];
             });
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $products,
-        ]);
+        $customers = Customer::active()
+            ->orderBy('name')
+            ->get(['id', 'name', 'mobile']);
+
+        return view('admin.order.form', compact('pageTitle', 'products', 'customers', 'invoiceNumber'));
     }
- 
+
+    public function edit($id)
+    {
+        $pageTitle = 'Edit Order';
+        $sale = Sale::with(['customer', 'saleDetails.product.category', 'saleDetails.product.unit', 'saleReturn'])
+            ->findOrFail($id);
+
+        // Get products with category relationship
+        $products = Product::with(['category', 'unit', 'brand'])
+            ->active()
+            ->orderBy('name')
+            ->get()
+            ->map(function ($product) {
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'display_title' => $product->name,
+                    'category_name' => $product->category->name ?? 'Uncategorized',
+                    'brand_name' => $product->brand->name ?? '',
+                    'unit' => [
+                        'id' => $product->unit->id,
+                        'name' => $product->unit->name
+                    ],
+                    'selling_price' => $product->selling_price,
+                    'image_url' => $product->image ? getImage(imagePath()['product']['path'] . '/' . $product->image) : getImage('assets/images/default.png')
+                ];
+            });
+
+        $customers = Customer::active()
+            ->orderBy('name')
+            ->get(['id', 'name', 'mobile']);
+
+        return view('admin.order.form', compact('pageTitle', 'sale', 'products', 'customers'));
+    }
+
+    // Helper method for invoice generation
+    private function generateInvoiceNumber()
+    {
+        $lastSale = Sale::latest('id')->first();
+        $lastNumber = $lastSale ? intval(substr($lastSale->invoice_no, -6)) : 0;
+        return 'INV-' . str_pad($lastNumber + 1, 6, '0', STR_PAD_LEFT);
+    }
+
     public function getAllCategories()
     {
         $categories = Category::all();
@@ -71,5 +124,4 @@ class ProductController extends Controller
             'data' => $units,
         ]);
     }
-
 }

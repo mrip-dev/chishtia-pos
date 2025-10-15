@@ -63,7 +63,7 @@ class AdminController extends Controller
             'total_customer' => Customer::count(),
             'total_product' => Product::count(),
             'total_category' => Category::count(),
-            'total_supplier' => Supplier::count(),
+
 
             'total_purchase_count' => Purchase::when($filter, fn($q) => $q->whereBetween('created_at', [$startDate, $endDate]))->count(),
             'total_purchase' => Purchase::when($filter, fn($q) => $q->whereBetween('created_at', [$startDate, $endDate]))->sum('payable_amount'),

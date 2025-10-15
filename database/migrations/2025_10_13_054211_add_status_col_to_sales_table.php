@@ -12,8 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('sales', function (Blueprint $table) {
-            $table->string('customer_name')->nullable();
-            $table->string('customer_phone')->nullable();
+               $table->string('status')->default('pending')->nullable();
+               $table->string('customer_name')->default('shop')->nullable();
+               $table->string('customer_phone')->default(0000000)->nullable();
+               $table->integer('user_id')->nullable();
         });
     }
 
@@ -23,8 +25,10 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('sales', function (Blueprint $table) {
-              $table->dropColumn('customer_name');
-              $table->dropColumn('customer_phone');
+            $table->dropColumn('status');
+            $table->dropColumn('customer_name');
+            $table->dropColumn('customer_phone');
+            $table->dropColumn('user_id');
         });
     }
 };

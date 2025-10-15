@@ -194,7 +194,7 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
 
 
 
-    /////////////////////////   Kamaran 
+    /////////////////////////   Kamaran
 
     Route::get('/pos', function () {
         $pageTitle = 'Point Of Sale';
@@ -202,11 +202,26 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
     })->name('pos');
 
 
+    //Manage Orders
+    Route::controller('OrderController')->name('order.')->prefix('order')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('pdf', 'salePDF')->name('pdf');
+        Route::get('csv', 'saleCSV')->name('csv');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/store', 'store')->name('store');
 
+        Route::get('/edit/{id}', 'edit')->name('edit');
+        Route::post('/update/{id}', 'update')->name('update');
+        Route::get('pdf/{id}', 'downloadInvoice')->name('invoice.pdf');
+        Route::get('/search-product', 'searchProduct')->name('search.product');
+        Route::get('search-customer', 'searchCustomer')->name('search.customer');
 
+        Route::get('last-invoice', 'lastInvoice')->name('last.invoice');
 
+        Route::get('/invoice/{id}', 'downloadInvoice')->name('invoice');
 
-
+        Route::post('/update-status/{id}', 'updateStatus')->name('update.status');
+    });
 
 
 
