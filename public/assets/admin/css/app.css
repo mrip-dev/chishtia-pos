@@ -5499,7 +5499,9 @@ th.w-85 {
   border-bottom: 1px solid #dee4ec;
   transition: all 0.5s cubic-bezier(0.4, -0.25, 0.25, 1.1);
 }
-
+.navbar-wrapper.ip {
+  margin-left: 200px !important;
+}
 @media (max-width: 991px) {
   .navbar-wrapper {
     margin-left: 0;
@@ -6281,6 +6283,10 @@ th.w-85 {
   margin-left: 60px;
   padding: 30px;
   transition: all 0.5s cubic-bezier(0.4, -0.25, 0.25, 1.1);
+}
+.body-wrapper.ip {
+  margin-left: 200px;
+
 }
 
 @media (max-width: 575px) {

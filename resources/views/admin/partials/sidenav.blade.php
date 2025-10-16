@@ -3,114 +3,152 @@
 @endphp
 
 <style>
-    /* === SIDEBAR BASE === */
-    .sidebar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 80px; /* collapsed by default */
-        height: 100%;
-        overflow-y: auto;
-        transition: all 0.3s ease;
-        z-index: 999;
-    }
+/* === SIDEBAR BASE === */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 80px; /* collapsed by default */
+    height: 100%;
+    overflow-y: auto;
+    transition: all 0.3s ease;
+    z-index: 1001;
+}
+.sidebar.expanded {
+    width: 200px;
+}
 
-    .sidebar.expanded {
+/* === BACKGROUND === */
+.rgbg {
+    background: linear-gradient(135deg, #fdf8e1 0%, #e8d8b1 100%);
+    background-color: #fdf8e1;
+}
+
+/* === INNER STRUCTURE === */
+.sidebar__inner {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* === HIDE TEXT WHEN COLLAPSED === */
+.sidebar:not(.expanded) .menu-title,
+.sidebar:not(.expanded) .sidebar__menu-header {
+    display: none;
+}
+
+/* === CENTER ICONS WHEN COLLAPSED === */
+.sidebar:not(.expanded) .menu-icon {
+    display: block;
+    text-align: center;
+    width: 100%;
+    font-size: 20px;
+}
+
+/* === MENU ITEMS === */
+.sidebar__menu li a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+    color: #333;
+    text-decoration: none;
+    transition: 0.3s;
+}
+.sidebar__menu li a:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+/* === TOGGLE BUTTONS === */
+.mobile-menu-toggle,
+.sidebar-collapse-toggle {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    background: #f0d98a;
+    color: #333;
+    border: none;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 1100;
+    font-size: 20px;
+}
+.sidebar-collapse-toggle {
+    left: 90px;
+    transition: left 0.3s ease;
+}
+.sidebar.expanded ~ .sidebar-collapse-toggle {
+    left: 210px;
+}
+
+/* === OVERLAY === */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+}
+.sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* === NAVBAR & BODY SHIFT === */
+.navbar-wrapper {
+    position: relative;
+    background: #fff;
+    padding: 15px 30px;
+    margin-left: 60px;
+    border-bottom: 1px solid #dee4ec;
+    transition: all 0.3s cubic-bezier(0.4, -0.25, 0.25, 1.1);
+}
+.navbar-wrapper.ip {
+    margin-left: 200px !important;
+}
+.body-wrapper {
+    margin-left: 60px;
+    transition: all 0.3s cubic-bezier(0.4, -0.25, 0.25, 1.1);
+}
+.body-wrapper.ip {
+    margin-left: 200px !important;
+}
+
+/* === MOBILE RESPONSIVE === */
+@media (max-width: 992px) {
+    .sidebar {
+        left: -260px;
         width: 260px;
     }
-
-    .sidebar__inner {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
+    .sidebar.expanded {
+        left: 0;
     }
-
-    /* === HIDE TEXT WHEN COLLAPSED === */
-    .sidebar:not(.expanded) .menu-title,
-    .sidebar:not(.expanded) .sidebar__menu-header {
+    .mobile-menu-toggle {
+        display: block;
+    }
+    .sidebar-collapse-toggle {
         display: none;
     }
-
-    /* === CENTER ICONS WHEN COLLAPSED === */
-    .sidebar:not(.expanded) .menu-icon {
-        display: block;
-        text-align: center;
-        width: 100%;
-        font-size: 20px;
-        margin: 0;
+    .navbar-wrapper,
+    .body-wrapper {
+        margin-left: 0 !important;
     }
-
-    .sidebar__menu li a {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 15px;
-        color: #333;
-        text-decoration: none;
-        transition: 0.3s;
+    body.menu-open {
+        overflow: hidden;
     }
-
-    .sidebar__menu li a:hover {
-        background: rgba(0, 0, 0, 0.05);
+}
+@media (min-width: 993px) {
+    .mobile-menu-toggle {
+        display: none;
     }
-
-    /* === GRADIENT BACKGROUND === */
-    .rgbg {
-        background: linear-gradient(135deg, #fdf8e1 0%, #e8d8b1 100%);
-        background-color: #fdf8e1;
-    }
-
-    /* === TOGGLE BUTTONS === */
-    .mobile-menu-toggle,
-    .sidebar-collapse-toggle {
-        position: fixed;
-        top: 15px;
-        left: 15px;
-        background: #f0d98a;
-        color: #333;
-        border: none;
-        padding: 8px 10px;
-        border-radius: 8px;
-        cursor: pointer;
-        z-index: 1000;
-        font-size: 20px;
-    }
-
-    .sidebar-collapse-toggle {
-        left: 90px;
-        transition: left 0.3s ease;
-    }
-
-    .sidebar.expanded ~ .sidebar-collapse-toggle {
-        left: 270px;
-    }
-
-    /* === MOBILE STYLES === */
-    @media (max-width: 992px) {
-        .sidebar {
-            left: -260px;
-            width: 260px;
-        }
-
-        .sidebar.expanded {
-            left: 0;
-        }
-
-        .mobile-menu-toggle {
-            display: block;
-        }
-
-        .sidebar-collapse-toggle {
-            display: none;
-        }
-    }
-
-    @media (min-width: 993px) {
-        .mobile-menu-toggle {
-            display: none;
-        }
-    }
+}
 </style>
 
 <!-- === MOBILE MENU ICON === -->
@@ -178,29 +216,47 @@
     </div>
 </div>
 
+<!-- === OVERLAY === -->
+<div class="sidebar-overlay"></div>
+
 <!-- === COLLAPSE BUTTON === -->
 <button class="sidebar-collapse-toggle"><i class="las la-angle-double-right"></i></button>
 
 @push('script')
 <script>
-    const sidebar = document.getElementById('adminSidebar');
+const sidebar = document.getElementById('adminSidebar');
+const overlay = document.querySelector('.sidebar-overlay');
+const navbar = document.querySelector('.navbar-wrapper');
+const bodyWrapper = document.querySelector('.body-wrapper');
+const collapseBtn = document.querySelector('.sidebar-collapse-toggle');
+const mobileMenuBtn = document.querySelector('.mobile-menu-toggle');
+const closeBtn = document.querySelector('.res-sidebar-close-btn');
 
-    // --- Desktop toggle (collapsed/expanded) ---
-    document.querySelector('.sidebar-collapse-toggle').addEventListener('click', function () {
-        sidebar.classList.toggle('expanded');
-        const icon = this.querySelector('i');
-        icon.classList.toggle('la-angle-double-left');
-        icon.classList.toggle('la-angle-double-right');
-    });
+// === Desktop toggle ===
+collapseBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('expanded');
+    const icon = collapseBtn.querySelector('i');
+    icon.classList.toggle('la-angle-double-left');
+    icon.classList.toggle('la-angle-double-right');
+    navbar.classList.toggle('ip', sidebar.classList.contains('expanded'));
+    bodyWrapper.classList.toggle('ip', sidebar.classList.contains('expanded'));
+});
 
-    // --- Mobile open ---
-    document.querySelector('.mobile-menu-toggle').addEventListener('click', function () {
-        sidebar.classList.add('expanded');
-    });
+// === Mobile open ===
+mobileMenuBtn.addEventListener('click', () => {
+    sidebar.classList.add('expanded');
+    overlay.classList.add('active');
+    document.body.classList.add('menu-open');
+});
 
-    // --- Mobile close ---
-    document.querySelector('.res-sidebar-close-btn').addEventListener('click', function () {
-        sidebar.classList.remove('expanded');
-    });
+// === Mobile close ===
+closeBtn.addEventListener('click', closeMobileMenu);
+overlay.addEventListener('click', closeMobileMenu);
+
+function closeMobileMenu() {
+    sidebar.classList.remove('expanded');
+    overlay.classList.remove('active');
+    document.body.classList.remove('menu-open');
+}
 </script>
 @endpush
