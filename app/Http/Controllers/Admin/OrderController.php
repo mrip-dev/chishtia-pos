@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Action;
 use App\Models\Bank;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\SaleDetails;
@@ -29,7 +30,7 @@ class OrderController extends Controller
         $query = Sale::searchable(['invoice_no', 'due_amount', 'customer:name,mobile', 'status'])
             ->dateFilter('sale_date')
             ->with('customer', 'saleReturn')
-            ->where('status', 'pending')
+            // ->where('status', 'pending')
             ->orderBy('id', 'desc');
 
         $user = Auth::guard('admin')->user();
@@ -45,7 +46,7 @@ class OrderController extends Controller
         $pageTitle = $this->pageTitle;
         $sales     = $this->getSales()->paginate(getPaginate());
         $banks     = Bank::all();
-        $pdfButton = true;
+        $pdfButton = false;
         $routePDF  = route('admin.order.pdf') . "?";
         $routeCSV  = route('admin.order.csv') . "?";
 
@@ -58,8 +59,18 @@ class OrderController extends Controller
             $routeCSV .= "date=" . request()->date;
         }
 
-        return view('admin.order.index', compact('pageTitle', 'sales', 'pdfButton', 'routePDF', 'routeCSV', 'banks'));
+        // ADDED for payment status
+        $paymentMethods = [
+            'cash'    => 'Cash',
+            'bank'    => 'Bank Transfer',
+            'mobile'  => 'Mobile Money',
+            // Add more as needed
+        ];
+
+        return view('admin.order.index', compact('pageTitle', 'sales', 'pdfButton', 'routePDF', 'routeCSV', 'banks', 'paymentMethods'));
     }
+
+    // --- Existing methods (salePDF, saleCSV, downloadCsv, downloadInvoice) go here ---
 
     public function salePDF()
     {
@@ -109,42 +120,72 @@ class OrderController extends Controller
     public function downloadInvoice($id)
     {
         $pageTitle = "INVOICE";
-        $sale      = Sale::where('id', $id)
+
+        $sale = Sale::where('id', $id)
             ->with('customer', 'saleDetails', 'saleDetails.product', 'saleDetails.product.unit')
             ->whereHas('saleDetails')
             ->firstOrFail();
 
-        $customer = $sale->customer;
-        $pdf = PDF::loadView('pdf.order.invoice', compact('pageTitle', 'sale', 'customer'));
+        $pdf = PDF::loadView('pdf.order.invoice', compact('pageTitle', 'sale'));
 
-        $customerName = preg_replace('/[^A-Za-z0-9\-]/', '_', $customer?->name);
-        $invoiceNo    = $sale->invoice_no ?? 'INV-00';
-        $date         = now()->format('Y-m-d');
+        $invoiceNo = $sale->invoice_no ?? 'INV-00';
+        $date = now()->format('Y-m-d');
+        $fileName = "Order_Inv_{$invoiceNo}_{$date}.pdf";
 
-        return $pdf->download("Order_Inv_{$invoiceNo}_{$customerName}_{$date}.pdf");
+        // Define save path — use public/invoices
+        $path = public_path("invoices/{$fileName}");
+
+        // Ensure directory exists
+        if (!file_exists(public_path('invoices'))) {
+            mkdir(public_path('invoices'), 0777, true);
+        }
+
+        // Save PDF file
+        $pdf->save($path);
+
+        // Optional: Save path in database (if needed)
+        // $sale->invoice_path = "invoices/{$fileName}";
+        // $sale->save();
+
+        // Return file as download
+        return response()->download($path);
     }
+
+    // ---
 
     public function create()
     {
         $pageTitle     = 'New Order';
         $lastSale      = Sale::orderBy('id', 'DESC')->first();
         $lastInvoiceNo = @$lastSale->invoice_no;
+        $categories    = Category::all();
         $invoiceNumber = generateInvoiceNumber($lastInvoiceNo);
         $customers     = Customer::select('id', 'name', 'mobile')->get();
-        $products      = Product::with('unit')
-            ->select('id', 'name', 'sku', 'selling_price', 'image', 'unit_id')
+
+        // FIX: Include 'category_id' in the select statement and eager load 'category'
+        $products      = Product::with(['unit', 'category'])
+            ->select('id', 'name', 'sku', 'selling_price', 'image', 'unit_id', 'category_id', 'brand_id') // ADDED 'category_id' and 'brand_id'
             ->orderBy('name')
             ->get();
 
-        // Add image URL to each product
+        // ADDED: Payment methods
+        $paymentMethods = [
+            'cash'    => 'Cash',
+            'bank'    => 'Bank Transfer',
+            'mobile'  => 'Mobile Money',
+        ];
+        $banks = Bank::all(); // Used for bank payment method
+
+        // Add image URL and other details to each product
         foreach ($products as $product) {
             $product->image_url = getImage(getFilePath('product') . '/' . $product->image, getFileSize('product'));
             $product->display_title = getProductTitle($product->id);
+            // The relationship data is available here thanks to eager loading
             $product->brand_name = $product->brand->name ?? 'No Brand';
-            $product->category_name = $product->category->name ?? 'No Category';
+            $product->category_name = $product->category->name ?? 'No Category'; // Ensure it doesn't crash if null
         }
 
-        return view('admin.order.form', compact('pageTitle', 'invoiceNumber', 'customers', 'products'));
+        return view('admin.order.form', compact('pageTitle', 'invoiceNumber', 'customers', 'products', 'paymentMethods', 'banks', 'categories'));
     }
 
     public function edit($id)
@@ -153,6 +194,7 @@ class OrderController extends Controller
             ->with('saleDetails', 'saleDetails.product', 'saleDetails.product.unit', 'customer')
             ->whereHas('saleDetails')
             ->firstOrFail();
+
         $pageTitle = 'Edit Order';
         $customers = Customer::select('id', 'name', 'mobile')->get();
         $products  = Product::with('unit')
@@ -160,20 +202,29 @@ class OrderController extends Controller
             ->orderBy('name')
             ->get();
 
+        // ADDED: Payment methods
+        $paymentMethods = [
+            'cash'    => 'Cash',
+            'bank'    => 'Bank Transfer',
+            'mobile'  => 'Mobile Money',
+        ];
+        $banks = Bank::all();
+
         // Add image URL to each product
         foreach ($products as $product) {
             $product->image_url = getImage(getFilePath('product') . '/' . $product->image, getFileSize('product'));
             $product->display_title = getProductTitle($product->id);
+            // Assuming brand and category relationships exist on Product model
             $product->brand_name = $product->brand->name ?? 'No Brand';
             $product->category_name = $product->category->name ?? 'No Category';
         }
 
-        return view('admin.order.form', compact('pageTitle', 'sale', 'customers', 'products'));
+        return view('admin.order.form', compact('pageTitle', 'sale', 'customers', 'products', 'paymentMethods', 'banks'));
     }
 
     public function store(Request $request)
     {
-        $this->validation($request);
+        $this->validation($request, 'store'); // Updated validation call
 
         $this->products   = collect($request->products);
         $this->productIds = $this->products->pluck('product_id')->toArray();
@@ -193,14 +244,17 @@ class OrderController extends Controller
         $lastSale      = Sale::orderBy('id', 'DESC')->first();
         $lastInvoiceNo = @$lastSale->invoice_no;
 
-        $sale             = new Sale();
-        $sale->invoice_no = generateInvoiceNumber($lastInvoiceNo);
+        $sale                 = new Sale();
+        $sale->invoice_no     = generateInvoiceNumber($lastInvoiceNo);
+        $sale->user_id        = Auth::guard('admin')->id(); // Assigning the user who created the order
 
-        $sale             = $this->saveSaleData($sale);
+        $sale = $this->saveSaleData($sale);
 
         $this->storeSaleDetails($sale);
 
         Action::newEntry($sale, 'CREATED');
+        $notify[] = ['success', 'Order created successfully'];
+
         if ($request->expectsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
@@ -212,11 +266,13 @@ class OrderController extends Controller
                 ]
             ]);
         }
+
+        return redirect()->route('admin.order.index')->withNotify($notify);
     }
 
     public function update(Request $request, $id)
     {
-        $this->validation($request);
+        $this->validation($request, 'update'); // Updated validation call
 
         $this->products   = collect($request->products);
         $this->totalPrice = $this->getTotalPrice();
@@ -259,31 +315,143 @@ class OrderController extends Controller
                 ]
             ]);
         }
+
+        return redirect()->route('admin.order.index')->withNotify($notify);
+    }
+
+    /**
+     * Handles adding a new payment to an existing order.
+     * @param Request $request
+     * @param int $id Sale ID
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function makePayment(Request $request, $id)
+    {
+        $request->validate([
+            'payment_amount'   => 'required|numeric|gt:0',
+            'payment_method'   => 'required|in:cash,bank,mobile',
+            'bank_id'          => 'nullable|required_if:payment_method,bank|exists:banks,id',
+            'transaction_id'   => 'nullable|string|max:255',
+        ]);
+
+        $sale = Sale::findOrFail($id);
+
+        $paymentAmount = $request->payment_amount;
+
+        if ($paymentAmount > $sale->due_amount) {
+            $notify[] = ['error', 'Payment amount cannot be greater than the due amount.'];
+            return back()->withNotify($notify);
+        }
+
+        $sale->received_amount += $paymentAmount;
+        $sale->due_amount      = $sale->receivable_amount - $sale->received_amount;
+
+        $isFullPayment = $sale->due_amount <= 0;
+
+        // Update status if fully paid and not already 'delivered' or 'cancelled'
+        if ($isFullPayment && $sale->status == 'pending') {
+            $sale->status = 'confirmed';
+        }
+
+        $sale->save();
+
+        // You would typically log this as a separate transaction/payment model
+        // For simplicity, we'll log an action entry here
+        Action::newEntry($sale, 'PAYMENT_RECEIVED', [
+            'amount' => $paymentAmount,
+            'method' => $request->payment_method,
+            'details' => $request->transaction_id
+        ]);
+
+        $notify[] = ['success', 'Payment of ' . gs('cur_sym') . getAmount($paymentAmount) . ' recorded successfully. ' . ($isFullPayment ? 'Order is now fully paid.' : '')];
+        return back()->withNotify($notify);
+    }
+
+    /**
+     * Updates the status of an existing order.
+     * @param Request $request
+     * @param int $id Sale ID
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:pending,confirmed,processing,shipped,delivered,cancelled'
+        ]);
+
+        $sale = Sale::findOrFail($id);
+
+        if ($sale->return_status) {
+            $notify[] = ['error', 'Order cannot be updated due to a return process.'];
+            return back()->withNotify($notify);
+        }
+
+        $sale->status = $request->status;
+        $sale->save();
+
+        Action::newEntry($sale, 'STATUS_UPDATED');
+
+        $notify[] = ['success', 'Order status updated to ' . ucfirst($sale->status) . ' successfully'];
+        return back()->withNotify($notify);
     }
 
     protected function saveSaleData($sale)
     {
         $request    = request();
         $discount   = $request->discount ?? 0;
+        $totalReceived = $request->received_amount ?? 0; // The amount paid during order creation/edit
         $receivable = $this->totalPrice - $discount;
-        $dueAmount  = $receivable - ($sale->received_amount ?? 0);
-        $received_amount = 0;
 
-        $sale->customer_id       = $request->customer_id ?? Customer::first()->id ?? 1;
-        $sale->warehouse_id      = $request->warehouse_id ?? Warehouse::first()->id ?? 1; // No warehouse needed
+        // If editing an existing order, maintain the previously received amount unless a new one is provided.
+        // For simplicity, for store/update, we'll assume the 'received_amount' from the request is only what's being paid *now*.
+        // If it's a new order, it's the initial payment. If it's an update, it's an adjustment/new payment for now.
+        // A dedicated 'makePayment' is better, but to save the initial payment:
+
+        if ($sale->exists) {
+            // For update, the received_amount in the request is the new payment
+            $sale->received_amount = $sale->received_amount + $totalReceived;
+        } else {
+            // For store, the received_amount in the request is the initial payment
+            $sale->received_amount = $totalReceived;
+        }
+
+        $dueAmount  = $receivable - $sale->received_amount;
+
+        // Initial payment method for new orders
+        $paymentMethod = $request->payment_method ?? null;
+        $bankId = $request->bank_id ?? null;
+
+        // Only update these fields if a payment was made during order creation/edit
+        if ($totalReceived > 0) {
+            $sale->payment_method = $paymentMethod;
+            $sale->bank_id = $bankId;
+        }
+
+        // Fallback for customer and warehouse
+        $defaultCustomer = Customer::first()->id ?? 1;
+        $defaultWarehouse = Warehouse::first()->id ?? 1;
+
+        $sale->customer_id       = $request->customer_id ?? $defaultCustomer;
+        $sale->warehouse_id      = $request->warehouse_id ?? $defaultWarehouse; // No warehouse needed
         $sale->sale_date         = Carbon::parse($request->sale_date);
         $sale->status            = $request->status ?? 'pending';
         $sale->total_price       = $this->totalPrice;
         $sale->discount_amount   = $discount;
-        $sale->received_amount   = $received_amount;
         $sale->receivable_amount = $receivable;
         $sale->due_amount        = $dueAmount;
         $sale->note              = $request->note;
+
+        // Status check for full payment on creation/update
+        if ($sale->due_amount <= 0 && $sale->status == 'pending') {
+            $sale->status = 'confirmed';
+        }
 
         $sale->save();
 
         return $sale;
     }
+
+    // --- Existing methods (storeSaleDetails, getTotalPrice, validation, searchProduct, lastInvoice) go here ---
 
     protected function storeSaleDetails($sale)
     {
@@ -327,9 +495,9 @@ class OrderController extends Controller
         });
     }
 
-    protected function validation($request)
+    protected function validation($request, $context)
     {
-        $request->validate([
+        $rules = [
             'customer_id'           => 'nullable|exists:customers,id',
             'customer_name'         => 'required_without:customer_id|string',
             'sale_date'             => 'required|date_format:Y-m-d',
@@ -340,7 +508,15 @@ class OrderController extends Controller
             'products.*.price'      => 'required|numeric|gte:0',
             'discount'              => 'nullable|numeric|gte:0',
             'note'                  => 'nullable|string',
-        ]);
+            // Payment fields (only required when an amount is received)
+            'received_amount'       => 'nullable|numeric|gte:0',
+            'payment_method'        => 'nullable|required_with:received_amount|in:cash,bank,mobile',
+            'bank_id'               => 'nullable|required_if:payment_method,bank|exists:banks,id',
+        ];
+
+        // Conditional validation for customer_name might need adjustment based on your front-end logic (creating a new customer)
+
+        $request->validate($rules);
     }
 
     public function searchProduct(Request $request)
@@ -376,21 +552,5 @@ class OrderController extends Controller
             'status' => true,
             'data'   => $lastInvoiceNo,
         ]);
-    }
-
-    public function updateStatus(Request $request, $id)
-    {
-        $request->validate([
-            'status' => 'required|in:pending,confirmed,processing,shipped,delivered,cancelled'
-        ]);
-
-        $sale = Sale::findOrFail($id);
-        $sale->status = $request->status;
-        $sale->save();
-
-        Action::newEntry($sale, 'STATUS_UPDATED');
-
-        $notify[] = ['success', 'Order status updated successfully'];
-        return back()->withNotify($notify);
     }
 }

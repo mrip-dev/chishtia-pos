@@ -597,14 +597,14 @@
 <body>
 
     <!-- Watermark -->
-    <div class="watermark-logo">
-        <img src="{{ siteLogo('dark') }}" alt="Moeeen Traders Logo" style="width: 100%;">
-    </div>
+    <!-- <div class="watermark-logo">
+        <img src="{{ siteLogo('dark') }}" alt="Chishtia Logo" style="width: 100%;">
+    </div> -->
 
     <!-- Company Header -->
     <div class="header-bar">
-        <img src="{{ siteLogo('dark') }}" alt="Moeeen Traders" class="company-logo">
-        <div class="company-title">Moeeen Traders - {{$pageTitle}}</div>
+        <img src="{{ siteLogo('dark') }}" alt="Chishtia" class="company-logo">
+        <div class="company-title">Chishtia - {{$pageTitle}}</div>
     </div>
 
     @yield('content')

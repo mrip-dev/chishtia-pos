@@ -10,7 +10,7 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $pageTitle  = 'Variants';
+        $pageTitle  = 'Categories';
         $categories = Category::searchable(['name'])->withCount('products')->latest()->paginate(getPaginate());
         return view('admin.category.index', compact('pageTitle', 'categories'));
     }

@@ -11,11 +11,11 @@ select:-webkit-autofill,
 select:-webkit-autofill:hover,
 select:-webkit-autofill:focus {
     -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
-    -webkit-text-fill-color: black !important; 
+    -webkit-text-fill-color: black !important;
     background-color: transparent !important;
     transition: background-color 9999s ease-in-out 0s !important;
 }
-   
+
 /* global css start */
 .text--shadow {
   text-shadow: 1px 2px 5px rgba(0, 0, 0, 0.35);
@@ -5495,7 +5495,7 @@ th.w-85 {
   position: relative;
   background: #ffffff;
   padding: 15px 30px;
-  margin-left: 200px;
+  margin-left: 60px;
   border-bottom: 1px solid #dee4ec;
   transition: all 0.5s cubic-bezier(0.4, -0.25, 0.25, 1.1);
 }
@@ -6278,7 +6278,7 @@ th.w-85 {
 /* navbar-wrapper css end */
 /* body-wrapper css start */
 .body-wrapper {
-  margin-left: 200px;
+  margin-left: 60px;
   padding: 30px;
   transition: all 0.5s cubic-bezier(0.4, -0.25, 0.25, 1.1);
 }

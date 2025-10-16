@@ -33,9 +33,7 @@
                                         </td>
 
                                         <td>
-                                            <span class="fw-bold">{{ __($sale->customer?->name) }}</span>
-                                            <br>
-                                            <span class="small">{{ $sale->customer?->mobile }}</span>
+                                            <span class="fw-bold">{{ __(@$sale->customer->name) }}</span>
                                         </td>
 
                                         <td>
@@ -92,6 +90,16 @@
                                                    title="@lang('Download Invoice')">
                                                     <i class="la la-download"></i> @lang('Invoice')
                                                 </a>
+
+                                                {{-- MAKE PAYMENT Button --}}
+                                                @if($sale->due_amount > 0)
+                                                    <button class="btn btn-sm btn-outline--success paymentBtn"
+                                                            data-id="{{ $sale->id }}"
+                                                            data-due_amount="{{ showAmount($sale->due_amount) }}"
+                                                            title="@lang('Record Payment')">
+                                                        <i class="las la-money-bill-wave"></i> @lang('Payment')
+                                                    </button>
+                                                @endif
 
                                                 <button class="btn btn-sm btn-outline--dark statusBtn"
                                                         data-id="{{ $sale->id }}"
@@ -154,6 +162,63 @@
             </div>
         </div>
     </div>
+
+    {{-- Make Payment Modal --}}
+    <div class="modal fade" id="paymentModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@lang('Record New Payment')</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="las la-times"></i>
+                    </button>
+                </div>
+                <form action="" method="POST" id="paymentForm">
+                    @csrf
+                    <div class="modal-body">
+                        <p class="text--info">@lang('Order Due Amount'): **<span class="due-amount-text"></span>**</p>
+
+                        <div class="form-group">
+                            <label>@lang('Payment Amount')</label>
+                            <div class="input-group">
+                                <span class="input-group-text">{{ gs('cur_sym') }}</span>
+                                <input type="number" step="any" name="payment_amount" class="form-control" placeholder="0.00" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>@lang('Payment Method')</label>
+                            <select class="form-control" name="payment_method" id="paymentMethod" required>
+                                <option value="">@lang('Select Method')</option>
+                                @foreach($paymentMethods as $key => $value)
+                                    <option value="{{ $key }}">{{ __($value) }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="form-group bank-field d-none">
+                            <label>@lang('Select Bank')</label>
+                            <select class="form-control" name="bank_id">
+                                <option value="">@lang('Select One')</option>
+                                @foreach($banks as $bank)
+                                    <option value="{{ $bank->id }}">{{ __($bank->name) }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>@lang('Transaction ID / Note') (@lang('Optional'))</label>
+                            <input type="text" name="transaction_id" class="form-control" placeholder="@lang('e.g. Bank Ref No., Mobile Txn ID')">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn--dark" data-bs-dismiss="modal">@lang('Close')</button>
+                        <button type="submit" class="btn btn--success">@lang('Record Payment')</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('breadcrumb-plugins')
@@ -178,6 +243,7 @@
         (function($) {
             'use strict';
 
+            // --- Status Update Modal Logic ---
             $('.statusBtn').on('click', function() {
                 let modal = $('#statusModal');
                 let id = $(this).data('id');
@@ -190,6 +256,38 @@
 
                 $('#statusForm').attr('action', action);
                 modal.modal('show');
+            });
+
+            // --- Payment Modal Logic ---
+            $('.paymentBtn').on('click', function() {
+                let modal = $('#paymentModal');
+                let id = $(this).data('id');
+                let dueAmount = $(this).data('due_amount');
+
+                // Reset form fields
+                $('#paymentForm')[0].reset();
+                $('.bank-field').addClass('d-none');
+
+                modal.find('.due-amount-text').text("{{ gs('cur_sym') }}" + dueAmount);
+                modal.find('[name=payment_amount]').attr({
+                    'max': dueAmount, // Set max attribute to prevent overpayment
+                    'value': dueAmount // Suggest full payment by default
+                });
+
+                let action = "{{ route('admin.order.make_payment', ':id') }}";
+                action = action.replace(':id', id);
+
+                $('#paymentForm').attr('action', action);
+                modal.modal('show');
+            });
+
+            // Toggle Bank Field
+            $('#paymentMethod').on('change', function() {
+                if ($(this).val() === 'bank') {
+                    $('.bank-field').removeClass('d-none').find('[name=bank_id]').attr('required', true);
+                } else {
+                    $('.bank-field').addClass('d-none').find('[name=bank_id]').attr('required', false);
+                }
             });
 
         })(jQuery);

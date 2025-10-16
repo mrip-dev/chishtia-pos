@@ -18,21 +18,16 @@
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         <label>@lang('Name')</label>
-                                        <select class="form-control select2" name="name" required>
-                                            <option value="">@lang('Select Product')</option>
-                                            @foreach(gourmet_cola_products() as $name)
-                                            <option value="{{ $name }}" {{ old('name', @$product->name) == $name ? 'selected' : '' }}>
-                                                {{ $name }}
-                                            </option>
-                                            @endforeach
-                                        </select>
+                                          <input class="form-control" name="name" type="text"
+                                            value="{{ old('name', @$product->name) }}">
+
                                     </div>
                                 </div>
 
 
                                 <div class="col-sm-6">
                                     <div class="form-group ">
-                                        <label>@lang('Variant')</label>
+                                        <label>@lang('Category')</label>
                                         <select class="form-control select2" name="category_id" required>
                                             <option value="" selected disabled>@lang('Select One')</option>
                                             @foreach ($categories as $category)
@@ -85,7 +80,7 @@
                                             value="{{ old('alert_quantity', @$product->alert_quantity) }}">
                                     </div>
                                 </div>
-                                
+
                                 <div class="col-sm-6" id="net_weight" style="display: none;">
                                     <div class="form-group">
                                         <label>@lang('Net Weight')</label>
@@ -96,8 +91,8 @@
                                <div class="col-sm-6" id="price">
                                     <div class="form-group">
                                         <label>@lang('Price')</label>
-                                        <input class="form-control" name="price" type="number"
-                                            value="{{ old('price', @$product->price) }}">
+                                        <input class="form-control" name="selling_price" type="number"
+                                            value="{{ old('selling_price', @$product->selling_price) }}">
                                     </div>
                                 </div>
                                  <div class="col-sm-12">

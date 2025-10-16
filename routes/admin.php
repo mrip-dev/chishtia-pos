@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PdfController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\CustomerViewController;
@@ -361,7 +362,13 @@ Route::middleware(['admin', 'admin.permission'])->group(function () {
 
     Route::delete('admin/customers/{id}', [CustomerController::class, 'destroy'])->name('customer.destroy');
     Route::get('/customers-pdf', [PdfController::class, 'customersPdf'])->name('customers.pdf');
+    // Routes to be added for the new controller methods
 
+    // Dedicated payment route (for existing orders)
+    Route::post('order/make-payment/{id}', [OrderController::class, 'makePayment'])->name('order.make_payment');
+
+    // Dedicated status update route
+    Route::post('order/update-status/{id}', [OrderController::class, 'updateStatus'])->name('order.update.status');
 
 
     //Payment - Supplier

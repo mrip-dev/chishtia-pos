@@ -20,12 +20,12 @@
 <!-- navbar-wrapper start -->
 <nav class="navbar-wrapper bg-white d-flex flex-wrap">
     <div class="navbar__left">
-        <button class="res-sidebar-open-btn me-3" type="button"><i class="las la-bars"></i></button>
+        <!-- <button class="res-sidebar-open-btn me-3" type="button"><i class="las la-bars"></i></button>
         <form class="navbar-search">
             <input class="navbar-search-field" id="searchInput" name="#0" type="search" autocomplete="off" placeholder="@lang('Search here...')">
             <i class="las la-search"></i>
             <ul class="search-list"></ul>
-        </form>
+        </form> -->
     </div>
     <div class="navbar__right">
         <ul class="navbar__action-list">

@@ -2,11 +2,13 @@
     <div class="d-flex mb-30 flex-wrap gap-3 justify-content-end align-items-center">
         <div class="d-flex flex-wrap justify-content-end gap-2 align-items-center breadcrumb-plugins">
             <x-search-form dateSearch='yes' />
+            @if(false)
             @permit('admin.sale.create')
             <button type="button" wire:click.prevent="createSale" class="btn btn-sm btn-outline--primary m-2">
                 <i class="las la-plus"></i>{{ $isCreating ? __('Close') : __('Add New') }}
             </button>
             @endpermit
+
             @permit(['admin.sale.pdf', 'admin.sale.csv'])
 
             @php
@@ -33,6 +35,7 @@
                 </ul>
             </div>
             @endpermit
+            @endif
         </div>
     </div>
     @if(!$isCreating)
@@ -69,12 +72,7 @@
 
                                     <td>
                                         <span class="text--primary fw-bold"> {{ $sale->customer_name }}</span>
-                                        <br>
-                                        {{ $sale->customer_phone }}
                                     </td>
-
-
-
                                     <td>
                                         <!-- {{ showAmount($sale->discount_amount) }} -->
                                         <br>
@@ -104,7 +102,7 @@
                                             <a href="{{ route('admin.sale.view', $sale->id) }}" class="btn btn-sm btn-outline--primary">
                                                 <i class="la la-eye"></i> @lang('View')
                                             </a>
-                                            @if ($sale->return_status !== 1)
+                                            @if (false)
                                             <a wire:click.prevent="editSale({{ $sale->id }})"
                                                 class="btn btn-sm btn-outline--primary ms-1">
                                                 <i class="la la-pen"></i> @lang('Edit')
@@ -120,16 +118,11 @@
 
                                             <div class="dropdown-menu">
                                                 @permit('admin.customer.payment.store')
-                                                <li>
-                                                    <a wire:click="openExpenseModal({{$sale->id}})" href="javascript:void(0)"
-                                                        class="dropdown-item">
-                                                        <i class="la la-money-bill-wave"></i> @lang('Pay Expense')
-                                                    </a>
-                                                </li>
+
 
                                                 <a href="javascript:void(0)" wire:click="payMentModal({{$sale->id}})" class="dropdown-item paymentModalBtn"
                                                     data-customer_id="{{ $sale->customer_id }}"
-                                                    data-customer="{{ $sale->customer?->name }}"
+                                                    data-customer="{{ $sale->customer_name }}"
                                                     data-invoice="{{ $sale->invoice_no }}"
                                                     data-id="{{ $sale->id }}"
                                                     data-due_amount="{{ $sale->due_amount }}">

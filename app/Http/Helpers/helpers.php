@@ -248,7 +248,7 @@ if (!function_exists('getProductTitle')) {
         $brand    = $product->brand->name ?? 'No Brand';
         $category = $product->category->name ?? 'No Category';
 
-        return "{$product->name} ({$category})";
+        return "{$product->name}";
     }
 }
 if (!function_exists('isWeightOpen')) {
@@ -266,9 +266,9 @@ function getImage($image, $size = null)
     if (file_exists($image) && is_file($image)) {
         return asset($image) . $clean;
     }
-    if ($size) {
-        return route('placeholder.image', $size);
-    }
+    // if ($size) {
+    //     return route('placeholder.image', $size);
+    // }
     return asset('assets/images/default.png');
 }
 

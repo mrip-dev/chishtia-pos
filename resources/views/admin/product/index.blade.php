@@ -186,9 +186,9 @@
 <a wire:navigate class="btn btn-outline--primary" href="{{ route('admin.product.create') }}">
     <i class="la la-plus"></i>@lang('Add New')
 </a>
-<a wire:navigate class="btn btn-outline--secondary" href="{{ route('admin.product.open-stock') }}">
+<!-- <a wire:navigate class="btn btn-outline--secondary" href="{{ route('admin.product.open-stock') }}">
     <i class="la la-plus"></i>@lang('Enter Stock')
-</a>
+</a> -->
 @endpermit
 @php
 $params = request()->all();

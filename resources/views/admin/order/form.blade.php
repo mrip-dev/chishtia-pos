@@ -1,13 +1,26 @@
 @extends('admin.layouts.app')
 @section('panel')
 <div class="row" id="orderApp">
-    <!-- Left Side: Product Catalog -->
     <div class="col-lg-8 mb-30">
         <div class="card h-100">
 
             <div class="card-body">
-
-                <!-- Search Box -->
+                <div class="category-tabs-container mb-3">
+                    <ul class="nav nav-pills product-category-tabs" id="pills-tab" role="tablist">
+                        <li class="nav-item me-2" role="presentation">
+                            <a class="nav-link" :class="{ 'active': activeCategory === null }"
+                                @click="setActiveCategory(null)" role="tab" aria-selected="true">
+                                @lang('All')
+                            </a>
+                        </li>
+                        <li v-for="category in categories" :key="category.id" class="nav-item me-2" role="presentation">
+                            <a class="nav-link" :class="{ 'active': activeCategory === category.id }"
+                                @click="setActiveCategory(category.id)" role="tab" :aria-selected="activeCategory === category.id">
+                                @{{ category.name }}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
                 <div class="form-group">
                     <div class="input-group">
                         <span class="input-group-text"><i class="las la-search"></i></span>
@@ -19,24 +32,25 @@
                     </div>
                 </div>
 
-                <!-- Product List -->
-                <div class="product-catalog">
-                    <div class="row p-4">
+                <div class="product-catalog p-4">
+                    <div class="row">
                         <div
                             v-for="product in filteredProducts"
                             :key="product.id"
-                            class="product-item col-3 p-1 m-1"
+                            class="col-xl-3 col-lg-4 col-md-4 col-sm-6 mb-3 px-2"
                             @click="addProduct(product)">
-                            <div class="product-image">
-                                <img :src="getProductImage(product)" :alt="product.name">
-                            </div>
-                            <div class="product-details">
-                                <h6 class="product-name">@{{ product.display_title }}</h6>
-                                <div class="product-price">
-                                    <strong>{{ gs('cur_sym') }}@{{ formatPrice(product.selling_price) }}</strong>
+
+                            <div class="product-item h-100">
+                                <div class="product-image">
+                                    <img :src="getProductImage(product)" :alt="product.name">
+                                </div>
+                                <div class="product-details">
+                                    <h6 class="product-name">@{{ product.display_title }}</h6>
+                                    <div class="product-price">
+                                        <strong>{{ gs('cur_sym') }}@{{ formatPrice(product.selling_price) }}</strong>
+                                    </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
 
@@ -50,7 +64,6 @@
         </div>
     </div>
 
-    <!-- Right Side: Order Form -->
     <div class="col-lg-4 mb-30">
         <div class="card">
             <div class="card-body">
@@ -74,8 +87,7 @@
                                 <input
                                     class="form-control"
                                     v-model="orderData.customer_name"
-                                    type="text"
-                                    >
+                                    type="text">
                             </div>
                         </div>
 
@@ -108,7 +120,6 @@
                         </div>
                     </div>
 
-                    <!-- Selected Products Table -->
                     <div class="row mb-3">
                         <div class="col-12">
                             <div class="table-responsive">
@@ -116,7 +127,6 @@
                                     <thead class="border bg--dark">
                                         <tr>
                                             <th>@lang('Product')</th>
-
                                             <th width="150">@lang('Quantity')</th>
                                             <th width="150">@lang('Price')</th>
                                             <th width="150">@lang('Total')</th>
@@ -177,7 +187,6 @@
                         </div>
                     </div>
 
-                    <!-- Summary Section -->
                     <div class="row">
                         <div class="col-md-12">
                             <div class="order-summary">
@@ -245,6 +254,7 @@
                                     </div>
                                 </div>
                                 @endisset
+
                             </div>
                         </div>
                         <div class="col-md-12">
@@ -298,37 +308,42 @@
 
 @push('style')
 <style>
+    /* Corrected max-height */
     .product-catalog {
-        /* max-height: calc(100vh - 300px); */
-        overflow: scroll;
+        max-height: calc(100vh - 350px);
+        overflow-y: scroll;
         padding-right: 5px;
     }
 
     .product-item {
-        /* display: flex; */
+        display: flex; /* Added display flex to align items correctly */
+        flex-direction: column; /* Stacks image and details */
         align-items: center;
-        gap: 15px;
+        text-align: center;
         padding: 12px;
         border: 1px solid #e5e5e5;
         border-radius: 6px;
         margin-bottom: 10px;
         cursor: pointer;
         transition: all 0.3s ease;
+        height: 100%; /* Ensure h-100 works */
     }
 
     .product-item:hover {
         border-color: var(--primary);
         background-color: #f8f9fa;
-        transform: translateX(5px);
+        transform: translateY(-5px); /* Changed to Y-axis for better visual */
     }
 
     .product-image {
         width: 100%;
-        height: 150px;
+        max-width: 150px; /* Constrain image width */
+        height: 120px; /* Reduced height */
         flex-shrink: 0;
         border-radius: 6px;
         overflow: hidden;
         background: #f5f5f5;
+        margin-bottom: 10px;
     }
 
     .product-image img {
@@ -339,6 +354,7 @@
 
     .product-details {
         flex: 1;
+        width: 100%;
     }
 
     .product-name {
@@ -346,6 +362,9 @@
         font-size: 14px;
         font-weight: 600;
         color: #333;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
     }
 
     .product-price {
@@ -363,6 +382,7 @@
         padding: 60px 20px;
     }
 
+    /* Scrollbar styles */
     .product-catalog::-webkit-scrollbar {
         width: 6px;
     }
@@ -374,6 +394,34 @@
 
     .product-catalog::-webkit-scrollbar-track {
         background: #f1f1f1;
+    }
+
+    /* Category Tabs Styles */
+    .category-tabs-container {
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 10px;
+    }
+
+    .product-category-tabs {
+        flex-wrap: nowrap;
+
+    }
+
+    .product-category-tabs .nav-link {
+        border-radius: 5px;
+        padding: 5px 15px;
+        color: var(--dark);
+        border: 1px solid #ddd;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+
+    .product-category-tabs .nav-link.active {
+        background-color: #a0522d;
+
+        color: #fff;
+        border-color: var(--primary);
     }
 </style>
 @endpush
@@ -389,11 +437,13 @@
         data() {
             return {
                 searchQuery: '',
+                // Ensure these variables are defined in your PHP controller if they are not defined they will break the page
                 products: @json($products ?? []),
+                categories: @json($categories ?? []),
                 customers: @json($customers ?? []),
                 selectedProducts: [],
                 orderData: {
-                    invoice_no: @json($sale->invoice_no ?? $invoiceNumber),
+                    invoice_no: @json($sale->invoice_no ?? $invoiceNumber ?? 'NEW-ORDER-000'),
                     customer_name: @json($sale->customer_name?? ''),
                     sale_date: @json($sale->sale_date ?? date('Y-m-d')),
                     status: @json($sale->status ?? 'pending'),
@@ -402,21 +452,34 @@
                 },
                 discountError: '',
                 isSubmitting: false,
-                isEdit: @json(isset($sale))
+                isEdit: @json(isset($sale)),
+                activeCategory: null
             }
         },
         computed: {
             filteredProducts() {
-                if (!this.searchQuery) {
-                    return this.products;
-                }
+                let filtered = this.products;
                 const query = this.searchQuery.toLowerCase();
-                return this.products.filter(product =>
-                    product.name.toLowerCase().includes(query)
-                );
+
+                // 1. Filter by Category
+                if (this.activeCategory !== null) {
+                    filtered = filtered.filter(product => product.category_id === this.activeCategory);
+                }
+
+                // 2. Filter by Search Query
+                if (query) {
+                    filtered = filtered.filter(product =>
+                        (product.name && product.name.toLowerCase().includes(query)) ||
+                        (product.display_title && product.display_title.toLowerCase().includes(query)) ||
+                        (product.sku && product.sku.toLowerCase().includes(query))
+                    );
+                }
+
+                return filtered;
             },
             totalPrice() {
-                return this.selectedProducts.reduce((sum, item) => sum + item.total, 0);
+                // Ensure item.total is calculated and is a number
+                return this.selectedProducts.reduce((sum, item) => sum + (item.total || 0), 0);
             },
             receivableAmount() {
                 return Math.max(0, this.totalPrice - (this.orderData.discount || 0));
@@ -428,6 +491,10 @@
             }
         },
         methods: {
+            setActiveCategory(categoryId) {
+                this.activeCategory = categoryId;
+                this.searchQuery = ''; // Clear search when switching categories
+            },
             addProduct(product) {
                 const existingIndex = this.selectedProducts.findIndex(
                     item => item.product_id === product.id
@@ -440,9 +507,9 @@
                     this.selectedProducts.push({
                         product_id: product.id,
                         name: product.name,
-                        display_title: product.display_title,
+                        display_title: product.display_title || product.name,
                         category_name: product.category_name,
-                        unit: product.unit.name,
+                        unit: (product.unit && product.unit.name) ? product.unit.name : 'Pcs',
                         quantity: 1,
                         price: parseFloat(product.selling_price || 0),
                         total: parseFloat(product.selling_price || 0)
@@ -454,30 +521,39 @@
             },
             calculateTotal(index) {
                 const item = this.selectedProducts[index];
-                item.total = item.quantity * item.price;
+                // Ensure quantity and price are numbers before multiplication
+                const quantity = parseFloat(item.quantity || 0);
+                const price = parseFloat(item.price || 0);
+
+                // Update the total and force reactivity
+                item.total = quantity * price;
+
+                // Re-validate discount since total price might change
+                this.validateDiscount();
             },
             validateDiscount() {
-                if (this.orderData.discount < 0) {
-                    this.discountError = 'Discount cannot be negative';
-                } else if (this.orderData.discount > this.totalPrice) {
-                    this.discountError = 'Discount cannot exceed total price';
-                } else {
-                    this.discountError = '';
-                }
+                // Wait for the next tick to ensure totalPrice is updated
+                this.$nextTick(() => {
+                    if (this.orderData.discount < 0) {
+                        this.discountError = 'Discount cannot be negative';
+                    } else if (this.orderData.discount > this.totalPrice) {
+                        this.discountError = `Discount cannot exceed total price (${this.formatPrice(this.totalPrice)})`;
+                    } else {
+                        this.discountError = '';
+                    }
+                });
             },
             formatPrice(value) {
                 return parseFloat(value || 0).toFixed(2);
             },
             getProductImage(product) {
-                // Use image_url if available, otherwise fallback to default
+                // Assuming 'image_url' is available on the product object
                 return product.image_url || '{{ getImage("assets/images/default.png") }}';
             },
             submitOrder() {
                 if (!this.canSubmit) return;
-
                 this.isSubmitting = true;
 
-                // Prepare form data
                 const formData = new FormData();
                 formData.append('_token', '{{ csrf_token() }}');
                 formData.append('customer_name', this.orderData.customer_name);
@@ -485,15 +561,16 @@
                 formData.append('status', this.orderData.status);
                 formData.append('discount', this.orderData.discount || 0);
                 formData.append('note', this.orderData.note || '');
+                formData.append('total_amount', this.totalPrice);
+                formData.append('receivable_amount', this.receivableAmount);
 
-                // Add products
                 this.selectedProducts.forEach((product, index) => {
                     formData.append(`products[${index}][product_id]`, product.product_id);
                     formData.append(`products[${index}][quantity]`, product.quantity);
                     formData.append(`products[${index}][price]`, product.price);
+                    formData.append(`products[${index}][total]`, product.total);
                 });
 
-                // Submit form
                 const url = this.isEdit ?
                     '{{ isset($sale) ? route("admin.order.update", $sale->id) : "" }}' :
                     '{{ route("admin.order.store") }}';
@@ -502,10 +579,17 @@
                         method: 'POST',
                         body: formData,
                         headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
+                            'X-Requested-With': 'XMLHttpRequest',
+                            // Laravel often requires method override for PUT/PATCH/DELETE
+                            ...(this.isEdit ? {
+                                'X-HTTP-Method-Override': 'PUT'
+                            } : {})
                         }
                     })
                     .then(response => {
+                        if (response.status === 403) {
+                             return Promise.reject({message: 'Forbidden: CSRF token mismatch or unauthorized action.'});
+                        }
                         if (!response.ok) {
                             return response.json().then(err => Promise.reject(err));
                         }
@@ -514,56 +598,47 @@
                     .then(data => {
                         if (data.success) {
                             this.showNotification('success', data.message);
-
-                            // Redirect after short delay
                             setTimeout(() => {
                                 window.location.href = data.redirect || '{{ route("admin.order.index") }}';
                             }, 1000);
                         } else {
                             this.isSubmitting = false;
-                            this.showNotification('error', data.message || 'An error occurred');
+                            this.showNotification('error', data.message || 'An unexpected error occurred');
                         }
                     })
                     .catch(error => {
                         this.isSubmitting = false;
                         console.error('Error:', error);
-
                         if (error.errors) {
-                            // Validation errors
                             const firstError = Object.values(error.errors)[0][0];
                             this.showNotification('error', firstError);
                         } else if (error.message) {
                             this.showNotification('error', error.message);
                         } else {
-                            this.showNotification('error', 'An error occurred while saving the order');
+                            this.showNotification('error', 'An error occurred while saving the order. Check the console for details.');
                         }
                     });
             },
             showNotification(type, message) {
-                // Use your notification system here
-                // For now, using alert as fallback
+                // Assumes iziToast is available globally
                 if (typeof iziToast !== 'undefined') {
                     iziToast[type]({
                         message: message,
                         position: 'topRight'
                     });
                 } else {
-                    alert(message);
+                    alert(`${type.toUpperCase()}: ${message}`);
                 }
             }
         },
         mounted() {
-            // Debug: Check if products have image_url
+            // Log to confirm data presence
             console.log('Products loaded:', this.products.length);
-            if (this.products.length > 0) {
-                console.log('Sample product:', this.products[0]);
-            }
+            console.log('Categories loaded:', this.categories.length);
 
-            // Load existing sale details if editing
+            // Logic for pre-loading sale details in edit mode
             @if(isset($sale))
             console.log('Editing mode - Loading sale details');
-
-            // Load sale details from server
             this.selectedProducts = [
                 @foreach($sale->saleDetails as $detail) {
                     product_id: {{$detail->product_id}},
@@ -581,13 +656,11 @@
                 @endforeach
             ];
 
-            console.log('Sale details loaded:', this.selectedProducts);
-
-            // Trigger total calculation
             this.$nextTick(() => {
                 this.selectedProducts.forEach((item, index) => {
                     this.calculateTotal(index);
                 });
+                this.validateDiscount(); // Initial discount validation
             });
             @endif
         }
