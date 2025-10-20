@@ -432,6 +432,7 @@ class OrderController extends Controller
         $defaultWarehouse = Warehouse::first()->id ?? 1;
 
         $sale->customer_id       = $request->customer_id ?? $defaultCustomer;
+        $sale->customer_name       = $request->customer_name ?? 'Walkin-customer';
         $sale->warehouse_id      = $request->warehouse_id ?? $defaultWarehouse; // No warehouse needed
         $sale->sale_date         = Carbon::parse($request->sale_date);
         $sale->status            = $request->status ?? 'pending';

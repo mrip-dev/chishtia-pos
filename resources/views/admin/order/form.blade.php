@@ -362,8 +362,8 @@
         font-size: 14px;
         font-weight: 600;
         color: #333;
-        overflow: hidden;
-        white-space: nowrap;
+        /* overflow: hidden; */
+        /* white-space: nowrap; */
         text-overflow: ellipsis;
     }
 
@@ -458,25 +458,58 @@
         },
         computed: {
             filteredProducts() {
-                let filtered = this.products;
-                const query = this.searchQuery.toLowerCase();
+    // Log initial state for debugging
+    console.log('=== FILTER START ===');
+    console.log('Search Query:', this.searchQuery);
+    console.log('Active Category:', this.activeCategory);
+    console.log('Total Products Loaded:', this.products ? this.products.length : 0);
 
-                // 1. Filter by Category
-                if (this.activeCategory !== null) {
-                    filtered = filtered.filter(product => product.category_id === this.activeCategory);
-                }
+    // Safety check
+    if (!Array.isArray(this.products)) {
+        console.warn('Products data is not an array:', this.products);
+        return [];
+    }
 
-                // 2. Filter by Search Query
-                if (query) {
-                    filtered = filtered.filter(product =>
-                        (product.name && product.name.toLowerCase().includes(query)) ||
-                        (product.display_title && product.display_title.toLowerCase().includes(query)) ||
-                        (product.sku && product.sku.toLowerCase().includes(query))
-                    );
-                }
+    let filtered = [...this.products]; // create a copy
+    const query = this.searchQuery ? this.searchQuery.toLowerCase().trim() : '';
 
-                return filtered;
-            },
+    // 1. Filter by Category
+    if (this.activeCategory !== null && this.activeCategory !== '' && this.activeCategory !== undefined) {
+        const activeCat = Number(this.activeCategory);
+        filtered = filtered.filter(product => {
+            const productCat = Number(product.category_id);
+            const match = productCat === activeCat;
+            if (!match) {
+                console.log(`Product ${product.id || 'N/A'} skipped (Cat: ${productCat}, Expected: ${activeCat})`);
+            }
+            return match;
+        });
+        console.log('Filtered by Category Count:', filtered.length);
+    } else {
+        console.log('No active category filter applied');
+    }
+
+    // 2. Filter by Search Query
+    if (query) {
+        filtered = filtered.filter(product => {
+            const name = product.name?.toString().toLowerCase() || '';
+            const title = product.display_title?.toString().toLowerCase() || '';
+            const sku = product.sku?.toString().toLowerCase() || '';
+            return name.includes(query) || title.includes(query) || sku.includes(query);
+        });
+        console.log('Filtered by Search Query Count:', filtered.length);
+    } else {
+        console.log('No search query filter applied');
+    }
+
+    // Final logs
+    console.log('Final Filtered Product Count:', filtered.length);
+    console.log('Filtered Products:', filtered);
+    console.log('=== FILTER END ===');
+
+    return filtered;
+},
+
             totalPrice() {
                 // Ensure item.total is calculated and is a number
                 return this.selectedProducts.reduce((sum, item) => sum + (item.total || 0), 0);

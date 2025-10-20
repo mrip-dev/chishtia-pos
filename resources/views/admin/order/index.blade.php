@@ -33,7 +33,7 @@
                                         </td>
 
                                         <td>
-                                            <span class="fw-bold">{{ __(@$sale->customer->name) }}</span>
+                                            <span class="fw-bold">{{ __(@$sale->customer_name) }}</span>
                                         </td>
 
                                         <td>
