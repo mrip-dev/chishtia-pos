@@ -7,7 +7,7 @@ use App\Models\Action;
 use App\Models\Bank;
 use App\Models\Category;
 use App\Models\Product;
-use App\Models\Sale;
+use App\Models\Sale; // Assuming Sale model is used for orders
 use App\Models\SaleDetails;
 use App\Models\Customer;
 use App\Models\Warehouse;
@@ -15,6 +15,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB; // Added for potential transaction
 
 class OrderController extends Controller
 {
@@ -27,10 +28,9 @@ class OrderController extends Controller
 
     protected function getSales()
     {
-        $query = Sale::searchable(['invoice_no', 'due_amount', 'customer:name,mobile', 'status'])
+        $query = Sale::searchable(['invoice_no', 'due_amount', 'customer:name,mobile', 'status','servic_type'])
             ->dateFilter('sale_date')
             ->with('customer', 'saleReturn')
-            // ->where('status', 'pending')
             ->orderBy('id', 'desc');
 
         $user = Auth::guard('admin')->user();
@@ -59,18 +59,14 @@ class OrderController extends Controller
             $routeCSV .= "date=" . request()->date;
         }
 
-        // ADDED for payment status
         $paymentMethods = [
             'cash'    => 'Cash',
             'bank'    => 'Bank Transfer',
             'mobile'  => 'Mobile Money',
-            // Add more as needed
         ];
 
         return view('admin.order.index', compact('pageTitle', 'sales', 'pdfButton', 'routePDF', 'routeCSV', 'banks', 'paymentMethods'));
     }
-
-    // --- Existing methods (salePDF, saleCSV, downloadCsv, downloadInvoice) go here ---
 
     public function salePDF()
     {
@@ -90,14 +86,17 @@ class OrderController extends Controller
     {
         $filename = "assets/files/csv/example.csv";
         $myFile   = fopen($filename, 'w');
-        $column   = "Order No.,Date,Customer,Mobile,Total Amount,Status,Discount,Receivable,Paid,Due\n";
+        $column   = "Order No.,Date,Customer,Mobile,Service Type,Table No.,Table Man,Total Amount,Status,Discount,Receivable,Paid,Due\n"; // Updated CSV header
         $curSym   = gs('cur_sym');
 
         foreach ($data as $sale) {
             $invoice        = $sale->invoice_no;
             $date           = showDateTime(@$sale->sale_date, 'd-m-Y');
-            $customer       = $sale->customer?->name;
-            $customerMobile = $sale->customer?->mobile;
+            $customer       = $sale->customer_name; // Use customer_name from Sale
+            $customerMobile = $sale->customer_phone; // Use customer_phone from Sale
+            $serviceType    = ucfirst(str_replace('_', ' ', $sale->service_type)); // New
+            $tableNo        = $sale->table_no ?? 'N/A'; // New
+            $tableMan       = $sale->table_man ?? 'N/A'; // New
             $status         = ucfirst($sale->status);
             $totalAmount    = $curSym . getAmount($sale->total_price);
             $discount       = $curSym . getAmount($sale->discount_amount);
@@ -105,7 +104,7 @@ class OrderController extends Controller
             $received       = $curSym . getAmount($sale->received_amount);
             $due            = $curSym . getAmount($sale->due_amount);
 
-            $column .= "$invoice,$date,$customer,$customerMobile,$totalAmount,$status,$discount,$receivable,$received,$due \n";
+            $column .= "$invoice,$date,$customer,$customerMobile,$serviceType,$tableNo,$tableMan,$totalAmount,$status,$discount,$receivable,$received,$due \n";
         }
 
         fwrite($myFile, $column);
@@ -151,8 +150,6 @@ class OrderController extends Controller
         return response()->download($path);
     }
 
-    // ---
-
     public function create()
     {
         $pageTitle     = 'New Order';
@@ -162,27 +159,23 @@ class OrderController extends Controller
         $invoiceNumber = generateInvoiceNumber($lastInvoiceNo);
         $customers     = Customer::select('id', 'name', 'mobile')->get();
 
-        // FIX: Include 'category_id' in the select statement and eager load 'category'
-        $products      = Product::with(['unit', 'category'])
-            ->select('id', 'name', 'sku', 'selling_price', 'image', 'unit_id', 'category_id', 'brand_id') // ADDED 'category_id' and 'brand_id'
+        $products      = Product::with(['unit', 'category', 'brand']) // Eager load 'brand' as well
+            ->select('id', 'name', 'sku', 'selling_price', 'image', 'unit_id', 'category_id', 'brand_id')
             ->orderBy('name')
             ->get();
 
-        // ADDED: Payment methods
         $paymentMethods = [
             'cash'    => 'Cash',
             'bank'    => 'Bank Transfer',
             'mobile'  => 'Mobile Money',
         ];
-        $banks = Bank::all(); // Used for bank payment method
+        $banks = Bank::all();
 
-        // Add image URL and other details to each product
         foreach ($products as $product) {
             $product->image_url = getImage(getFilePath('product') . '/' . $product->image, getFileSize('product'));
             $product->display_title = getProductTitle($product->id);
-            // The relationship data is available here thanks to eager loading
             $product->brand_name = $product->brand->name ?? 'No Brand';
-            $product->category_name = $product->category->name ?? 'No Category'; // Ensure it doesn't crash if null
+            $product->category_name = $product->category->name ?? 'No Category';
         }
 
         return view('admin.order.form', compact('pageTitle', 'invoiceNumber', 'customers', 'products', 'paymentMethods', 'banks', 'categories'));
@@ -191,18 +184,18 @@ class OrderController extends Controller
     public function edit($id)
     {
         $sale      = Sale::where('id', $id)
-            ->with('saleDetails', 'saleDetails.product', 'saleDetails.product.unit', 'customer')
+            ->with('saleDetails', 'saleDetails.product', 'saleDetails.product.unit', 'saleDetails.product.category', 'saleDetails.product.brand', 'customer')
             ->whereHas('saleDetails')
             ->firstOrFail();
 
         $pageTitle = 'Edit Order';
+         $categories    = Category::all();
         $customers = Customer::select('id', 'name', 'mobile')->get();
-        $products  = Product::with('unit')
-            ->select('id', 'name', 'sku', 'selling_price', 'image', 'unit_id')
+        $products  = Product::with(['unit', 'category', 'brand']) // Eager load 'brand' and 'category' for edit as well
+            ->select('id', 'name', 'sku', 'selling_price', 'image', 'unit_id', 'category_id', 'brand_id') // Select 'category_id' and 'brand_id'
             ->orderBy('name')
             ->get();
 
-        // ADDED: Payment methods
         $paymentMethods = [
             'cash'    => 'Cash',
             'bank'    => 'Bank Transfer',
@@ -210,113 +203,155 @@ class OrderController extends Controller
         ];
         $banks = Bank::all();
 
-        // Add image URL to each product
         foreach ($products as $product) {
             $product->image_url = getImage(getFilePath('product') . '/' . $product->image, getFileSize('product'));
             $product->display_title = getProductTitle($product->id);
-            // Assuming brand and category relationships exist on Product model
             $product->brand_name = $product->brand->name ?? 'No Brand';
             $product->category_name = $product->category->name ?? 'No Category';
         }
 
-        return view('admin.order.form', compact('pageTitle', 'sale', 'customers', 'products', 'paymentMethods', 'banks'));
+        return view('admin.order.form', compact('pageTitle', 'sale', 'customers', 'products', 'paymentMethods', 'banks', 'categories'));
     }
 
     public function store(Request $request)
     {
-        $this->validation($request, 'store'); // Updated validation call
+        $this->validation($request, 'store');
 
-        $this->products   = collect($request->products);
-        $this->productIds = $this->products->pluck('product_id')->toArray();
-        $this->totalPrice = $this->getTotalPrice();
+        DB::beginTransaction(); // Start database transaction
 
-        if ($request->discount > $this->totalPrice) {
+        try {
+            $this->products   = collect($request->products);
+            $this->productIds = $this->products->pluck('product_id')->toArray();
+            $this->totalPrice = $this->getTotalPrice();
+
+            if ($request->discount > $this->totalPrice) {
+                if ($request->expectsJson() || $request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Discount amount mustn\'t be greater than total price'
+                    ], 422);
+                }
+                $notify[] = ['error', 'Discount amount mustn\'t be greater than total price'];
+                return back()->withNotify($notify)->withInput();
+            }
+
+            $lastSale      = Sale::orderBy('id', 'DESC')->first();
+            $lastInvoiceNo = @$lastSale->invoice_no;
+
+            $sale                 = new Sale();
+            $sale->invoice_no     = generateInvoiceNumber($lastInvoiceNo);
+            $sale->user_id        = Auth::guard('admin')->id();
+
+            $sale = $this->saveSaleData($sale);
+            $this->storeSaleDetails($sale);
+
+            Action::newEntry($sale, 'CREATED');
+
+            DB::commit(); // Commit the transaction
+
+            $notify[] = ['success', 'Order created successfully'];
+
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Order created successfully',
+                    'redirect' => route('admin.order.index'),
+                    'data' => [
+                        'order_id' => $sale->id,
+                        'invoice_no' => $sale->invoice_no
+                    ]
+                ]);
+            }
+
+            return redirect()->route('admin.order.index')->withNotify($notify);
+        } catch (\Exception $e) {
+            DB::rollBack(); // Rollback on error
+            dd($e);
+            // Log the error for debugging
+            logger()->error('Order creation failed: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+
+            $notify[] = ['error', 'Failed to create order. An unexpected error occurred.'];
             if ($request->expectsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Discount amount mustn\'t be greater than total price'
-                ], 422);
+                    'message' => 'Failed to create order. An unexpected error occurred.',
+                    'error' => $e->getMessage()
+                ], 500);
             }
-            $notify[] = ['error', 'Discount amount mustn\'t be greater than total price'];
             return back()->withNotify($notify)->withInput();
         }
-
-        $lastSale      = Sale::orderBy('id', 'DESC')->first();
-        $lastInvoiceNo = @$lastSale->invoice_no;
-
-        $sale                 = new Sale();
-        $sale->invoice_no     = generateInvoiceNumber($lastInvoiceNo);
-        $sale->user_id        = Auth::guard('admin')->id(); // Assigning the user who created the order
-
-        $sale = $this->saveSaleData($sale);
-
-        $this->storeSaleDetails($sale);
-
-        Action::newEntry($sale, 'CREATED');
-        $notify[] = ['success', 'Order created successfully'];
-
-        if ($request->expectsJson() || $request->ajax()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Order created successfully',
-                'redirect' => route('admin.order.index'),
-                'data' => [
-                    'order_id' => $sale->id,
-                    'invoice_no' => $sale->invoice_no
-                ]
-            ]);
-        }
-
-        return redirect()->route('admin.order.index')->withNotify($notify);
     }
 
     public function update(Request $request, $id)
     {
-        $this->validation($request, 'update'); // Updated validation call
+        $this->validation($request, 'update');
 
-        $this->products   = collect($request->products);
-        $this->totalPrice = $this->getTotalPrice();
-        $this->productIds = $this->products->pluck('product_id')->toArray();
+        DB::beginTransaction(); // Start database transaction
 
-        if ($request->discount > $this->totalPrice) {
+        try {
+            $this->products   = collect($request->products);
+            $this->totalPrice = $this->getTotalPrice();
+            $this->productIds = $this->products->pluck('product_id')->toArray();
+
+            if ($request->discount > $this->totalPrice) {
+                if ($request->expectsJson() || $request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Discount amount mustn\'t be greater than total price'
+                    ], 422);
+                }
+                $notify[] = ['error', 'Discount amount mustn\'t be greater than total price'];
+                return back()->withNotify($notify)->withInput();
+            }
+
+            $sale = Sale::with('saleDetails')->findOrFail($id);
+
+            if ($sale->return_status) {
+                $notify[] = ['error', 'You can\'t update this order'];
+                if ($request->expectsJson() || $request->ajax()) {
+                    return response()->json(['success' => false, 'message' => 'You can\'t update this order'], 400);
+                }
+                return back()->withNotify($notify);
+            }
+
+            $this->saleDetails = $sale->saleDetails;
+
+            $sale = $this->saveSaleData($sale);
+            $this->storeSaleDetails($sale);
+
+            Action::newEntry($sale, 'UPDATED');
+
+            DB::commit(); // Commit the transaction
+
+            $notify[] = ['success', 'Order updated successfully'];
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Order updated successfully',
+                    'redirect' => route('admin.order.index'),
+                    'data' => [
+                        'order_id' => $sale->id,
+                        'invoice_no' => $sale->invoice_no
+                    ]
+                ]);
+            }
+
+            return redirect()->route('admin.order.index')->withNotify($notify);
+        } catch (\Exception $e) {
+            DB::rollBack(); // Rollback on error
+            // Log the error for debugging
+            logger()->error('Order update failed: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+
+            $notify[] = ['error', 'Failed to update order. An unexpected error occurred.'];
             if ($request->expectsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Discount amount mustn\'t be greater than total price'
-                ], 422);
+                    'message' => 'Failed to update order. An unexpected error occurred.',
+                    'error' => $e->getMessage()
+                ], 500);
             }
-            $notify[] = ['error', 'Discount amount mustn\'t be greater than total price'];
             return back()->withNotify($notify)->withInput();
         }
-
-        $sale = Sale::with('saleDetails')->findOrFail($id);
-
-        if ($sale->return_status) {
-            $notify[] = ['error', 'You can\'t update this order'];
-            return back()->withNotify($notify);
-        }
-
-        $this->saleDetails = $sale->saleDetails;
-
-        $sale = $this->saveSaleData($sale);
-        $this->storeSaleDetails($sale);
-
-        Action::newEntry($sale, 'UPDATED');
-
-        $notify[] = ['success', 'Order updated successfully'];
-        if ($request->expectsJson() || $request->ajax()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Order updated successfully',
-                'redirect' => route('admin.order.index'),
-                'data' => [
-                    'order_id' => $sale->id,
-                    'invoice_no' => $sale->invoice_no
-                ]
-            ]);
-        }
-
-        return redirect()->route('admin.order.index')->withNotify($notify);
     }
 
     /**
@@ -343,28 +378,43 @@ class OrderController extends Controller
             return back()->withNotify($notify);
         }
 
-        $sale->received_amount += $paymentAmount;
-        $sale->due_amount      = $sale->receivable_amount - $sale->received_amount;
+        // Use database transaction for payment to ensure atomicity
+        DB::beginTransaction();
+        try {
+            $sale->received_amount += $paymentAmount;
+            $sale->due_amount      = $sale->receivable_amount - $sale->received_amount;
 
-        $isFullPayment = $sale->due_amount <= 0;
+            $isFullPayment = $sale->due_amount <= 0;
 
-        // Update status if fully paid and not already 'delivered' or 'cancelled'
-        if ($isFullPayment && $sale->status == 'pending') {
-            $sale->status = 'confirmed';
+            // Update status if fully paid and not already 'delivered' or 'cancelled'
+            if ($isFullPayment && ($sale->status == 'pending' || $sale->status == 'processing')) {
+                $sale->status = 'confirmed'; // Or 'delivered' based on your workflow
+            }
+
+            $sale->save();
+
+            // Log this as a separate transaction/payment if you have a Payment model
+            // For now, adding more details to Action entry
+            Action::newEntry($sale, 'PAYMENT_RECEIVED', [
+                'amount' => $paymentAmount,
+                'method' => $request->payment_method,
+                'bank_id' => $request->bank_id,
+                'transaction_id' => $request->transaction_id,
+                'new_due_amount' => $sale->due_amount,
+                'new_status' => $sale->status,
+            ]);
+
+            DB::commit();
+
+            $notify[] = ['success', 'Payment of ' . gs('cur_sym') . getAmount($paymentAmount) . ' recorded successfully. ' . ($isFullPayment ? 'Order is now fully paid.' : '')];
+            return back()->withNotify($notify);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            logger()->error('Payment failed: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            $notify[] = ['error', 'Failed to record payment. An unexpected error occurred.'];
+            return back()->withNotify($notify)->withInput();
         }
-
-        $sale->save();
-
-        // You would typically log this as a separate transaction/payment model
-        // For simplicity, we'll log an action entry here
-        Action::newEntry($sale, 'PAYMENT_RECEIVED', [
-            'amount' => $paymentAmount,
-            'method' => $request->payment_method,
-            'details' => $request->transaction_id
-        ]);
-
-        $notify[] = ['success', 'Payment of ' . gs('cur_sym') . getAmount($paymentAmount) . ' recorded successfully. ' . ($isFullPayment ? 'Order is now fully paid.' : '')];
-        return back()->withNotify($notify);
     }
 
     /**
@@ -386,54 +436,61 @@ class OrderController extends Controller
             return back()->withNotify($notify);
         }
 
-        $sale->status = $request->status;
-        $sale->save();
+        DB::beginTransaction(); // Transaction for status update
+        try {
+            $sale->status = $request->status;
+            $sale->save();
 
-        Action::newEntry($sale, 'STATUS_UPDATED');
+            Action::newEntry($sale, 'STATUS_UPDATED', ['new_status' => $sale->status]);
 
-        $notify[] = ['success', 'Order status updated to ' . ucfirst($sale->status) . ' successfully'];
-        return back()->withNotify($notify);
+            DB::commit();
+
+            $notify[] = ['success', 'Order status updated to ' . ucfirst($sale->status) . ' successfully'];
+            return back()->withNotify($notify);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            logger()->error('Order status update failed: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            $notify[] = ['error', 'Failed to update order status. An unexpected error occurred.'];
+            return back()->withNotify($notify)->withInput();
+        }
     }
 
     protected function saveSaleData($sale)
     {
         $request    = request();
         $discount   = $request->discount ?? 0;
-        $totalReceived = $request->received_amount ?? 0; // The amount paid during order creation/edit
+        $totalReceived = $request->received_amount ?? 0;
         $receivable = $this->totalPrice - $discount;
 
-        // If editing an existing order, maintain the previously received amount unless a new one is provided.
-        // For simplicity, for store/update, we'll assume the 'received_amount' from the request is only what's being paid *now*.
-        // If it's a new order, it's the initial payment. If it's an update, it's an adjustment/new payment for now.
-        // A dedicated 'makePayment' is better, but to save the initial payment:
-
         if ($sale->exists) {
-            // For update, the received_amount in the request is the new payment
-            $sale->received_amount = $sale->received_amount + $totalReceived;
+
+            $sale->received_amount = ($sale->received_amount + $totalReceived); // Accumulate received
         } else {
-            // For store, the received_amount in the request is the initial payment
             $sale->received_amount = $totalReceived;
         }
 
         $dueAmount  = $receivable - $sale->received_amount;
 
-        // Initial payment method for new orders
         $paymentMethod = $request->payment_method ?? null;
         $bankId = $request->bank_id ?? null;
 
-        // Only update these fields if a payment was made during order creation/edit
         if ($totalReceived > 0) {
             $sale->payment_method = $paymentMethod;
             $sale->bank_id = $bankId;
         }
 
-        // Fallback for customer and warehouse
-        $defaultCustomer = Customer::first()->id ?? 1;
-        $defaultWarehouse = Warehouse::first()->id ?? 1;
+        $defaultCustomer = Customer::first()->id ?? 1; // Use null if no default customer exists
+        $defaultWarehouse = Warehouse::first()->id ?? 1; // Use null if no default warehouse exists
 
         $sale->customer_id       = $request->customer_id ?? $defaultCustomer;
-        $sale->customer_name       = $request->customer_name ?? 'Walkin-customer';
-        $sale->warehouse_id      = $request->warehouse_id ?? $defaultWarehouse; // No warehouse needed
+        $sale->customer_name     = $request->customer_name ?? 'Walkin-customer';
+        $sale->customer_phone    = $request->customer_phone; // New field
+        $sale->customer_address  = $request->customer_address; // New field
+        $sale->service_type      = $request->service_type ?? 'takeaway'; // New field, default to takeaway
+        $sale->table_no          = $request->table_no; // New field
+        $sale->table_man         = $request->table_man; // New field
+        $sale->warehouse_id      = $request->warehouse_id ?? $defaultWarehouse;
         $sale->sale_date         = Carbon::parse($request->sale_date);
         $sale->status            = $request->status ?? 'pending';
         $sale->total_price       = $this->totalPrice;
@@ -442,9 +499,8 @@ class OrderController extends Controller
         $sale->due_amount        = $dueAmount;
         $sale->note              = $request->note;
 
-        // Status check for full payment on creation/update
-        if ($sale->due_amount <= 0 && $sale->status == 'pending') {
-            $sale->status = 'confirmed';
+        if ($sale->due_amount <= 0 && ($sale->status == 'pending' || $sale->status == 'processing')) {
+            $sale->status = 'confirmed'; // Automatically confirm if fully paid on creation/update
         }
 
         $sale->save();
@@ -452,18 +508,14 @@ class OrderController extends Controller
         return $sale;
     }
 
-    // --- Existing methods (storeSaleDetails, getTotalPrice, validation, searchProduct, lastInvoice) go here ---
-
     protected function storeSaleDetails($sale)
     {
         $saleDetails = @$this->saleDetails ?? null;
 
-        // Remove old details if updating
         if ($saleDetails) {
             $existingProductIds = $saleDetails->pluck('product_id')->toArray();
             $newProductIds = $this->products->pluck('product_id')->toArray();
 
-            // Delete products that are no longer in the order
             $toDelete = array_diff($existingProductIds, $newProductIds);
             if (!empty($toDelete)) {
                 SaleDetails::where('sale_id', $sale->id)
@@ -474,14 +526,8 @@ class OrderController extends Controller
 
         foreach ($this->products as $product) {
             $product    = (object) $product;
-            $saleDetail = new SaleDetails();
+            $saleDetail = SaleDetails::firstOrNew(['sale_id' => $sale->id, 'product_id' => $product->product_id]);
 
-            if ($saleDetails) {
-                $saleDetail = $saleDetails->where('product_id', $product->product_id)->first() ?? new SaleDetails();
-            }
-
-            $saleDetail->sale_id    = $sale->id;
-            $saleDetail->product_id = $product->product_id;
             $saleDetail->quantity   = $product->quantity;
             $saleDetail->price      = $product->price;
             $saleDetail->total      = $product->quantity * $product->price;
@@ -500,22 +546,40 @@ class OrderController extends Controller
     {
         $rules = [
             'customer_id'           => 'nullable|exists:customers,id',
-            'customer_name'         => 'required_without:customer_id|string',
+            'customer_name'         => 'required_without:customer_id|string|max:255',
             'sale_date'             => 'required|date_format:Y-m-d',
             'status'                => 'required|in:pending,confirmed,processing,shipped,delivered,cancelled',
+            'service_type'          => 'required|in:takeaway,delivery,dine_in', // New field
             'products'              => 'required|array|min:1',
             'products.*.product_id' => 'required|integer|exists:products,id',
             'products.*.quantity'   => 'required|integer|gt:0',
             'products.*.price'      => 'required|numeric|gte:0',
             'discount'              => 'nullable|numeric|gte:0',
-            'note'                  => 'nullable|string',
+            'note'                  => 'nullable|string|max:1000',
+
             // Payment fields (only required when an amount is received)
             'received_amount'       => 'nullable|numeric|gte:0',
             'payment_method'        => 'nullable|required_with:received_amount|in:cash,bank,mobile',
             'bank_id'               => 'nullable|required_if:payment_method,bank|exists:banks,id',
         ];
 
-        // Conditional validation for customer_name might need adjustment based on your front-end logic (creating a new customer)
+        // Conditional validation based on service_type
+        if ($request->service_type === 'delivery') {
+            $rules['customer_phone'] = 'required|string|max:20';
+            $rules['customer_address'] = 'required|string|max:500';
+            $rules['table_no'] = 'nullable'; // Must be nullable if not dine_in
+            $rules['table_man'] = 'nullable'; // Must be nullable if not dine_in
+        } elseif ($request->service_type === 'dine_in') {
+            $rules['table_no'] = 'required|string|max:50';
+            $rules['table_man'] = 'required|string|max:255';
+            $rules['customer_phone'] = 'nullable'; // Must be nullable if not delivery
+            $rules['customer_address'] = 'nullable'; // Must be nullable if not delivery
+        } else { // Take Away
+            $rules['customer_phone'] = 'nullable';
+            $rules['customer_address'] = 'nullable';
+            $rules['table_no'] = 'nullable';
+            $rules['table_man'] = 'nullable';
+        }
 
         $request->validate($rules);
     }

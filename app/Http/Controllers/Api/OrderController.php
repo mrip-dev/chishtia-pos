@@ -22,7 +22,7 @@ use Illuminate\Support\Str;
 class OrderController extends Controller
 {
     public $warehouse_id = 1;
-   
+
     public function getAllOrders()
     {
         $orders = Sale::with('saleDetails')->get();
@@ -32,9 +32,9 @@ class OrderController extends Controller
             'data' => $orders,
         ]);
     }
-   
-  
- 
+
+
+
 
     public function saveOrder(Request $request)
     {

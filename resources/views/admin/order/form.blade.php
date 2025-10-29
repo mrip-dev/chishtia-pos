@@ -118,6 +118,69 @@
                                 </select>
                             </div>
                         </div>
+
+                        {{-- New Service Type Field --}}
+                        <div class="col-xl-12 col-sm-12">
+                            <div class="form-group">
+                                <label>@lang('Service Type') <span class="text--danger">*</span></label>
+                                <select
+                                    class="form-control"
+                                    v-model="orderData.service_type"
+                                    required>
+                                    <option value="takeaway">@lang('Take Away')</option>
+                                    <option value="delivery">@lang('Delivery')</option>
+                                    <option value="dine_in">@lang('Dine In')</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {{-- Customer Info for Delivery --}}
+                        <template v-if="orderData.service_type === 'delivery'">
+                            <div class="col-xl-6 col-sm-6">
+                                <div class="form-group">
+                                    <label>@lang('Customer Phone') <span class="text--danger">*</span></label>
+                                    <input
+                                        class="form-control"
+                                        v-model="orderData.customer_phone"
+                                        type="tel"
+                                        required>
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-sm-6">
+                                <div class="form-group">
+                                    <label>@lang('Customer Address') <span class="text--danger">*</span></label>
+                                    <input
+                                        class="form-control"
+                                        v-model="orderData.customer_address"
+                                        type="text"
+                                        required>
+                                </div>
+                            </div>
+                        </template>
+
+                        {{-- Dine In Specific Fields --}}
+                        <template v-if="orderData.service_type === 'dine_in'">
+                            <div class="col-xl-6 col-sm-6">
+                                <div class="form-group">
+                                    <label>@lang('Table No.') <span class="text--danger">*</span></label>
+                                    <input
+                                        class="form-control"
+                                        v-model="orderData.table_no"
+                                        type="text"
+                                        required>
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-sm-6">
+                                <div class="form-group">
+                                    <label>@lang('Table Man') <span class="text--danger">*</span></label>
+                                    <input
+                                        class="form-control"
+                                        v-model="orderData.table_man"
+                                        type="text"
+                                        required>
+                                </div>
+                            </div>
+                        </template>
                     </div>
 
                     <div class="row mb-3">
@@ -447,6 +510,11 @@
                     customer_name: @json($sale->customer_name?? ''),
                     sale_date: @json($sale->sale_date ?? date('Y-m-d')),
                     status: @json($sale->status ?? 'pending'),
+                    service_type: @json($sale->service_type ?? 'takeaway'), // New field
+                    customer_phone: @json($sale->customer_phone ?? ''), // New field
+                    customer_address: @json($sale->customer_address ?? ''), // New field
+                    table_no: @json($sale->table_no ?? ''), // New field
+                    table_man: @json($sale->table_man ?? ''), // New field
                     discount: @json($sale->discount_amount ?? 0),
                     note: @json($sale->note ?? '')
                 },
@@ -518,9 +586,16 @@
                 return Math.max(0, this.totalPrice - (this.orderData.discount || 0));
             },
             canSubmit() {
-                return this.selectedProducts.length > 0 &&
+                let isValid = this.selectedProducts.length > 0 &&
                     this.orderData.customer_name &&
                     !this.discountError;
+
+                if (this.orderData.service_type === 'delivery') {
+                    isValid = isValid && this.orderData.customer_phone && this.orderData.customer_address;
+                } else if (this.orderData.service_type === 'dine_in') {
+                    isValid = isValid && this.orderData.table_no && this.orderData.table_man;
+                }
+                return isValid;
             }
         },
         methods: {
@@ -592,6 +667,14 @@
                 formData.append('customer_name', this.orderData.customer_name);
                 formData.append('sale_date', this.orderData.sale_date);
                 formData.append('status', this.orderData.status);
+                formData.append('service_type', this.orderData.service_type); // Append service type
+                if (this.orderData.service_type === 'delivery') {
+                    formData.append('customer_phone', this.orderData.customer_phone); // Append phone
+                    formData.append('customer_address', this.orderData.customer_address); // Append address
+                } else if (this.orderData.service_type === 'dine_in') {
+                    formData.append('table_no', this.orderData.table_no); // Append table no
+                    formData.append('table_man', this.orderData.table_man); // Append table man
+                }
                 formData.append('discount', this.orderData.discount || 0);
                 formData.append('note', this.orderData.note || '');
                 formData.append('total_amount', this.totalPrice);
@@ -607,7 +690,7 @@
                 const url = this.isEdit ?
                     '{{ isset($sale) ? route("admin.order.update", $sale->id) : "" }}' :
                     '{{ route("admin.order.store") }}';
-
+                console.log(formData);
                 fetch(url, {
                         method: 'POST',
                         body: formData,
@@ -615,7 +698,7 @@
                             'X-Requested-With': 'XMLHttpRequest',
                             // Laravel often requires method override for PUT/PATCH/DELETE
                             ...(this.isEdit ? {
-                                'X-HTTP-Method-Override': 'PUT'
+                                'X-HTTP-Method-Override': 'POST'
                             } : {})
                         }
                     })

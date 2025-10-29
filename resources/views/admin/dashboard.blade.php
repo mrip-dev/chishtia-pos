@@ -36,6 +36,64 @@
 
 
 <div class="row gy-4">
+    {{-- Today Widgets --}}
+    <div class="col-md-6">
+        <div class="app-card border-0 rounded-3 shadow-sm d-block">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="text-muted fw-semibold mb-1 text-uppercase">Today's Sales</div>
+                        <h2 class="display-6 fw-bold mb-0 text-primary">
+                            {{ $todayWidget['today_sales_count'] }}
+                        </h2>
+                    </div>
+                      <div>
+                        <div class="text-muted fw-semibold mb-1 text-uppercase">Today's Sales</div>
+                        <h2 class="display-6 fw-bold mb-0 text-primary">
+                           {{ showAmount($todayWidget['today_sales_amount'],2,false,false,false) }}
+                        </h2>
+                    </div>
+                    <div class="icon-wrap bg-primary-subtle text-primary rounded-circle p-3">
+                        <i class="las la-cash-register fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-xxl-3 col-sm-4">
+        <div class="app-card border-0 rounded-3 shadow-sm d-block">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="text-muted fw-semibold mb-1 text-uppercase">Today's Orders</div>
+                        <h2 class="display-6 fw-bold mb-0 text-info">{{ $todayWidget['today_orders'] }}</h2>
+                    </div>
+                    <div class="icon-wrap bg-info-subtle text-info rounded-circle p-3">
+                        <i class="las la-file-invoice fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-3 col-sm-4">
+        <div class="app-card border-0 rounded-3 shadow-sm d-block">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="text-muted fw-semibold mb-1 text-uppercase">New Customers Today</div>
+                        <h2 class="display-6 fw-bold mb-0 text-warning">{{ $todayWidget['today_customers'] }}</h2>
+                    </div>
+                    <div class="icon-wrap bg-warning-subtle text-warning rounded-circle p-3">
+                        <i class="las la-user-plus fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="col-xxl-3 col-sm-4">
         <a href="{{ route('admin.product.index') }}" class="app-card border-0 rounded-3 shadow-sm d-block">
             <div class="card-body p-4">
@@ -130,6 +188,7 @@
             </div>
         </a>
     </div>
+
 
 </div>
 

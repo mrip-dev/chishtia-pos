@@ -27,13 +27,13 @@ class AdminController extends Controller
     {
         $pageTitle = 'Dashboard';
 
+        // Total widgets
         $widget['total_customer'] = Customer::count();
         $widget['total_product']  = Product::count();
         $widget['total_category'] = Category::count();
         $widget['total_orders'] = Sale::count();
-        $widget['unpaid_orders'] = Sale::where('due_amount','>',0)->count();
-        $widget['paid_orders'] = Sale::where('due_amount',0)->count();
-
+        $widget['unpaid_orders'] = Sale::where('due_amount', '>', 0)->count();
+        $widget['paid_orders'] = Sale::where('due_amount', 0)->count();
 
         $widget['total_purchase_count']        = Purchase::count();
         $widget['total_purchase']              = Purchase::sum('payable_amount');
@@ -45,6 +45,19 @@ class AdminController extends Controller
         $widget['total_sale_return_count'] = SaleReturn::count();
         $widget['total_sale_return']       = SaleReturn::sum('payable_amount');
 
+        // 👇 NEW: Today widgets
+        $today = now()->toDateString();
+
+        $todayWidget['today_sales_count'] = Sale::whereDate('created_at', $today)->count();
+        $todayWidget['today_sales_amount'] = Sale::whereDate('created_at', $today)->sum('receivable_amount');
+
+        $todayWidget['today_purchases_count'] = Purchase::whereDate('created_at', $today)->count();
+        $todayWidget['today_purchases_amount'] = Purchase::whereDate('created_at', $today)->sum('payable_amount');
+
+        $todayWidget['today_orders'] = Sale::whereDate('created_at', $today)->count();
+        $todayWidget['today_customers'] = Customer::whereDate('created_at', $today)->count();
+
+        // Other data
         $alertProductsQty = Product::select('products.id', 'products.name', 'units.name as unit_name', 'products.alert_quantity', 'product_stocks.quantity as quantity', 'warehouses.name as warehouse_name')
             ->join('product_stocks', 'products.id', '=', 'product_stocks.product_id')
             ->join('units', 'units.id', '=', 'products.unit_id')
@@ -52,11 +65,17 @@ class AdminController extends Controller
             ->whereRaw('products.alert_quantity >= product_stocks.quantity')
             ->orderBy('products.alert_quantity')->take(8)->get();
 
-        //top 5 best sales products
-        $topSellingProducts =  Product::where('total_sale', '!=', 0)->with('unit:id,name')->orderBy('total_sale', 'desc')->limit(8)->get();
+        $topSellingProducts = Product::where('total_sale', '!=', 0)->with('unit:id,name')->orderBy('total_sale', 'desc')->limit(8)->get();
         $saleReturns        = SaleReturn::with('sale.warehouse', 'customer')->orderBy('id', 'desc')->take(8)->get();
 
-        return view('admin.dashboard', compact('pageTitle', 'widget', 'alertProductsQty', 'topSellingProducts', 'saleReturns'));
+        return view('admin.dashboard', compact(
+            'pageTitle',
+            'widget',
+            'todayWidget',
+            'alertProductsQty',
+            'topSellingProducts',
+            'saleReturns'
+        ));
     }
 
 

@@ -1,176 +1,63 @@
 {
-    "dashboard": {
-        "keyword": [
-            "Dashboard",
-            "Home",
-            "Panel",
-            "Admin",
-            "Control center",
-            "Overview",
-            "Main hub",
-            "Management hub",
-            "Administrative hub",
-            "Central hub",
-            "Command center",
-            "Administrator portal",
-            "Centralized interface",
-            "Admin console",
-            "Management dashboard",
-            "Main screen",
-            "Administrative dashboard",
-            "Command dashboard",
-            "Main control panel"
-        ],
-        "title": "Dashboard",
-        "icon": "las la-home",
-        "route_name": "admin.dashboard",
-        "menu_active": "admin.dashboard"
-    },
-    "manage_products": {
-        "title": "Products",
-        "icon": "las la-box",
-        "menu_active": [
-            "admin.product*"
-        ],
-        "submenu": [
-            {
-                "keyword": [
-                    "All Products",
-                    "Manage Product",
-                    "Product Configuration",
-                    "Add product",
-                    "Edit Products"
-                ],
-                "title": "Products",
-                "route_name": "admin.product.index",
-                "menu_active": "admin.product.index"
-            },
-            {
-                "keyword": [
-                    "All Categories",
-                    "Manage Category",
-                    "Category management",
-                    "Category control",
-                    "Category activity",
-                    "Category analytics"
-                ],
-                "title": "Categories",
-                "route_name": "admin.product.category.index",
-                "menu_active": "admin.product.category.index"
-            },
-            {
-                "keyword": [
-                    "All Brands",
-                    "Manage Brands",
-                    "Brand management"
-                ],
-                "title": "Brands",
-                "route_name": "admin.product.brand.index",
-                "menu_active": [
-                    "admin.product.brand.index"
-                ]
-            },
-            {
-                "keyword": [
-                    "All Units",
-                    "Manage Units",
-                    "Product Units"
-                ],
-                "title": "Units",
-                "route_name": "admin.product.unit.index",
-                "menu_active": "admin.product.unit.index"
-            }
-        ]
-    },
-    "manage_sale": {
-        "title": "Sales",
-        "icon": "la la-shopping-cart",
-        "menu_active": [
-            "admin.manage_sale",
-            "admin.sale.return*"
-        ],
-        "submenu": [
-            {
-                "keyword": [
-                    "Sales",
-                    "Manage sales",
-                    "Sale Configuration",
-                    "Add sale",
-                    "Edit sale"
-                ],
-                "title": "All Sales",
-                "route_name": "admin.manage_sale",
-                "menu_active": [
-                    "admin.manage_sale",
-                    "admin.sale.create",
-                    "admin.sale.edit"
-                ]
-            }
-        ]
-    },
-      "manage_orders": {
-        "title": "Orders",
-        "icon": "la la-shopping-cart",
-        "menu_active": [
-            "admin.order.*"
-        ],
-        "submenu": [
-            {
-                "keyword": [
-                    "Orders",
-                    "Manage orders",
-                    "Sale Configuration",
-                    "Add order",
-                    "Edit order"
-                ],
-                "title": "All Orders",
-                "route_name": "admin.order.index",
-                "menu_active": [
-                    "admin.order.index",
-                    "admin.order.create",
-                    "admin.order.edit"
-                ]
-            }
-        ]
-    },
-    "manage_staff": {
-        "title": "All Staff",
-        "icon": "las la-user",
-        "menu_active": [
-            "admin.staff.index",
-            "admin.roles.index",
-            "admin.roles.edit"
-        ],
-        "submenu": [
-            {
-                "keyword": [
-                    "All Staff",
-                    "Manage staff",
-                    "Staff management",
-                    "Staff control",
-                    "Staff activity",
-                    "Staff analytics"
-                ],
-                "title": "All Staff",
-                "route_name": "admin.staff.index",
-                "menu_active": "admin.staff.index"
-            },
-            {
-                "keyword": [
-                    "All Roles",
-                    "Manage Role",
-                    "Role management",
-                    "Role control",
-                    "Role activity",
-                    "Role analytics"
-                ],
-                "title": "Roles",
-                "route_name": "admin.roles.index",
-                "menu_active": [
-                    "admin.roles.index",
-                    "admin.roles.edit"
-                ]
-            }
-        ]
-    }
+  "dashboard": {
+    "title": "Dashboard",
+    "icon": "las la-tachometer-alt",
+    "route_name": "admin.dashboard",
+    "menu_active": "admin.dashboard"
+  },
+  "products": {
+    "title": "Products",
+    "icon": "las la-box",
+    "route_name": "admin.product.index",
+    "menu_active": "admin.product.index"
+  },
+  "categories": {
+    "title": "Categories",
+    "icon": "las la-layer-group",
+    "route_name": "admin.product.category.index",
+    "menu_active": "admin.product.category.index"
+  },
+  "brands": {
+    "title": "Brands",
+    "icon": "las la-tags",
+    "route_name": "admin.product.brand.index",
+    "menu_active": "admin.product.brand.index"
+  },
+  "units": {
+    "title": "Units",
+    "icon": "las la-ruler-combined",
+    "route_name": "admin.product.unit.index",
+    "menu_active": "admin.product.unit.index"
+  },
+  "sales": {
+    "title": "Sales",
+    "icon": "las la-shopping-cart",
+    "route_name": "admin.manage_sale",
+    "menu_active": ["admin.manage_sale", "admin.sale.create", "admin.sale.edit"]
+  },
+  "orders": {
+    "title": "Orders",
+    "icon": "las la-file-invoice-dollar",
+    "route_name": "admin.order.index",
+    "menu_active": ["admin.order.index", "admin.order.create", "admin.order.edit"]
+  },
+  "staff": {
+    "title": "Staff",
+    "icon": "las la-user-tie",
+    "route_name": "admin.staff.index",
+    "menu_active": "admin.staff.index"
+  },
+  "roles": {
+    "title": "Roles",
+    "icon": "las la-user-shield",
+    "route_name": "admin.roles.index",
+    "menu_active": ["admin.roles.index", "admin.roles.edit"]
+  },
+
+  "logout": {
+    "title": "Logout",
+    "icon": "las la-sign-out-alt",
+    "route_name": "admin.logout",
+    "menu_active": "admin.logout"
+  }
 }

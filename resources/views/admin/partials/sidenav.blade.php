@@ -60,6 +60,34 @@
     background: rgba(0, 0, 0, 0.05);
 }
 
+/* === TOOLTIP FOR COLLAPSED SIDEBAR === */
+.sidebar:not(.expanded) .sidebar__menu li a {
+    position: relative;
+}
+
+.sidebar:not(.expanded) .sidebar__menu li a[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #333;
+    color: #fff;
+    white-space: nowrap;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-left: 10px;
+    font-size: 12px;
+    z-index: 2000;
+    opacity: 0;
+    animation: fadeInTooltip 0.2s forwards;
+}
+
+/* Fade in tooltip */
+@keyframes fadeInTooltip {
+    to { opacity: 1; }
+}
+
 /* === TOGGLE BUTTONS === */
 .mobile-menu-toggle,
 .sidebar-collapse-toggle {
@@ -241,6 +269,7 @@ collapseBtn.addEventListener('click', () => {
     navbar.classList.toggle('ip', sidebar.classList.contains('expanded'));
     bodyWrapper.classList.toggle('ip', sidebar.classList.contains('expanded'));
 });
+collapseBtn.click();
 
 // === Mobile open ===
 mobileMenuBtn.addEventListener('click', () => {
@@ -258,5 +287,14 @@ function closeMobileMenu() {
     overlay.classList.remove('active');
     document.body.classList.remove('menu-open');
 }
+
+// === Add tooltips dynamically ===
+const sidebarLinks = document.querySelectorAll('.sidebar__menu li a');
+sidebarLinks.forEach(link => {
+    const titleText = link.querySelector('.menu-title')?.innerText.trim();
+    if (titleText) {
+        link.setAttribute('title', titleText);
+    }
+});
 </script>
 @endpush
